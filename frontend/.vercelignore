@@ -1,0 +1,3 @@
+# Force rebuild
+.env.local
+.env.development.local
