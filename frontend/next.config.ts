@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
 
   /* Performance */
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Disabled due to critters module issue in Vercel
     optimizePackageImports: ['lucide-react'],
   },
 
