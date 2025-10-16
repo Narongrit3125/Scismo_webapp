@@ -1,0 +1,470 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User management
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  username    String   @unique
+  firstName   String
+  lastName    String
+  role        Role     @default(MEMBER)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  memberProfile Member?
+  staffProfile  Staff?
+  authoredNews  News[]
+  authoredActivities Activity[]
+  authoredProjects Project[]
+  donations     Donation[]
+  contactMessages Contact[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  MEMBER
+  STAFF
+}
+
+// Member information
+model Member {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  studentId   String?   @unique
+  phone       String?
+  year        Int
+  department  String
+  faculty     String
+  position    String?
+  joinDate    DateTime  @default(now())
+  isActive    Boolean   @default(true)
+  bio         String?
+  skills      String?   // JSON string array
+  interests   String?   // JSON string array
+  avatar      String?
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("members")
+}
+
+// Staff information
+model Staff {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  employeeId  String?  @unique
+  department  String
+  position    String
+  phone       String?
+  office      String?
+  bio         String?
+  expertise   String?   // JSON string array
+  avatar      String?
+  isActive    Boolean  @default(true)
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("staff")
+}
+
+// Position/Role definitions
+model Position {
+  id          String   @id @default(cuid())
+  title       String   @unique
+  description String?
+  type        PositionType
+  level       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@map("positions")
+}
+
+enum PositionType {
+  EXECUTIVE
+  COMMITTEE
+  ADVISOR
+  VOLUNTEER
+}
+
+// Content management
+model Content {
+  id          String      @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  type        ContentType
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  tags        String?     // JSON string array
+  slug        String      @unique
+  viewCount   Int         @default(0)
+  
+  @@map("contents")
+}
+
+enum ContentType {
+  PAGE
+  POST
+  ANNOUNCEMENT
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// News and announcements
+model News {
+  id          String      @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  authorId    String
+  category    String
+  priority    Priority    @default(MEDIUM)
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  tags        String?     // JSON string array
+  slug        String      @unique
+  viewCount   Int         @default(0)
+  image       String?
+
+  author      User        @relation(fields: [authorId], references: [id])
+
+  @@map("news")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Activities and events
+model Activity {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  authorId    String
+  projectId   String?      // เชื่อมโยงกับโครงการหลัก
+  category    String
+  type        ActivityType
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  maxParticipants Int?
+  currentParticipants Int @default(0)
+  status      ActivityStatus @default(PLANNING)
+  isPublic    Boolean      @default(true)
+  requirements String?
+  budget      Float?       // งบประมาณของกิจกรรมนี้
+  order       Int          @default(0) // ลำดับของกิจกรรมในโครงการ
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  tags        String?      // JSON string array
+  image       String?
+
+  author      User         @relation(fields: [authorId], references: [id])
+  project     Project?     @relation(fields: [projectId], references: [id])
+
+  @@map("activities")
+}
+
+enum ActivityType {
+  WORKSHOP      // เวิร์กช็อป
+  SEMINAR       // สัมมนา
+  COMPETITION   // การแข่งขัน
+  VOLUNTEER     // อาสาสมัคร
+  SOCIAL        // สังสรรค์
+  TRAINING      // ฝึกอบรม
+  MEETING       // ประชุม
+  CEREMONY      // พิธีการ
+  FUNDRAISING   // ระดมทุน
+  EXHIBITION    // นิทรรศการ
+}
+
+enum ActivityStatus {
+  PLANNING
+  OPEN_REGISTRATION
+  FULL
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Projects (โครงการประจำปี)
+model Project {
+  id          String        @id @default(cuid())
+  code        String        @unique // รหัสโครงการ เช่น "SC2567-001"
+  title       String        // เช่น "โครงการสโมสรนิสิตคณะวิทยาศาสตร์ ปีการศึกษา 2567"
+  description String
+  shortDescription String?
+  authorId    String
+  year        Int           // ปีการศึกษา เช่น 2567
+  status      ProjectStatus @default(PLANNING)
+  priority    Priority      @default(MEDIUM)
+  startDate   DateTime      // วันเริ่มต้นโครงการ
+  endDate     DateTime      // วันสิ้นสุดโครงการ
+  totalBudget Float?        // งบประมาณรวมของโครงการทั้งหมด
+  usedBudget  Float         @default(0) // งบประมาณที่ใช้ไปแล้ว
+  objectives  String?       // วัตถุประสงค์ของโครงการ
+  targetGroup String?       // กลุ่มเป้าหมาย
+  expectedResults String?   // ผลที่คาดหวัง
+  sponsor     String?       // ผู้สนับสนุน
+  coordinator String?       // ผู้ประสานงาน
+  isActive    Boolean       @default(true)
+  image       String?       // รูปปกโครงการ
+  planFile    String?       // ไฟล์แผนโครงการ (PDF, DOC, etc.)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  author      User          @relation(fields: [authorId], references: [id])
+  activities  Activity[]    // กิจกรรมย่อยในโครงการ
+  reports     ProjectReport[] // รายงานผลการดำเนินงาน
+
+  @@map("projects")
+}
+
+// รายงานผลการดำเนินงานโครงการ
+model ProjectReport {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String
+  content     String   // รายงานผล
+  reportType  ReportType
+  reportDate  DateTime
+  submittedBy String
+  status      ReportStatus @default(DRAFT)
+  attachments String?  // JSON string array of file URLs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_reports")
+}
+
+enum ReportType {
+  PROGRESS    // รายงานความคืบหน้า
+  FINANCIAL   // รายงานการเงิน
+  FINAL       // รายงานสรุปผล
+  EVALUATION  // รายงานการประเมิน
+}
+
+enum ReportStatus {
+  DRAFT       // ร่าง
+  SUBMITTED   // ส่งแล้ว
+  APPROVED    // อนุมัติ
+  REJECTED    // ไม่อนุมัติ
+}
+
+enum ProjectStatus {
+  PLANNING      // วางแผน
+  APPROVED      // อนุมัติแล้ว
+  IN_PROGRESS   // ดำเนินการ
+  COMPLETED     // เสร็จสิ้น
+  ON_HOLD       // ระงับ
+  CANCELLED     // ยกเลิก
+}
+
+// Documents and files
+model Document {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    String
+  type        String
+  fileName    String
+  fileUrl     String
+  fileSize    Int
+  isPublic    Boolean  @default(true)
+  downloadCount Int    @default(0)
+  tags        String?  // JSON string array
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("documents")
+}
+
+// Gallery
+model Gallery {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    String
+  images      String?  // JSON string array
+  date        DateTime
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("gallery")
+}
+
+// Forms
+model Form {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  type        FormType
+  status      FormStatus @default(ACTIVE)
+  fields      String     // JSON string
+  settings    String?    // JSON string
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  submissions FormSubmission[]
+
+  @@map("forms")
+}
+
+enum FormType {
+  MEMBERSHIP_APPLICATION
+  EVENT_REGISTRATION
+  FEEDBACK
+  CONTACT
+  SURVEY
+  OTHER
+}
+
+enum FormStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+// Form submissions
+model FormSubmission {
+  id        String   @id @default(cuid())
+  formId    String
+  data      String   // JSON string
+  status    SubmissionStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@map("form_submissions")
+}
+
+enum SubmissionStatus {
+  PENDING
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
+// Donations
+model DonationCampaign {
+  id            String           @id @default(cuid())
+  title         String
+  description   String
+  targetAmount  Float
+  currentAmount Float            @default(0)
+  startDate     DateTime
+  endDate       DateTime
+  status        CampaignStatus   @default(ACTIVE)
+  category      String
+  image         String?
+  donorCount    Int              @default(0)
+  createdBy     String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  donations     Donation[]
+
+  @@map("donation_campaigns")
+}
+
+enum CampaignStatus {
+  ACTIVE
+  COMPLETED
+  EXPIRED
+  PAUSED
+}
+
+model Donation {
+  id         String           @id @default(cuid())
+  campaignId String
+  donorId    String?
+  donorName  String
+  amount     Float
+  message    String?
+  isAnonymous Boolean         @default(false)
+  status     DonationStatus  @default(COMPLETED)
+  createdAt  DateTime        @default(now())
+
+  campaign   DonationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  donor      User?           @relation(fields: [donorId], references: [id])
+
+  @@map("donations")
+}
+
+enum DonationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Contact messages
+model Contact {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  category  String        @default("general")
+  priority  Priority      @default(MEDIUM)
+  status    ContactStatus @default(PENDING)
+  userId    String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user      User?         @relation(fields: [userId], references: [id])
+
+  @@map("contacts")
+}
+
+enum ContactStatus {
+  PENDING
+  REPLIED
+  CLOSED
+}
+
+// Contact information
+model ContactInfo {
+  id        String  @id @default(cuid())
+  type      String  // address, phone, email, social
+  label     String
+  value     String
+  icon      String?
+  isActive  Boolean @default(true)
+  order     Int     @default(0)
+
+  @@map("contact_info")
+}
