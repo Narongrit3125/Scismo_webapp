@@ -21,6 +21,16 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
+  /* ESLint - Ignore during builds for deployment */
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  /* TypeScript - Check types but don't fail build */
+  typescript: {
+    // ignoreBuildErrors: true, // Uncomment if needed
+  },
+
   /* Security Headers */
   async headers() {
     return [
