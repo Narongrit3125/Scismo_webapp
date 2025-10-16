@@ -6,11 +6,12 @@ import { authOptions } from '@/lib/auth';
 // GET specific project
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const project = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         author: {
           select: {
@@ -52,9 +53,10 @@ export async function GET(
 // PUT (Update) project
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ 
@@ -80,7 +82,7 @@ export async function PUT(
 
     // Check if project exists and user has permission
     const existingProject = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         author: true
       }
@@ -115,7 +117,7 @@ export async function PUT(
 
     // Update project
     const updatedProject = await prisma.project.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: title || existingProject.title,
         description: description || existingProject.description,
@@ -156,9 +158,10 @@ export async function PUT(
 // DELETE project
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ 
@@ -181,7 +184,7 @@ export async function DELETE(
 
     // Delete project (this will also delete related activities due to cascade)
     await prisma.project.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ success: true });
