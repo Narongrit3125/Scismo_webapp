@@ -3,6 +3,7 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'MEMBER',

@@ -24,14 +24,12 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (!user) {
+        if (!user || !user.password) {
           return null
         }
 
-        // For demo, we'll use simple password comparison
-        // In production, use bcrypt.compare(credentials.password, user.password)
-        const isPasswordValid = credentials.password === "password123" || 
-                               credentials.password === user.username
+        // Use bcrypt to compare passwords
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
           return null
