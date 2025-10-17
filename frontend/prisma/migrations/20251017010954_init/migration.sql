@@ -99,6 +99,7 @@ CREATE TABLE "activities" (
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
+    "projectId" TEXT,
     "category" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "startDate" DATETIME NOT NULL,
@@ -109,40 +110,58 @@ CREATE TABLE "activities" (
     "status" TEXT NOT NULL DEFAULT 'PLANNING',
     "isPublic" BOOLEAN NOT NULL DEFAULT true,
     "requirements" TEXT,
+    "budget" REAL,
+    "order" INTEGER NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "tags" TEXT,
     "image" TEXT,
-    CONSTRAINT "activities_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "activities_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "activities_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "projects" (
     "id" TEXT NOT NULL PRIMARY KEY,
+    "code" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "shortDescription" TEXT,
     "authorId" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
+    "year" INTEGER NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'PLANNING',
     "priority" TEXT NOT NULL DEFAULT 'MEDIUM',
     "startDate" DATETIME NOT NULL,
-    "endDate" DATETIME,
-    "progress" INTEGER NOT NULL DEFAULT 0,
-    "technologies" TEXT,
-    "features" TEXT,
-    "challenges" TEXT,
-    "achievements" TEXT,
-    "budget" REAL,
+    "endDate" DATETIME NOT NULL,
+    "totalBudget" REAL,
+    "usedBudget" REAL NOT NULL DEFAULT 0,
+    "objectives" TEXT,
+    "targetGroup" TEXT,
+    "expectedResults" TEXT,
     "sponsor" TEXT,
-    "targetUsers" TEXT NOT NULL,
-    "impact" TEXT NOT NULL,
-    "githubUrl" TEXT,
-    "demoUrl" TEXT,
-    "images" TEXT,
+    "coordinator" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "image" TEXT,
+    "planFile" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "projects_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "project_reports" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "projectId" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "reportType" TEXT NOT NULL,
+    "reportDate" DATETIME NOT NULL,
+    "submittedBy" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'DRAFT',
+    "attachments" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "project_reports_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -287,3 +306,6 @@ CREATE UNIQUE INDEX "contents_slug_key" ON "contents"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "news_slug_key" ON "news"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "projects_code_key" ON "projects"("code");
