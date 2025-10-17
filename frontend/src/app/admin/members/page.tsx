@@ -343,7 +343,9 @@ export default function AdminMembersPage() {
                   <option value="chemistry">เคมี</option>
                   <option value="physics">ฟิสิกส์</option>
                   <option value="mathematics">คณิตศาสตร์</option>
+                  <option value="data_science">วิทยาการข้อมูล</option>
                   <option value="computer">วิทยาการคอมพิวเตอร์</option>
+                  <option value="information_technology">เทคโนโลยีสารสนเทศ</option>
                 </select>
               </div>
               
