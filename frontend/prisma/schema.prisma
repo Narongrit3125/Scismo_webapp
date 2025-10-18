@@ -10,15 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User management
+// User management - ระบบจัดการผู้ใช้งาน
 model User {
   id          String   @id @default(cuid())
   email       String   @unique
   username    String   @unique
+  password    String
   firstName   String
   lastName    String
-  role        Role     @default(MEMBER)
+  role        Role     @default(USER)
   isActive    Boolean  @default(true)
+  lastLoginAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -30,76 +32,85 @@ model User {
   authoredProjects Project[]
   donations     Donation[]
   contactMessages Contact[]
+  formSubmissions FormSubmission[]
 
   @@map("users")
 }
 
 enum Role {
-  ADMIN
-  EDITOR
-  MEMBER
-  STAFF
+  ADMIN   // ผู้ดูแลระบบ
+  MEMBER  // สมาชิกสโมสร
+  USER    // ผู้ใช้งานทั่วไป
 }
 
-// Member information
+// Member information - ข้อมูลสมาชิกสโมสร
 model Member {
   id          String    @id @default(cuid())
   userId      String    @unique
-  studentId   String?   @unique
+  studentId   String    @unique // รหัสนิสิต
   phone       String?
-  year        Int
-  department  String
-  faculty     String
-  position    String?
+  year        Int       // ปีการศึกษา
+  department  String    // สาขาวิชา
+  faculty     String    // คณะ
+  position    String?   // ตำแหน่งในสโมสร
+  division    String?   // ฝ่ายงาน
   joinDate    DateTime  @default(now())
   isActive    Boolean   @default(true)
-  bio         String?
-  skills      String?   // JSON string array
-  interests   String?   // JSON string array
+  bio         String?   // ประวัติส่วนตัว
+  skills      String?   // ทักษะ (JSON array)
+  interests   String?   // ความสนใจ (JSON array)
   avatar      String?
+  address     String?   // ที่อยู่
+  emergencyContact String? // ผู้ติดต่อฉุกเฉิน
+  emergencyPhone String?   // เบอร์ฉุกเฉิน
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("members")
 }
 
-// Staff information
+// Staff information - ข้อมูลบุคลากร/เจ้าหน้าที่
 model Staff {
   id          String   @id @default(cuid())
   userId      String   @unique
-  employeeId  String?  @unique
-  department  String
-  position    String
+  staffId     String   @unique // รหัสเจ้าหน้าที่
+  department  String   // แผนก/ฝ่าย
+  position    String   // ตำแหน่ง
   phone       String?
-  office      String?
-  bio         String?
-  expertise   String?   // JSON string array
+  office      String?  // สำนักงาน/ห้องทำงาน
+  bio         String?  // ประวัติ
+  expertise   String?  // ความเชี่ยวชาญ (JSON array)
   avatar      String?
   isActive    Boolean  @default(true)
+  startDate   DateTime @default(now()) // วันที่เริ่มงาน
 
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("staff")
 }
 
-// Position/Role definitions
+// Position/Role definitions - ตำแหน่งและบทบาทในองค์กร
 model Position {
-  id          String   @id @default(cuid())
-  title       String   @unique
-  description String?
-  type        PositionType
-  level       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  id          String       @id @default(cuid())
+  title       String       @unique // ชื่อตำแหน่ง
+  description String?      // รายละเอียด
+  type        PositionType // ประเภทตำแหน่ง
+  level       Int          @default(0) // ระดับตำแหน่ง
+  division    String?      // ฝ่าย/แผนก
+  responsibilities String?  // หน้าที่ความรับผิดชอบ
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("positions")
 }
 
 enum PositionType {
-  EXECUTIVE
-  COMMITTEE
-  ADVISOR
-  VOLUNTEER
+  EXECUTIVE   // ฝ่ายบริหาร
+  COMMITTEE   // คณะกรรมการ
+  ADVISOR     // ที่ปรึกษา
+  COORDINATOR // ผู้ประสานงาน
+  MEMBER      // สมาชิกทั่วไป
 }
 
 // Content management
@@ -132,339 +143,458 @@ enum ContentStatus {
   ARCHIVED
 }
 
-// News and announcements
+// News and announcements - ข่าวสารและประกาศ
 model News {
-  id          String      @id @default(cuid())
-  title       String
-  content     String
-  excerpt     String?
-  authorId    String
-  category    String
-  priority    Priority    @default(MEDIUM)
-  status      ContentStatus @default(DRAFT)
-  publishedAt DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  tags        String?     // JSON string array
-  slug        String      @unique
-  viewCount   Int         @default(0)
-  image       String?
+  id          String        @id @default(cuid())
+  title       String        // หัวข้อข่าว
+  content     String        // เนื้อหา
+  excerpt     String?       // สรุปข่าว
+  authorId    String        // ผู้เขียน
+  category    String        // หมวดหมู่
+  priority    Priority      @default(MEDIUM) // ระดับความสำคัญ
+  isPinned    Boolean       @default(false)  // ปักหมุดข่าว
+  status      ContentStatus @default(DRAFT)  // สถานะ
+  publishedAt DateTime?     // วันที่เผยแพร่
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  tags        String?       // แท็ก (JSON array)
+  slug        String        @unique
+  viewCount   Int           @default(0) // จำนวนการเข้าชม
+  image       String?       // รูปภาพปก
+  attachments String?       // ไฟล์แนบ (JSON array)
 
-  author      User        @relation(fields: [authorId], references: [id])
+  author      User          @relation(fields: [authorId], references: [id])
 
+  @@index([category])
+  @@index([status])
+  @@index([publishedAt])
   @@map("news")
 }
 
 enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
+  LOW     // ต่ำ
+  MEDIUM  // ปานกลาง
+  HIGH    // สูง
+  URGENT  // ด่วน
 }
 
-// Activities and events
+// Activities and events - กิจกรรมและงานต่างๆ
 model Activity {
-  id          String       @id @default(cuid())
-  title       String
-  description String
-  authorId    String
-  projectId   String?      // เชื่อมโยงกับโครงการหลัก
-  category    String
-  type        ActivityType
-  startDate   DateTime
-  endDate     DateTime?
-  location    String?
-  maxParticipants Int?
-  currentParticipants Int @default(0)
-  status      ActivityStatus @default(PLANNING)
-  isPublic    Boolean      @default(true)
-  requirements String?
-  budget      Float?       // งบประมาณของกิจกรรมนี้
-  order       Int          @default(0) // ลำดับของกิจกรรมในโครงการ
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  tags        String?      // JSON string array
-  image       String?
+  id                  String         @id @default(cuid())
+  title               String         // ชื่อกิจกรรม
+  description         String         // รายละเอียด
+  authorId            String         // ผู้รับผิดชอบ
+  projectId           String?        // เชื่อมโยงกับโครงการหลัก
+  category            String         // หมวดหมู่
+  type                ActivityType   // ประเภทกิจกรรม
+  startDate           DateTime       // วันเริ่มต้น
+  endDate             DateTime?      // วันสิ้นสุด
+  location            String?        // สถานที่จัดกิจกรรม
+  maxParticipants     Int?           // จำนวนผู้เข้าร่วมสูงสุด
+  currentParticipants Int            @default(0) // จำนวนผู้ลงทะเบียนปัจจุบัน
+  coordinator         String?        // ผู้ประสานงาน
+  status              ActivityStatus @default(PLANNING) // สถานะ
+  isPublic            Boolean        @default(true)
+  requirements        String?        // คุณสมบัติผู้เข้าร่วม
+  budget              Float?         // งบประมาณ
+  actualExpense       Float?         // ค่าใช้จ่ายจริง
+  order               Int            @default(0) // ลำดับในโครงการ
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  tags                String?        // แท็ก (JSON array)
+  image               String?        // รูปภาพ
+  gallery             String?        // แกลเลอรีภาพกิจกรรม (JSON array)
 
-  author      User         @relation(fields: [authorId], references: [id])
-  project     Project?     @relation(fields: [projectId], references: [id])
+  author              User           @relation(fields: [authorId], references: [id])
+  project             Project?       @relation(fields: [projectId], references: [id])
 
+  @@index([category])
+  @@index([status])
+  @@index([startDate])
   @@map("activities")
 }
 
 enum ActivityType {
-  WORKSHOP      // เวิร์กช็อป
-  SEMINAR       // สัมมนา
+  WORKSHOP      // เวิร์กช็อป/อบรม
+  SEMINAR       // สัมมนา/บรรยาย
   COMPETITION   // การแข่งขัน
-  VOLUNTEER     // อาสาสมัคร
-  SOCIAL        // สังสรรค์
+  VOLUNTEER     // อาสาสมัคร/บำเพ็ญประโยชน์
+  SOCIAL        // กิจกรรมสังสรรค์
   TRAINING      // ฝึกอบรม
   MEETING       // ประชุม
   CEREMONY      // พิธีการ
   FUNDRAISING   // ระดมทุน
-  EXHIBITION    // นิทรรศการ
+  EXHIBITION    // นิทรรศการ/จัดแสดง
+  ACADEMIC      // กิจกรรมวิชาการ
+  SPORT         // กีฬา
+  ART_CULTURE   // ศิลปวัฒนธรรม
 }
 
 enum ActivityStatus {
-  PLANNING
-  OPEN_REGISTRATION
-  FULL
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
+  PLANNING            // วางแผน
+  OPEN_REGISTRATION   // เปิดรับสมัคร
+  FULL                // เต็ม
+  IN_PROGRESS         // กำลังดำเนินการ
+  COMPLETED           // เสร็จสิ้น
+  CANCELLED           // ยกเลิก
+  POSTPONED           // เลื่อน
 }
 
-// Projects (โครงการประจำปี)
+// Projects (โครงการหลัก)
 model Project {
-  id          String        @id @default(cuid())
-  code        String        @unique // รหัสโครงการ เช่น "SC2567-001"
-  title       String        // เช่น "โครงการสโมสรนิสิตคณะวิทยาศาสตร์ ปีการศึกษา 2567"
-  description String
-  shortDescription String?
-  authorId    String
-  year        Int           // ปีการศึกษา เช่น 2567
-  status      ProjectStatus @default(PLANNING)
-  priority    Priority      @default(MEDIUM)
-  startDate   DateTime      // วันเริ่มต้นโครงการ
-  endDate     DateTime      // วันสิ้นสุดโครงการ
-  totalBudget Float?        // งบประมาณรวมของโครงการทั้งหมด
-  usedBudget  Float         @default(0) // งบประมาณที่ใช้ไปแล้ว
-  objectives  String?       // วัตถุประสงค์ของโครงการ
-  targetGroup String?       // กลุ่มเป้าหมาย
-  expectedResults String?   // ผลที่คาดหวัง
-  sponsor     String?       // ผู้สนับสนุน
-  coordinator String?       // ผู้ประสานงาน
-  isActive    Boolean       @default(true)
-  image       String?       // รูปปกโครงการ
-  planFile    String?       // ไฟล์แผนโครงการ (PDF, DOC, etc.)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                String        @id @default(cuid())
+  code              String        @unique // รหัสโครงการ เช่น "SC2567-001"
+  title             String        // ชื่อโครงการ
+  description       String        // รายละเอียด
+  shortDescription  String?       // รายละเอียดย่อ
+  authorId          String        // ผู้รับผิดชอบหลัก
+  academicYear      Int           // ปีการศึกษา เช่น 2567
+  semester          Int?          // ภาคการศึกษา (1, 2, หรือ summer)
+  status            ProjectStatus @default(PLANNING)
+  priority          Priority      @default(MEDIUM)
+  startDate         DateTime      // วันเริ่มโครงการ
+  endDate           DateTime      // วันสิ้นสุดโครงการ
+  totalBudget       Float?        // งบประมาณรวม
+  approvedBudget    Float?        // งบประมาณที่ได้รับอนุมัติ
+  usedBudget        Float         @default(0) // งบประมาณที่ใช้ไป
+  objectives        String?       // วัตถุประสงค์
+  targetGroup       String?       // กลุ่มเป้าหมาย
+  expectedResults   String?       // ผลที่คาดหวัง
+  keyPerformance    String?       // ตัวชี้วัดความสำเร็จ (JSON array)
+  sponsor           String?       // ผู้สนับสนุน
+  coordinator       String?       // ผู้ประสานงาน
+  approvedBy        String?       // ผู้อนุมัติ
+  approvedDate      DateTime?     // วันที่อนุมัติ
+  isActive          Boolean       @default(true)
+  image             String?       // รูปปกโครงการ
+  planFile          String?       // ไฟล์แผนโครงการ
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
-  author      User          @relation(fields: [authorId], references: [id])
-  activities  Activity[]    // กิจกรรมย่อยในโครงการ
-  reports     ProjectReport[] // รายงานผลการดำเนินงาน
+  author            User          @relation(fields: [authorId], references: [id])
+  activities        Activity[]    // กิจกรรมในโครงการ
+  reports           ProjectReport[] // รายงานผล
 
+  @@index([academicYear])
+  @@index([status])
   @@map("projects")
 }
 
 // รายงานผลการดำเนินงานโครงการ
 model ProjectReport {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   projectId   String
-  title       String
-  content     String   // รายงานผล
-  reportType  ReportType
-  reportDate  DateTime
-  submittedBy String
+  title       String       // ชื่อรายงาน
+  content     String       // เนื้อหารายงาน
+  reportType  ReportType   // ประเภทรายงาน
+  reportDate  DateTime     // วันที่รายงาน
+  submittedBy String       // ผู้จัดทำ
+  reviewedBy  String?      // ผู้ตรวจสอบ
+  approvedBy  String?      // ผู้อนุมัติ
   status      ReportStatus @default(DRAFT)
-  attachments String?  // JSON string array of file URLs
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  attachments String?      // ไฟล์แนบ (JSON array)
+  remarks     String?      // หมายเหตุ
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+  @@index([projectId])
+  @@index([reportType])
   @@map("project_reports")
 }
 
 enum ReportType {
   PROGRESS    // รายงานความคืบหน้า
   FINANCIAL   // รายงานการเงิน
-  FINAL       // รายงานสรุปผล
-  EVALUATION  // รายงานการประเมิน
+  FINAL       // รายงานสรุปผลโครงการ
+  EVALUATION  // รายงานการประเมินผล
+  MONTHLY     // รายงานรายเดือน
+  QUARTERLY   // รายงานรายไตรมาส
 }
 
 enum ReportStatus {
   DRAFT       // ร่าง
   SUBMITTED   // ส่งแล้ว
+  UNDER_REVIEW // อยู่ระหว่างตรวจสอบ
   APPROVED    // อนุมัติ
   REJECTED    // ไม่อนุมัติ
+  REVISION    // ต้องแก้ไข
 }
 
 enum ProjectStatus {
   PLANNING      // วางแผน
+  PENDING_APPROVAL // รออนุมัติ
   APPROVED      // อนุมัติแล้ว
-  IN_PROGRESS   // ดำเนินการ
+  IN_PROGRESS   // กำลังดำเนินการ
   COMPLETED     // เสร็จสิ้น
-  ON_HOLD       // ระงับ
+  ON_HOLD       // ระงับชั่วคราว
   CANCELLED     // ยกเลิก
+  CLOSED        // ปิดโครงการ
 }
 
-// Documents and files
+// Documents and files - เอกสารและไฟล์
 model Document {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  category    String
-  type        String
-  fileName    String
-  fileUrl     String
-  fileSize    Int
-  isPublic    Boolean  @default(true)
-  downloadCount Int    @default(0)
-  tags        String?  // JSON string array
-  uploadedBy  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  title         String   // ชื่อเอกสาร
+  description   String?  // คำอธิบาย
+  category      String   // หมวดหมู่ (ระเบียบ, ข้อบังคับ, คู่มือ, แบบฟอร์ม, ฯลฯ)
+  type          String   // ประเภทไฟล์ (PDF, DOC, XLS, etc.)
+  fileName      String   // ชื่อไฟล์
+  fileUrl       String   // URL ไฟล์
+  fileSize      Int      // ขนาดไฟล์ (bytes)
+  version       String?  // เวอร์ชัน
+  isPublic      Boolean  @default(true) // สิทธิ์การเข้าถึง
+  accessLevel   AccessLevel @default(PUBLIC) // ระดับการเข้าถึง
+  downloadCount Int      @default(0) // จำนวนดาวน์โหลด
+  tags          String?  // แท็ก (JSON array)
+  uploadedBy    String   // ผู้อัปโหลด
+  approvedBy    String?  // ผู้อนุมัติ
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  expiryDate    DateTime? // วันหมดอายุ (ถ้ามี)
 
+  @@index([category])
+  @@index([isPublic])
   @@map("documents")
 }
 
-// Gallery
+enum AccessLevel {
+  PUBLIC      // ทุกคนเข้าถึงได้
+  MEMBER_ONLY // สมาชิกเท่านั้น
+  ADMIN_ONLY  // ผู้ดูแลระบบเท่านั้น
+  RESTRICTED  // จำกัดเฉพาะบุคคล
+}
+
+// Gallery - แกลเลอรีภาพกิจกรรม
 model Gallery {
   id          String   @id @default(cuid())
-  title       String
-  description String?
-  category    String
-  images      String?  // JSON string array
-  date        DateTime
-  viewCount   Int      @default(0)
+  title       String   // ชื่ออัลบั้ม/หัวข้อ
+  description String?  // คำอธิบาย
+  category    String   // หมวดหมู่
+  albumType   AlbumType @default(ACTIVITY) // ประเภทอัลบั้ม
+  images      String   // รูปภาพ (JSON array)
+  coverImage  String?  // รูปปกอัลบั้ม
+  eventDate   DateTime // วันที่จัดกิจกรรม
+  uploadedBy  String   // ผู้อัปโหลด
+  viewCount   Int      @default(0) // จำนวนการเข้าชม
+  isPublic    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([category])
+  @@index([eventDate])
   @@map("gallery")
 }
 
-// Forms
+enum AlbumType {
+  ACTIVITY    // กิจกรรม
+  EVENT       // งาน/อีเวนต์
+  CEREMONY    // พิธีการ
+  ACHIEVEMENT // ผลงาน
+  FACILITY    // สถานที่/อุปกรณ์
+  OTHER       // อื่นๆ
+}
+
+// Forms - แบบฟอร์มออนไลน์
 model Form {
   id          String     @id @default(cuid())
-  title       String
-  description String?
-  type        FormType
+  title       String     // ชื่อฟอร์ม
+  description String?    // คำอธิบาย
+  type        FormType   // ประเภทฟอร์ม
   status      FormStatus @default(ACTIVE)
-  fields      String     // JSON string
-  settings    String?    // JSON string
+  fields      String     // ฟิลด์ต่างๆ (JSON)
+  settings    String?    // การตั้งค่า (JSON)
+  openDate    DateTime?  // วันเปิดรับ
+  closeDate   DateTime?  // วันปิดรับ
+  maxSubmissions Int?    // จำนวนรับสูงสุด
+  currentSubmissions Int @default(0) // จำนวนที่รับแล้ว
+  createdBy   String     // ผู้สร้าง
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
   submissions FormSubmission[]
 
+  @@index([type])
+  @@index([status])
   @@map("forms")
 }
 
 enum FormType {
-  MEMBERSHIP_APPLICATION
-  EVENT_REGISTRATION
-  FEEDBACK
-  CONTACT
-  SURVEY
-  OTHER
+  MEMBERSHIP_APPLICATION  // สมัครสมาชิก
+  EVENT_REGISTRATION     // ลงทะเบียนกิจกรรม
+  FEEDBACK              // ความคิดเห็น
+  CONTACT               // ติดต่อสอบถาม
+  SURVEY                // แบบสอบถาม
+  EVALUATION            // แบบประเมิน
+  REQUEST               // คำร้อง
+  OTHER                 // อื่นๆ
 }
 
 enum FormStatus {
-  ACTIVE
-  INACTIVE
-  ARCHIVED
+  ACTIVE    // เปิดรับ
+  INACTIVE  // ปิดรับ
+  ARCHIVED  // เก็บถาวร
+  DRAFT     // ร่าง
 }
 
-// Form submissions
+// Form submissions - การตอบกลับฟอร์ม
 model FormSubmission {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   formId    String
-  data      String   // JSON string
+  userId    String?          // ผู้ตอบ (ถ้าล็อกอิน)
+  data      String           // ข้อมูลที่กรอก (JSON)
   status    SubmissionStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  ipAddress String?          // IP Address
+  reviewedBy String?         // ผู้ตรวจสอบ
+  reviewedAt DateTime?       // วันที่ตรวจสอบ
+  remarks   String?          // หมายเหตุ
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  form      Form             @relation(fields: [formId], references: [id], onDelete: Cascade)
+  user      User?            @relation(fields: [userId], references: [id])
 
+  @@index([formId])
+  @@index([status])
   @@map("form_submissions")
 }
 
 enum SubmissionStatus {
-  PENDING
-  REVIEWED
-  APPROVED
-  REJECTED
+  PENDING     // รอตรวจสอบ
+  REVIEWED    // ตรวจสอบแล้ว
+  APPROVED    // อนุมัติ
+  REJECTED    // ไม่อนุมัติ
+  PROCESSING  // กำลังดำเนินการ
 }
 
-// Donations
+// Donations - การบริจาคและระดมทุน
 model DonationCampaign {
-  id            String           @id @default(cuid())
-  title         String
-  description   String
-  targetAmount  Float
-  currentAmount Float            @default(0)
-  startDate     DateTime
-  endDate       DateTime
-  status        CampaignStatus   @default(ACTIVE)
-  category      String
-  image         String?
-  donorCount    Int              @default(0)
-  createdBy     String
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id            String          @id @default(cuid())
+  title         String          // ชื่อโครงการ
+  description   String          // รายละเอียด
+  purpose       String?         // วัตถุประสงค์
+  targetAmount  Float           // เป้าหมายยอดเงิน
+  currentAmount Float           @default(0) // ยอดเงินปัจจุบัน
+  startDate     DateTime        // วันเริ่มต้น
+  endDate       DateTime        // วันสิ้นสุด
+  status        CampaignStatus  @default(ACTIVE)
+  category      String          // หมวดหมู่
+  image         String?         // รูปภาพ
+  donorCount    Int             @default(0) // จำนวนผู้บริจาค
+  createdBy     String          // ผู้สร้างแคมเปญ
+  approvedBy    String?         // ผู้อนุมัติ
+  isPublic      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   donations     Donation[]
 
+  @@index([status])
   @@map("donation_campaigns")
 }
 
 enum CampaignStatus {
-  ACTIVE
-  COMPLETED
-  EXPIRED
-  PAUSED
+  ACTIVE      // กำลังดำเนินการ
+  COMPLETED   // สำเร็จ
+  EXPIRED     // หมดอายุ
+  PAUSED      // พักชั่วคราว
+  CANCELLED   // ยกเลิก
 }
 
 model Donation {
-  id         String           @id @default(cuid())
-  campaignId String
-  donorId    String?
-  donorName  String
-  amount     Float
-  message    String?
-  isAnonymous Boolean         @default(false)
-  status     DonationStatus  @default(COMPLETED)
-  createdAt  DateTime        @default(now())
+  id          String          @id @default(cuid())
+  campaignId  String
+  donorId     String?         // ผู้บริจาค (ถ้าล็อกอิน)
+  donorName   String          // ชื่อผู้บริจาค
+  donorEmail  String?         // อีเมลผู้บริจาค
+  donorPhone  String?         // เบอร์ผู้บริจาค
+  amount      Float           // จำนวนเงิน
+  message     String?         // ข้อความ
+  isAnonymous Boolean         @default(false) // บริจาคนิรนาม
+  paymentMethod String?       // วิธีการชำระเงิน
+  transactionId String?       // เลขที่ธุรกรรม
+  receiptUrl  String?         // URL ใบเสร็จ
+  status      DonationStatus  @default(PENDING)
+  verifiedBy  String?         // ผู้ตรวจสอบ
+  verifiedAt  DateTime?       // วันที่ตรวจสอบ
+  createdAt   DateTime        @default(now())
 
-  campaign   DonationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  donor      User?           @relation(fields: [donorId], references: [id])
+  campaign    DonationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  donor       User?            @relation(fields: [donorId], references: [id])
 
+  @@index([campaignId])
+  @@index([status])
   @@map("donations")
 }
 
 enum DonationStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
+  PENDING     // รอตรวจสอบ
+  VERIFIED    // ตรวจสอบแล้ว
+  COMPLETED   // สำเร็จ
+  FAILED      // ไม่สำเร็จ
+  REFUNDED    // คืนเงิน
 }
 
-// Contact messages
+// Contact messages - ข้อความติดต่อ
 model Contact {
   id        String        @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
-  subject   String
-  message   String
-  category  String        @default("general")
-  priority  Priority      @default(MEDIUM)
-  status    ContactStatus @default(PENDING)
-  userId    String?
+  name      String        // ชื่อผู้ติดต่อ
+  email     String        // อีเมล
+  phone     String?       // เบอร์โทร
+  subject   String        // หัวข้อ
+  message   String        // ข้อความ
+  category  String        @default("general") // หมวดหมู่
+  priority  Priority      @default(MEDIUM)    // ระดับความสำคัญ
+  status    ContactStatus @default(PENDING)   // สถานะ
+  userId    String?       // ผู้ส่ง (ถ้าล็อกอิน)
+  assignedTo String?      // มอบหมายให้
+  repliedBy String?       // ผู้ตอบกลับ
+  repliedAt DateTime?     // วันที่ตอบกลับ
+  reply     String?       // ข้อความตอบกลับ
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
   user      User?         @relation(fields: [userId], references: [id])
 
+  @@index([status])
+  @@index([category])
   @@map("contacts")
 }
 
 enum ContactStatus {
-  PENDING
-  REPLIED
-  CLOSED
+  PENDING     // รอดำเนินการ
+  IN_PROGRESS // กำลังดำเนินการ
+  REPLIED     // ตอบกลับแล้ว
+  CLOSED      // ปิดเรื่อง
 }
 
-// Contact information
+// Contact information - ข้อมูลช่องทางติดต่อ
 model ContactInfo {
-  id        String  @id @default(cuid())
-  type      String  // address, phone, email, social
-  label     String
-  value     String
-  icon      String?
-  isActive  Boolean @default(true)
-  order     Int     @default(0)
+  id        String   @id @default(cuid())
+  type      ContactInfoType // ประเภท
+  label     String   // ป้ายกำกับ
+  value     String   // ค่า
+  icon      String?  // ไอคอน
+  isActive  Boolean  @default(true)
+  order     Int      @default(0) // ลำดับการแสดงผล
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("contact_info")
+}
+
+enum ContactInfoType {
+  ADDRESS     // ที่อยู่
+  PHONE       // เบอร์โทร
+  EMAIL       // อีเมล
+  FAX         // แฟกซ์
+  WEBSITE     // เว็บไซต์
+  FACEBOOK    // เฟซบุ๊ก
+  LINE        // ไลน์
+  INSTAGRAM   // อินสตาแกรม
+  TWITTER     // ทวิตเตอร์
+  YOUTUBE     // ยูทูป
+  TIKTOK      // ติ๊กต๊อก
+  OTHER       // อื่นๆ
 }

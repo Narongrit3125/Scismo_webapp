@@ -2,10 +2,12 @@ export interface User {
   id: string;
   email: string;
   username: string;
+  password?: string;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'EDITOR' | 'MEMBER' | 'STAFF';
+  role: 'ADMIN' | 'MEMBER' | 'USER';
   isActive: boolean;
+  lastLoginAt?: string;
   createdAt: string;
   updatedAt: string;
 }
