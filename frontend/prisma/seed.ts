@@ -1,13 +1,18 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
+  // Hash password for all test accounts
+  const hashedPassword = await bcrypt.hash('password123', 12)
+
   // สร้างผู้ใช้ Admin
   const adminUser = await prisma.user.create({
     data: {
       email: 'admin@smo.com',
       username: 'admin',
+      password: hashedPassword,
       firstName: 'ผู้ดูแล',
       lastName: 'ระบบ',
       role: 'ADMIN',
@@ -20,6 +25,7 @@ async function main() {
     data: {
       email: 'member@smo.com',
       username: 'member',
+      password: hashedPassword,
       firstName: 'สมาชิก',
       lastName: 'ทดสอบ',
       role: 'MEMBER',
@@ -47,6 +53,7 @@ async function main() {
     data: {
       email: 'staff@smo.com',
       username: 'staff',
+      password: hashedPassword,
       firstName: 'เจ้าหน้าที่',
       lastName: 'ทดสอบ',
       role: 'STAFF',
