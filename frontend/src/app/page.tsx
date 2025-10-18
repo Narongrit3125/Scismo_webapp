@@ -75,7 +75,7 @@ export default function Home() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch('/api/activities?status=PUBLISHED&limit=3');
+        const response = await fetch('/api/activities?upcoming=true&limit=3');
         const result = await response.json();
         if (result.success) {
           setActivities(result.data || []);

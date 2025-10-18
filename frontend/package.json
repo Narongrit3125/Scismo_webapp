@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build --turbopack",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint",
-    "postinstall": "prisma generate",
-    "create-test-user": "tsx scripts/create-test-user.ts"
+    "lint": "next lint",
+    "create-test-user": "tsx scripts/create-test-user.ts",
+    "setup-production": "tsx scripts/setup-production-users.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

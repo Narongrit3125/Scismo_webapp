@@ -10,6 +10,8 @@ export async function GET(request: NextRequest) {
     const isPublic = searchParams.get('isPublic');
     const projectId = searchParams.get('projectId');
     const id = searchParams.get('id');
+    const upcoming = searchParams.get('upcoming'); // กิจกรรมที่กำลังจะมาถึง
+    const limit = searchParams.get('limit'); // จำกัดจำนวน
     
     // ถ้าต้องการข้อมูลกิจกรรมเฉพาะ
     if (id) {
@@ -98,6 +100,14 @@ export async function GET(request: NextRequest) {
       whereCondition.isPublic = true;
     }
 
+    // Filter upcoming activities (กิจกรรมที่ยังไม่เริ่ม หรือกำลังดำเนินการ)
+    if (upcoming === 'true') {
+      whereCondition.startDate = {
+        gte: new Date() // เริ่มวันนี้หรือหลังจากนี้
+      };
+      whereCondition.status = 'PUBLISHED'; // เฉพาะที่ published
+    }
+
     const activities = await prisma.activity.findMany({
       where: whereCondition,
       include: {
@@ -112,7 +122,8 @@ export async function GET(request: NextRequest) {
       orderBy: [
         { startDate: 'asc' },
         { createdAt: 'desc' }
-      ]
+      ],
+      take: limit ? parseInt(limit) : undefined // จำกัดจำนวนถ้ามี
     });
 
     const formattedActivities = activities.map(activity => ({
