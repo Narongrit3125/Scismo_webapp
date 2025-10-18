@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import * as bcrypt from "bcrypt"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
@@ -25,18 +25,31 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user) {
+          console.log('❌ User not found:', credentials.email)
           return null
         }
 
-        // For demo, we'll use simple password comparison
-        // In production, use bcrypt.compare(credentials.password, user.password)
-        const isPasswordValid = credentials.password === "password123" || 
-                               credentials.password === user.username
+        // Check if user is active
+        if (!user.isActive) {
+          console.log('❌ User is not active:', credentials.email)
+          return null
+        }
+
+        // Verify password using bcrypt
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
+          console.log('❌ Invalid password for user:', credentials.email)
           return null
         }
 
+        // Update last login time
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() }
+        })
+
+        console.log('✅ Login successful:', credentials.email)
         return {
           id: user.id,
           email: user.email,
