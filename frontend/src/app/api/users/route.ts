@@ -128,14 +128,11 @@ export async function POST(request: NextRequest) {
       data: {
         username,
         email,
+        password: 'temporary_password', // TODO: ให้ user set password ตอนแรกเข้าระบบ
         firstName,
         lastName,
         role: role.toUpperCase(),
         isActive: true
-      },
-      include: {
-        memberProfile: true,
-        staffProfile: true
       }
     });
 
@@ -149,9 +146,7 @@ export async function POST(request: NextRequest) {
         lastName: newUser.lastName,
         role: newUser.role,
         isActive: newUser.isActive,
-        createdAt: newUser.createdAt,
-        memberProfile: newUser.memberProfile,
-        staffProfile: newUser.staffProfile
+        createdAt: newUser.createdAt
       },
       message: 'User created successfully'
     });

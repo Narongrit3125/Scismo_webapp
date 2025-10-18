@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
           description: gallery.description,
           category: gallery.category,
           images: gallery.images ? JSON.parse(gallery.images) : [],
-          date: gallery.date,
+          eventDate: gallery.eventDate,
           viewCount: gallery.viewCount + 1,
           createdAt: gallery.createdAt,
           updatedAt: gallery.updatedAt
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     const galleries = await prisma.gallery.findMany({
       where: whereCondition,
       orderBy: [
-        { date: 'desc' },
+        { eventDate: 'desc' },
         { createdAt: 'desc' }
       ]
     });
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       description: gallery.description,
       category: gallery.category,
       images: gallery.images ? JSON.parse(gallery.images) : [],
-      date: gallery.date,
+      eventDate: gallery.eventDate,
       viewCount: gallery.viewCount,
       createdAt: gallery.createdAt,
       updatedAt: gallery.updatedAt
@@ -110,7 +110,8 @@ export async function POST(request: NextRequest) {
         description,
         category,
         images: JSON.stringify(images),
-        date: new Date(date)
+        eventDate: new Date(date),
+        uploadedBy: 'system' // TODO: ใช้ user ID จาก session
       }
     });
 
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
         description: newGallery.description,
         category: newGallery.category,
         images: newGallery.images ? JSON.parse(newGallery.images) : [],
-        date: newGallery.date,
+        eventDate: newGallery.eventDate,
         viewCount: newGallery.viewCount,
         createdAt: newGallery.createdAt
       },
@@ -179,7 +180,7 @@ export async function PUT(request: NextRequest) {
         description: updatedGallery.description,
         category: updatedGallery.category,
         images: updatedGallery.images ? JSON.parse(updatedGallery.images) : [],
-        date: updatedGallery.date,
+        eventDate: updatedGallery.eventDate,
         viewCount: updatedGallery.viewCount,
         createdAt: updatedGallery.createdAt,
         updatedAt: updatedGallery.updatedAt

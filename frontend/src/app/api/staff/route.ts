@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         success: true,
         data: {
           id: staff.id,
-          employeeId: staff.employeeId,
+          staffId: staff.staffId,
           firstName: staff.user?.firstName,
           lastName: staff.user?.lastName,
           email: staff.user?.email,
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
 
     const formattedStaff = staffList.map(staff => ({
       id: staff.id,
-      employeeId: staff.employeeId,
+      staffId: staff.staffId,
       firstName: staff.user?.firstName,
       lastName: staff.user?.lastName,
       email: staff.user?.email,
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { 
       userId,
-      employeeId, 
+      staffId, 
       department, 
       position,
       phone,
@@ -138,9 +138,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if employee ID already exists (if provided)
-    if (employeeId) {
+    if (staffId) {
       const existingStaff = await prisma.staff.findUnique({
-        where: { employeeId }
+        where: { staffId }
       });
 
       if (existingStaff) {
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
     const newStaff = await prisma.staff.create({
       data: {
         userId,
-        employeeId,
+        staffId,
         department,
         position,
         phone,
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         id: newStaff.id,
-        employeeId: newStaff.employeeId,
+        staffId: newStaff.staffId,
         firstName: newStaff.user?.firstName,
         lastName: newStaff.user?.lastName,
         email: newStaff.user?.email,
@@ -217,7 +217,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const { 
-      employeeId,
+      staffId,
       department, 
       position,
       phone,
@@ -231,7 +231,7 @@ export async function PUT(request: NextRequest) {
     const updatedStaff = await prisma.staff.update({
       where: { id },
       data: {
-        ...(employeeId && { employeeId }),
+        ...(staffId && { staffId }),
         ...(department && { department }),
         ...(position && { position }),
         ...(phone && { phone }),
@@ -256,7 +256,7 @@ export async function PUT(request: NextRequest) {
       success: true,
       data: {
         id: updatedStaff.id,
-        employeeId: updatedStaff.employeeId,
+        staffId: updatedStaff.staffId,
         firstName: updatedStaff.user?.firstName,
         lastName: updatedStaff.user?.lastName,
         email: updatedStaff.user?.email,

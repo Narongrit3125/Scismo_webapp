@@ -1,11 +1,5 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
+  "buildCommand": "prisma generate && next build",
   "env": {
     "PRISMA_GENERATE_SKIP_AUTOINSTALL": "false"
   }

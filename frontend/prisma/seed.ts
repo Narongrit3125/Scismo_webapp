@@ -1,14 +1,18 @@
 import { PrismaClient } from '@prisma/client'
+import * as bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
 async function main() {
+  // Hash password สำหรับการใช้งาน
+  const hashedPassword = await bcrypt.hash('SMO@2024', 10)
+
   // สร้างผู้ใช้ Admin
   const adminUser = await prisma.user.create({
     data: {
       email: 'admin@smo.com',
       username: 'admin',
-      password: 'hashed_password_here', // ในการใช้งานจริงควรใช้ bcrypt
+      password: hashedPassword,
       firstName: 'ผู้ดูแล',
       lastName: 'ระบบ',
       role: 'ADMIN',
@@ -16,18 +20,22 @@ async function main() {
     }
   })
 
+  console.log('✅ สร้าง Admin user:', adminUser.email)
+
   // สร้างผู้ใช้ Member
   const memberUser = await prisma.user.create({
     data: {
       email: 'member@smo.com',
       username: 'member',
-      password: 'hashed_password_here', // ในการใช้งานจริงควรใช้ bcrypt
+      password: hashedPassword,
       firstName: 'สมาชิก',
       lastName: 'ทดสอบ',
       role: 'MEMBER',
       isActive: true
     }
   })
+
+  console.log('✅ สร้าง Member user:', memberUser.email)
 
   // สร้าง Member profile
   // TODO: เปิดใช้งานหลังจาก setup database แล้ว

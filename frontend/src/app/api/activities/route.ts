@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               title: true,
-              year: true,
+              academicYear: true,
               status: true
             }
           }

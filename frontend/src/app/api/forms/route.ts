@@ -121,7 +121,8 @@ export async function POST(request: NextRequest) {
         type: type.toUpperCase(),
         fields: JSON.stringify(fields),
         status: status.toUpperCase(),
-        settings: JSON.stringify(settings)
+        settings: JSON.stringify(settings),
+        createdBy: 'system' // TODO: ใช้ user ID จาก session
       }
     });
 

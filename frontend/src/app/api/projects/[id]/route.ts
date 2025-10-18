@@ -121,7 +121,7 @@ export async function PUT(
       data: {
         title: title || existingProject.title,
         description: description || existingProject.description,
-        year: year ? parseInt(year) : existingProject.year,
+        academicYear: year ? parseInt(year) : existingProject.academicYear,
         totalBudget: totalBudget !== undefined ? parseFloat(totalBudget) : existingProject.totalBudget,
         objectives: objectives || existingProject.objectives,
         coordinator: coordinator || existingProject.coordinator,
