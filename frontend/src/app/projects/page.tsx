@@ -13,7 +13,7 @@ interface Project {
   title: string;
   description: string;
   shortDescription: string;
-  year: number;
+  academicYear: number;
   status: string;
   priority: string;
   startDate: string;
@@ -58,7 +58,7 @@ export default function ProjectsPage() {
 
   // Get unique years
   const years = useMemo(() => {
-    const yearSet = new Set(projects?.map((p: any) => p.year.toString()) || []);
+    const yearSet = new Set(projects?.map((p: any) => p.academicYear.toString()) || []);
     return ['ALL', ...Array.from(yearSet).sort((a, b) => Number(b) - Number(a))];
   }, [projects]);
 
@@ -66,7 +66,7 @@ export default function ProjectsPage() {
   const filteredProjects = useMemo(() => {
     return (projects || []).filter((project: any) => {
       const matchesStatus = statusFilter === 'ALL' || project.status === statusFilter;
-      const matchesYear = yearFilter === 'ALL' || project.year.toString() === yearFilter;
+      const matchesYear = yearFilter === 'ALL' || project.academicYear.toString() === yearFilter;
       return matchesStatus && matchesYear;
     });
   }, [projects, statusFilter, yearFilter]);
@@ -321,7 +321,7 @@ export default function ProjectsPage() {
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center text-sm text-gray-600">
                           <Calendar size={16} className="mr-2 text-purple-500" />
-                          <span>ปีการศึกษา {project.year}</span>
+                          <span>ปีการศึกษา {project.academicYear}</span>
                         </div>
                         
                         {project.coordinator && (
@@ -477,7 +477,7 @@ function ProjectDetailModal({
             <div className="text-center p-4 bg-purple-50 rounded-lg">
               <Calendar className="w-6 h-6 text-purple-600 mx-auto mb-2" />
               <div className="text-sm text-gray-600">ปีการศึกษา</div>
-              <div className="font-bold text-gray-900">{project.year}</div>
+              <div className="font-bold text-gray-900">{project.academicYear}</div>
             </div>
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <DollarSign className="w-6 h-6 text-blue-600 mx-auto mb-2" />

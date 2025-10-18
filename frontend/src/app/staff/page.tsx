@@ -8,17 +8,18 @@ import { Search, Mail, Phone, User, Users, GraduationCap, Briefcase, Filter, Map
 
 interface Staff {
   id: string;
+  staffId: string;
   firstName: string;
   lastName: string;
   position: string;
   department: string;
   email?: string;
   phone?: string;
+  office?: string;
   bio?: string;
-  image?: string;
-  startDate: string;
-  status: string;
-  createdAt: string;
+  avatar?: string;
+  expertise?: string[];
+  isActive: boolean;
 }
 
 // Fetch staff from API
@@ -27,7 +28,9 @@ const fetchStaff = async (): Promise<Staff[]> => {
   if (!response.ok) {
     throw new Error('Failed to fetch staff');
   }
-  return response.json();
+  const result = await response.json();
+  // API returns { success: true, data: [] }
+  return result.data || result;
 };
 
 export default function StaffPage() {
@@ -44,7 +47,7 @@ export default function StaffPage() {
   const staffList = Array.isArray(staff) ? staff : [];
   
   // Filter active staff
-  const activeStaff = staffList.filter(s => s.status === 'ACTIVE');
+  const activeStaff = staffList.filter(s => s.isActive === true);
 
   // Get unique departments
   const departments = useMemo(() => {
@@ -319,9 +322,9 @@ function StaffCard({ person, compact = false }: { person: Staff; compact?: boole
       <div className={compact ? 'p-4' : 'p-6'}>
         {/* Profile Image */}
         <div className={`mx-auto mb-4 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden group-hover:shadow-xl transition-shadow ${compact ? 'w-20 h-20' : 'w-28 h-28'}`}>
-          {person.image ? (
+          {person.avatar ? (
             <img
-              src={person.image}
+              src={person.avatar}
               alt={`${person.firstName} ${person.lastName}`}
               className="w-full h-full object-cover"
             />
