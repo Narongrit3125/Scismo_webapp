@@ -276,12 +276,21 @@ export default function AdminNews() {
 
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('file', file);
+    formData.append('type', 'news');
     
     try {
-      // For now, we'll use a placeholder URL
-      // In a real app, you'd upload to a service like Cloudinary, AWS S3, etc.
-      return URL.createObjectURL(file);
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await response.json();
+      return data.url; // Returns Vercel Blob Storage CDN URL
     } catch (error) {
       console.error('Error uploading image:', error);
       throw new Error('Failed to upload image');

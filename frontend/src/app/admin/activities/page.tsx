@@ -14,7 +14,9 @@ import {
   Users,
   ArrowLeft,
   Filter,
-  Tag
+  Tag,
+  Upload,
+  X
 } from 'lucide-react';
 
 interface Activity {
@@ -63,6 +65,8 @@ export default function AdminActivities() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -151,6 +155,41 @@ export default function AdminActivities() {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'activities');
+    
+    try {
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const data = await response.json();
+      return data.url; // Returns Vercel Blob Storage CDN URL
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw new Error('Failed to upload image');
+    }
+  };
+
   const handleCreateActivity = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -183,6 +222,12 @@ export default function AdminActivities() {
     try {
       const tagsArray = formData.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag);
       
+      // Upload image if user selected a file
+      let imageUrl = formData.image;
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+      
       const activityData = {
         title: formData.title,
         description: formData.description,
@@ -195,7 +240,7 @@ export default function AdminActivities() {
         requirements: formData.requirements || null,
         budget: formData.budget && formData.budget > 0 ? formData.budget : null,
         tags: tagsArray,
-        image: formData.image || null,
+        image: imageUrl || null,
         isPublic: formData.isPublic,
         projectId: formData.projectId || null,
         authorEmail: session.user.email
@@ -235,6 +280,12 @@ export default function AdminActivities() {
     try {
       const tagsArray = formData.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag);
       
+      // Upload new image if user selected a file
+      let imageUrl = formData.image;
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+      
       const response = await fetch(`/api/activities?id=${editingActivity.id}`, {
         method: 'PUT',
         headers: {
@@ -242,6 +293,7 @@ export default function AdminActivities() {
         },
         body: JSON.stringify({
           ...formData,
+          image: imageUrl,
           tags: tagsArray
         }),
       });
@@ -299,6 +351,8 @@ export default function AdminActivities() {
       isPublic: true,
       projectId: ''
     });
+    setImageFile(null);
+    setImagePreview('');
   };
 
   const startEdit = (activity: Activity) => {
@@ -319,6 +373,8 @@ export default function AdminActivities() {
       isPublic: activity.isPublic,
       projectId: activity.projectId || ''
     });
+    setImageFile(null);
+    setImagePreview(activity.image || '');
   };
 
   const filteredActivities = activities.filter(activity => {
@@ -743,15 +799,68 @@ export default function AdminActivities() {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL รูปภาพ
+                  รูปภาพกิจกรรม
                 </label>
-                <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                
+                {/* File Upload */}
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="activity-image-upload"
+                  />
+                  <label
+                    htmlFor="activity-image-upload"
+                    className="cursor-pointer flex flex-col items-center"
+                  >
+                    {imagePreview ? (
+                      <div className="relative w-full">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="max-h-48 mx-auto rounded-lg object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setImageFile(null);
+                            setImagePreview('');
+                            setFormData({...formData, image: ''});
+                          }}
+                          className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                        <span className="text-sm text-gray-600">คลิกเพื่ออัปโหลดรูปภาพ</span>
+                        <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                {/* Or enter URL */}
+                <div className="mt-2">
+                  <span className="text-xs text-gray-500">หรือใส่ URL รูปภาพ:</span>
+                  <input
+                    type="text"
+                    value={formData.image}
+                    onChange={(e) => {
+                      setFormData({...formData, image: e.target.value});
+                      if (e.target.value) {
+                        setImagePreview(e.target.value);
+                      }
+                    }}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end space-x-3">
