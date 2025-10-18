@@ -13,6 +13,7 @@ interface News {
   publishedAt?: string;
   createdAt: string;
   slug: string;
+  image?: string;
 }
 
 interface Activity {
@@ -23,6 +24,7 @@ interface Activity {
   endDate?: string;
   location?: string;
   status: string;
+  image?: string;
 }
 
 export default function Home() {
@@ -276,7 +278,19 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {newsItems.map((news) => (
                 <Card key={news.id} hover className="overflow-hidden">
-                  <div className="h-48 bg-gradient-to-br from-purple-400 to-blue-500"></div>
+                  <div className="h-48 bg-gradient-to-br from-purple-400 to-blue-500 relative overflow-hidden">
+                    {news.image ? (
+                      <img 
+                        src={news.image} 
+                        alt={news.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <BookOpen className="w-16 h-16 text-white/50" />
+                      </div>
+                    )}
+                  </div>
                   <div className="p-6">
                     <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-3">
                       {news.category}
@@ -325,27 +339,38 @@ export default function Home() {
           ) : activities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {activities.map((activity) => (
-                <Card key={activity.id} hover className="p-6">
-                  <div className="flex items-start space-x-4 mb-4">
-                    <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex flex-col items-center justify-center text-white">
-                      <span className="text-2xl font-bold">
-                        {new Date(activity.startDate).getDate()}
-                      </span>
-                      <span className="text-xs">
-                        {new Date(activity.startDate).toLocaleDateString('th-TH', { month: 'short' })}
-                      </span>
+                <Card key={activity.id} hover className="overflow-hidden">
+                  {activity.image && (
+                    <div className="h-48 relative overflow-hidden">
+                      <img 
+                        src={activity.image} 
+                        alt={activity.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg mb-2">{activity.title}</h3>
-                      {activity.description && (
-                        <p className="text-gray-600 text-sm line-clamp-2">{activity.description}</p>
-                      )}
-                      {activity.location && (
-                        <div className="flex items-center text-purple-600 text-sm mt-2">
-                          <MapPin size={14} className="mr-1" />
-                          {activity.location}
-                        </div>
-                      )}
+                  )}
+                  <div className="p-6">
+                    <div className="flex items-start space-x-4 mb-4">
+                      <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex flex-col items-center justify-center text-white">
+                        <span className="text-2xl font-bold">
+                          {new Date(activity.startDate).getDate()}
+                        </span>
+                        <span className="text-xs">
+                          {new Date(activity.startDate).toLocaleDateString('th-TH', { month: 'short' })}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg mb-2">{activity.title}</h3>
+                        {activity.description && (
+                          <p className="text-gray-600 text-sm line-clamp-2">{activity.description}</p>
+                        )}
+                        {activity.location && (
+                          <div className="flex items-center text-purple-600 text-sm mt-2">
+                            <MapPin size={14} className="mr-1" />
+                            {activity.location}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Card>
