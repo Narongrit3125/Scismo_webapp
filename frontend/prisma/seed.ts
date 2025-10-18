@@ -4,6 +4,10 @@ import * as bcrypt from 'bcrypt'
 const prisma = new PrismaClient()
 
 async function main() {
+  console.log('🌱 Seed script is temporarily disabled for Vercel deployment')
+  console.log('💡 Run seeds manually after database is set up')
+  
+  /* Temporarily disabled - uncomment after setting up database
   // Hash password สำหรับการใช้งาน
   const hashedPassword = await bcrypt.hash('SMO@2024', 10)
 
@@ -37,9 +41,7 @@ async function main() {
 
   console.log('✅ สร้าง Member user:', memberUser.email)
 
-  // สร้าง Member profile
-  // TODO: เปิดใช้งานหลังจาก setup database แล้ว
-  /*
+  // สร้าง Member profile - Uncomment after database setup
   await prisma.member.create({
     data: {
       userId: memberUser.id,
@@ -55,25 +57,8 @@ async function main() {
   })
   */
 
-  // สร้าง User ตัวอย่าง (ปิดไว้ชั่วคราวเพื่อให้ build ผ่าน)
-  // TODO: เปิดใช้งานหลังจาก setup database แล้ว
-  
-  /*
-  const adminUser = await prisma.user.create({
-    data: {
-      email: 'admin@smo.com',
-      username: 'admin',
-      password: 'hashed_password_here',
-      firstName: 'ผู้ดูแล',
-      lastName: 'ระบบ',
-      role: 'ADMIN',
-      isActive: true
-    }
-  })
-  */
-
-  console.log('✅ Seed script completed (data creation skipped for initial deployment)')
-  console.log('⚠️  Run seed after database setup: npx prisma db seed')
+  console.log('✅ Seed script completed')
+  console.log('💡 Uncomment user creation code after setting up PostgreSQL database')
 }
 
 main()
