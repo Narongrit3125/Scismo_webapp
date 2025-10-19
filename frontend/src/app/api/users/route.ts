@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: NextRequest) {
   try {
@@ -124,11 +125,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Hash password หรือใช้ default password
+    const hashedPassword = password 
+      ? await bcrypt.hash(password, 10)
+      : await bcrypt.hash('changeme123', 10); // default password ถ้าไม่มีการระบุ
+
     const newUser = await prisma.user.create({
       data: {
         username,
         email,
-        password: 'temporary_password', // TODO: ให้ user set password ตอนแรกเข้าระบบ
+        password: hashedPassword,
         firstName,
         lastName,
         role: role.toUpperCase(),
@@ -177,20 +183,29 @@ export async function PUT(request: NextRequest) {
       email, 
       firstName, 
       lastName, 
+      password,
       role,
       isActive 
     } = body;
 
+    // เตรียมข้อมูลที่จะอัปเดต
+    const updateData: any = {
+      ...(username && { username }),
+      ...(email && { email }),
+      ...(firstName && { firstName }),
+      ...(lastName && { lastName }),
+      ...(role && { role: role.toUpperCase() }),
+      ...(isActive !== undefined && { isActive })
+    };
+
+    // ถ้ามีการเปลี่ยนรหัสผ่าน ให้ hash ก่อน
+    if (password && password.trim() !== '') {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        ...(username && { username }),
-        ...(email && { email }),
-        ...(firstName && { firstName }),
-        ...(lastName && { lastName }),
-        ...(role && { role: role.toUpperCase() }),
-        ...(isActive !== undefined && { isActive })
-      },
+      data: updateData,
       include: {
         memberProfile: true,
         staffProfile: true
