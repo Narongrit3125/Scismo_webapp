@@ -32,6 +32,26 @@ export async function GET(request: NextRequest) {
               academicYear: true,
               status: true
             }
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              color: true
+            }
+          },
+          tags: {
+            include: {
+              tag: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  color: true
+                }
+              }
+            }
           }
         }
       });
@@ -50,7 +70,12 @@ export async function GET(request: NextRequest) {
           title: activity.title,
           description: activity.description,
           projectId: activity.projectId,
-          category: activity.category,
+          categoryId: activity.categoryId,
+          category: activity.category ? {
+            id: activity.category.id,
+            name: activity.category.name,
+            slug: activity.category.slug
+          } : { id: "default", name: "ทั่วไป", slug: "general" },
           type: activity.type,
           startDate: activity.startDate,
           endDate: activity.endDate,
@@ -64,13 +89,17 @@ export async function GET(request: NextRequest) {
           order: activity.order,
           createdAt: activity.createdAt,
           updatedAt: activity.updatedAt,
-          tags: activity.tags ? JSON.parse(activity.tags) : [],
+          tags: activity.tags?.map((t: any) => ({
+            id: t.tag.id,
+            name: t.tag.name,
+            slug: t.tag.slug
+          })) || [],
           image: activity.image,
-          author: {
-            firstName: activity.author?.firstName || '',
-            lastName: activity.author?.lastName || '',
-            email: activity.author?.email || ''
-          }
+          author: activity.author ? {
+            firstName: activity.author.firstName || '',
+            lastName: activity.author.lastName || '',
+            email: activity.author.email || ''
+          } : { firstName: '', lastName: '', email: '' }
         }
       });
     }
@@ -80,8 +109,10 @@ export async function GET(request: NextRequest) {
     
     if (category) {
       whereCondition.category = {
-        contains: category,
-        mode: 'insensitive'
+        slug: {
+          equals: category,
+          mode: 'insensitive'
+        }
       };
     }
     
@@ -130,7 +161,12 @@ export async function GET(request: NextRequest) {
       id: activity.id,
       title: activity.title,
       description: activity.description,
-      category: activity.category,
+      categoryId: activity.categoryId,
+      category: activity.category ? {
+        id: activity.category.id,
+        name: activity.category.name,
+        slug: activity.category.slug
+      } : { id: "default", name: "ทั่วไป", slug: "general" },
       type: activity.type,
       startDate: activity.startDate,
       endDate: activity.endDate,
