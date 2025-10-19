@@ -62,13 +62,12 @@ export async function GET(request: NextRequest) {
           title: news.title,
           content: news.content,
           excerpt: news.excerpt,
-          category: news.category,
+          categoryId: news.categoryId,
           priority: news.priority,
           status: news.status,
           publishedAt: news.publishedAt,
           createdAt: news.createdAt,
           updatedAt: news.updatedAt,
-          tags: news.tags ? JSON.parse(news.tags) : [],
           slug: news.slug,
           viewCount: news.viewCount + 1,
           image: news.image,
@@ -85,10 +84,7 @@ export async function GET(request: NextRequest) {
     const whereCondition: any = {};
     
     if (category) {
-      whereCondition.category = {
-        contains: category,
-        mode: 'insensitive'
-      };
+      whereCondition.categoryId = category;
     }
     
     if (status) {
@@ -125,13 +121,12 @@ export async function GET(request: NextRequest) {
       title: news.title,
       content: news.content,
       excerpt: news.excerpt,
-      category: news.category,
+      categoryId: news.categoryId,
       priority: news.priority,
       status: news.status,
       publishedAt: news.publishedAt,
       createdAt: news.createdAt,
       updatedAt: news.updatedAt,
-      tags: news.tags ? JSON.parse(news.tags) : [],
       slug: news.slug,
       viewCount: news.viewCount,
       image: news.image,
@@ -243,10 +238,9 @@ export async function POST(request: NextRequest) {
           content,
           excerpt,
           authorId: author.id, // ใช้ author.id ที่หาเจอแทน authorId
-          category,
+          categoryId: category,
           priority: priority.toUpperCase(),
           status: status.toUpperCase(),
-          tags: JSON.stringify(tags),
           slug: finalSlugWithRandom,
           image: image || null,
           publishedAt: status.toUpperCase() === 'PUBLISHED' ? new Date() : null
@@ -274,10 +268,9 @@ export async function POST(request: NextRequest) {
         content,
         excerpt,
         authorId: author.id, // ใช้ author.id ที่หาเจอแทน authorId
-        category,
+        categoryId: category,
         priority: priority.toUpperCase(),
         status: status.toUpperCase(),
-        tags: JSON.stringify(tags),
         slug: finalSlug,
         image: image || null,
         publishedAt: status.toUpperCase() === 'PUBLISHED' ? new Date() : null
@@ -300,12 +293,11 @@ export async function POST(request: NextRequest) {
         title: newNews.title,
         content: newNews.content,
         excerpt: newNews.excerpt,
-        category: newNews.category,
+        categoryId: newNews.categoryId,
         priority: newNews.priority,
         status: newNews.status,
         publishedAt: newNews.publishedAt,
         createdAt: newNews.createdAt,
-        tags: newNews.tags ? JSON.parse(newNews.tags) : [],
         slug: newNews.slug,
         viewCount: newNews.viewCount,
         image: newNews.image,
@@ -393,13 +385,12 @@ export async function PUT(request: NextRequest) {
         title: updatedNews.title,
         content: updatedNews.content,
         excerpt: updatedNews.excerpt,
-        category: updatedNews.category,
+        categoryId: updatedNews.categoryId,
         priority: updatedNews.priority,
         status: updatedNews.status,
         publishedAt: updatedNews.publishedAt,
         createdAt: updatedNews.createdAt,
         updatedAt: updatedNews.updatedAt,
-        tags: updatedNews.tags ? JSON.parse(updatedNews.tags) : [],
         slug: updatedNews.slug,
         viewCount: updatedNews.viewCount,
         image: updatedNews.image,

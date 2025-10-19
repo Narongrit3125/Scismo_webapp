@@ -31,8 +31,7 @@ export async function GET(request: NextRequest) {
           fileUrl: document.fileUrl,
           fileSize: document.fileSize,
           type: document.type,
-          category: document.category,
-          tags: document.tags ? JSON.parse(document.tags) : [],
+          categoryId: document.categoryId,
           isPublic: document.isPublic,
           downloadCount: document.downloadCount,
           uploadedBy: document.uploadedBy,
@@ -47,7 +46,7 @@ export async function GET(request: NextRequest) {
       whereCondition.type = type;
     }
     if (category) {
-      whereCondition.category = category;
+      whereCondition.categoryId = category;
     }
     if (isPublic !== null) {
       whereCondition.isPublic = isPublic === 'true';
@@ -70,8 +69,7 @@ export async function GET(request: NextRequest) {
         fileUrl: document.fileUrl,
         fileSize: document.fileSize,
         type: document.type,
-        category: document.category,
-        tags: document.tags ? JSON.parse(document.tags) : [],
+        categoryId: document.categoryId,
         isPublic: document.isPublic,
         downloadCount: document.downloadCount,
         uploadedBy: document.uploadedBy,
@@ -98,8 +96,7 @@ export async function POST(request: NextRequest) {
       fileUrl,
       fileSize,
       type = 'document',
-      category = 'general',
-      tags = [],
+      categoryId = null,
       isPublic = false,
       uploadedBy
     } = body;
@@ -119,8 +116,7 @@ export async function POST(request: NextRequest) {
         fileUrl,
         fileSize: fileSize || 0,
         type,
-        category,
-        tags: JSON.stringify(tags),
+        categoryId,
         isPublic,
         uploadedBy
       }
@@ -136,8 +132,7 @@ export async function POST(request: NextRequest) {
         fileUrl: newDocument.fileUrl,
         fileSize: newDocument.fileSize,
         type: newDocument.type,
-        category: newDocument.category,
-        tags: newDocument.tags ? JSON.parse(newDocument.tags) : [],
+        categoryId: newDocument.categoryId,
         isPublic: newDocument.isPublic,
         downloadCount: newDocument.downloadCount,
         uploadedBy: newDocument.uploadedBy,
@@ -170,9 +165,7 @@ export async function PUT(request: NextRequest) {
     const updateData: any = {};
     
     Object.keys(body).forEach(key => {
-      if (key === 'tags' && Array.isArray(body[key])) {
-        updateData[key] = JSON.stringify(body[key]);
-      } else if (body[key] !== undefined) {
+      if (body[key] !== undefined && key !== 'tags') {
         updateData[key] = body[key];
       }
     });
@@ -192,8 +185,7 @@ export async function PUT(request: NextRequest) {
         fileUrl: updatedDocument.fileUrl,
         fileSize: updatedDocument.fileSize,
         type: updatedDocument.type,
-        category: updatedDocument.category,
-        tags: updatedDocument.tags ? JSON.parse(updatedDocument.tags) : [],
+        categoryId: updatedDocument.categoryId,
         isPublic: updatedDocument.isPublic,
         downloadCount: updatedDocument.downloadCount,
         uploadedBy: updatedDocument.uploadedBy,

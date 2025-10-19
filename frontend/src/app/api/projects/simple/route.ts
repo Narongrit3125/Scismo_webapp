@@ -42,17 +42,13 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         description,
-        shortDescription: description.substring(0, 100),
         code: projectCode,
         authorId: user.id,
         academicYear: currentYear,
         status: 'PLANNING',
-        priority: 'MEDIUM',
         startDate: new Date(),
         endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
-        totalBudget: totalBudget ? parseFloat(totalBudget) : null,
-        objectives,
-        coordinator,
+        budget: totalBudget ? parseFloat(totalBudget) : null,
         isActive: true
       }
     });
@@ -65,9 +61,7 @@ export async function POST(request: NextRequest) {
         description: newProject.description,
         academicYear: newProject.academicYear,
         status: newProject.status,
-        totalBudget: newProject.totalBudget,
-        objectives: newProject.objectives,
-        coordinator: newProject.coordinator,
+        budget: newProject.budget,
         createdAt: newProject.createdAt
       }
     });
