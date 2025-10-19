@@ -39,9 +39,7 @@ model User {
   authoredNews  News[]
   authoredActivities Activity[]
   authoredProjects Project[]
-  donations     Donation[]
   contactMessages Contact[]
-  formSubmissions FormSubmission[]
 
   @@map("users")
 }
@@ -282,53 +280,10 @@ model Project {
 
   author            User          @relation(fields: [authorId], references: [id])
   activities        Activity[]    // กิจกรรมในโครงการ
-  reports           ProjectReport[] // รายงานผล
 
   @@index([academicYear])
   @@index([status])
   @@map("projects")
-}
-
-// รายงานผลการดำเนินงานโครงการ
-model ProjectReport {
-  id          String       @id @default(cuid())
-  projectId   String
-  title       String       // ชื่อรายงาน
-  content     String       // เนื้อหารายงาน
-  reportType  ReportType   // ประเภทรายงาน
-  reportDate  DateTime     // วันที่รายงาน
-  submittedBy String       // ผู้จัดทำ
-  reviewedBy  String?      // ผู้ตรวจสอบ
-  approvedBy  String?      // ผู้อนุมัติ
-  status      ReportStatus @default(DRAFT)
-  attachments String?      // ไฟล์แนบ (JSON array)
-  remarks     String?      // หมายเหตุ
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-  @@index([reportType])
-  @@map("project_reports")
-}
-
-enum ReportType {
-  PROGRESS    // รายงานความคืบหน้า
-  FINANCIAL   // รายงานการเงิน
-  FINAL       // รายงานสรุปผลโครงการ
-  EVALUATION  // รายงานการประเมินผล
-  MONTHLY     // รายงานรายเดือน
-  QUARTERLY   // รายงานรายไตรมาส
-}
-
-enum ReportStatus {
-  DRAFT       // ร่าง
-  SUBMITTED   // ส่งแล้ว
-  UNDER_REVIEW // อยู่ระหว่างตรวจสอบ
-  APPROVED    // อนุมัติ
-  REJECTED    // ไม่อนุมัติ
-  REVISION    // ต้องแก้ไข
 }
 
 enum ProjectStatus {
@@ -403,146 +358,6 @@ enum AlbumType {
   ACHIEVEMENT // ผลงาน
   FACILITY    // สถานที่/อุปกรณ์
   OTHER       // อื่นๆ
-}
-
-// Forms - แบบฟอร์มออนไลน์
-model Form {
-  id          String     @id @default(cuid())
-  title       String     // ชื่อฟอร์ม
-  description String?    // คำอธิบาย
-  type        FormType   // ประเภทฟอร์ม
-  status      FormStatus @default(ACTIVE)
-  fields      String     // ฟิลด์ต่างๆ (JSON)
-  settings    String?    // การตั้งค่า (JSON)
-  openDate    DateTime?  // วันเปิดรับ
-  closeDate   DateTime?  // วันปิดรับ
-  maxSubmissions Int?    // จำนวนรับสูงสุด
-  currentSubmissions Int @default(0) // จำนวนที่รับแล้ว
-  createdBy   String     // ผู้สร้าง
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  submissions FormSubmission[]
-
-  @@index([type])
-  @@index([status])
-  @@map("forms")
-}
-
-enum FormType {
-  MEMBERSHIP_APPLICATION  // สมัครสมาชิก
-  EVENT_REGISTRATION     // ลงทะเบียนกิจกรรม
-  FEEDBACK              // ความคิดเห็น
-  CONTACT               // ติดต่อสอบถาม
-  SURVEY                // แบบสอบถาม
-  EVALUATION            // แบบประเมิน
-  REQUEST               // คำร้อง
-  OTHER                 // อื่นๆ
-}
-
-enum FormStatus {
-  ACTIVE    // เปิดรับ
-  INACTIVE  // ปิดรับ
-  ARCHIVED  // เก็บถาวร
-  DRAFT     // ร่าง
-}
-
-// Form submissions - การตอบกลับฟอร์ม
-model FormSubmission {
-  id        String           @id @default(cuid())
-  formId    String
-  userId    String?          // ผู้ตอบ (ถ้าล็อกอิน)
-  data      String           // ข้อมูลที่กรอก (JSON)
-  status    SubmissionStatus @default(PENDING)
-  ipAddress String?          // IP Address
-  reviewedBy String?         // ผู้ตรวจสอบ
-  reviewedAt DateTime?       // วันที่ตรวจสอบ
-  remarks   String?          // หมายเหตุ
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  form      Form             @relation(fields: [formId], references: [id], onDelete: Cascade)
-  user      User?            @relation(fields: [userId], references: [id])
-
-  @@index([formId])
-  @@index([status])
-  @@map("form_submissions")
-}
-
-enum SubmissionStatus {
-  PENDING     // รอตรวจสอบ
-  REVIEWED    // ตรวจสอบแล้ว
-  APPROVED    // อนุมัติ
-  REJECTED    // ไม่อนุมัติ
-  PROCESSING  // กำลังดำเนินการ
-}
-
-// Donations - การบริจาคและระดมทุน
-model DonationCampaign {
-  id            String          @id @default(cuid())
-  title         String          // ชื่อโครงการ
-  description   String          // รายละเอียด
-  purpose       String?         // วัตถุประสงค์
-  targetAmount  Float           // เป้าหมายยอดเงิน
-  currentAmount Float           @default(0) // ยอดเงินปัจจุบัน
-  startDate     DateTime        // วันเริ่มต้น
-  endDate       DateTime        // วันสิ้นสุด
-  status        CampaignStatus  @default(ACTIVE)
-  category      String          // หมวดหมู่
-  image         String?         // รูปภาพ
-  donorCount    Int             @default(0) // จำนวนผู้บริจาค
-  createdBy     String          // ผู้สร้างแคมเปญ
-  approvedBy    String?         // ผู้อนุมัติ
-  isPublic      Boolean         @default(true)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-
-  donations     Donation[]
-
-  @@index([status])
-  @@map("donation_campaigns")
-}
-
-enum CampaignStatus {
-  ACTIVE      // กำลังดำเนินการ
-  COMPLETED   // สำเร็จ
-  EXPIRED     // หมดอายุ
-  PAUSED      // พักชั่วคราว
-  CANCELLED   // ยกเลิก
-}
-
-model Donation {
-  id          String          @id @default(cuid())
-  campaignId  String
-  donorId     String?         // ผู้บริจาค (ถ้าล็อกอิน)
-  donorName   String          // ชื่อผู้บริจาค
-  donorEmail  String?         // อีเมลผู้บริจาค
-  donorPhone  String?         // เบอร์ผู้บริจาค
-  amount      Float           // จำนวนเงิน
-  message     String?         // ข้อความ
-  isAnonymous Boolean         @default(false) // บริจาคนิรนาม
-  paymentMethod String?       // วิธีการชำระเงิน
-  transactionId String?       // เลขที่ธุรกรรม
-  receiptUrl  String?         // URL ใบเสร็จ
-  status      DonationStatus  @default(PENDING)
-  verifiedBy  String?         // ผู้ตรวจสอบ
-  verifiedAt  DateTime?       // วันที่ตรวจสอบ
-  createdAt   DateTime        @default(now())
-
-  campaign    DonationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  donor       User?            @relation(fields: [donorId], references: [id])
-
-  @@index([campaignId])
-  @@index([status])
-  @@map("donations")
-}
-
-enum DonationStatus {
-  PENDING     // รอตรวจสอบ
-  VERIFIED    // ตรวจสอบแล้ว
-  COMPLETED   // สำเร็จ
-  FAILED      // ไม่สำเร็จ
-  REFUNDED    // คืนเงิน
 }
 
 // Contact messages - ข้อความติดต่อ

@@ -21,9 +21,7 @@ Table users {
   authoredNews news [not null]
   authoredActivities activities [not null]
   authoredProjects projects [not null]
-  donations donations [not null]
   contactMessages contacts [not null]
-  formSubmissions form_submissions [not null]
 }
 
 Table members {
@@ -173,25 +171,6 @@ Table projects {
   updatedAt DateTime [not null]
   author users [not null]
   activities activities [not null]
-  reports project_reports [not null]
-}
-
-Table project_reports {
-  id String [pk]
-  projectId String [not null]
-  title String [not null]
-  content String [not null]
-  reportType ReportType [not null]
-  reportDate DateTime [not null]
-  submittedBy String [not null]
-  reviewedBy String
-  approvedBy String
-  status ReportStatus [not null, default: 'DRAFT']
-  attachments String
-  remarks String
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  project projects [not null]
 }
 
 Table documents {
@@ -229,82 +208,6 @@ Table gallery {
   isPublic Boolean [not null, default: true]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-}
-
-Table forms {
-  id String [pk]
-  title String [not null]
-  description String
-  type FormType [not null]
-  status FormStatus [not null, default: 'ACTIVE']
-  fields String [not null]
-  settings String
-  openDate DateTime
-  closeDate DateTime
-  maxSubmissions Int
-  currentSubmissions Int [not null, default: 0]
-  createdBy String [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  submissions form_submissions [not null]
-}
-
-Table form_submissions {
-  id String [pk]
-  formId String [not null]
-  userId String
-  data String [not null]
-  status SubmissionStatus [not null, default: 'PENDING']
-  ipAddress String
-  reviewedBy String
-  reviewedAt DateTime
-  remarks String
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  form forms [not null]
-  user users
-}
-
-Table donation_campaigns {
-  id String [pk]
-  title String [not null]
-  description String [not null]
-  purpose String
-  targetAmount Float [not null]
-  currentAmount Float [not null, default: 0]
-  startDate DateTime [not null]
-  endDate DateTime [not null]
-  status CampaignStatus [not null, default: 'ACTIVE']
-  category String [not null]
-  image String
-  donorCount Int [not null, default: 0]
-  createdBy String [not null]
-  approvedBy String
-  isPublic Boolean [not null, default: true]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  donations donations [not null]
-}
-
-Table donations {
-  id String [pk]
-  campaignId String [not null]
-  donorId String
-  donorName String [not null]
-  donorEmail String
-  donorPhone String
-  amount Float [not null]
-  message String
-  isAnonymous Boolean [not null, default: false]
-  paymentMethod String
-  transactionId String
-  receiptUrl String
-  status DonationStatus [not null, default: 'PENDING']
-  verifiedBy String
-  verifiedAt DateTime
-  createdAt DateTime [default: `now()`, not null]
-  campaign donation_campaigns [not null]
-  donor users
 }
 
 Table contacts {
@@ -398,24 +301,6 @@ Enum ActivityStatus {
   POSTPONED
 }
 
-Enum ReportType {
-  PROGRESS
-  FINANCIAL
-  FINAL
-  EVALUATION
-  MONTHLY
-  QUARTERLY
-}
-
-Enum ReportStatus {
-  DRAFT
-  SUBMITTED
-  UNDER_REVIEW
-  APPROVED
-  REJECTED
-  REVISION
-}
-
 Enum ProjectStatus {
   PLANNING
   PENDING_APPROVAL
@@ -441,48 +326,6 @@ Enum AlbumType {
   ACHIEVEMENT
   FACILITY
   OTHER
-}
-
-Enum FormType {
-  MEMBERSHIP_APPLICATION
-  EVENT_REGISTRATION
-  FEEDBACK
-  CONTACT
-  SURVEY
-  EVALUATION
-  REQUEST
-  OTHER
-}
-
-Enum FormStatus {
-  ACTIVE
-  INACTIVE
-  ARCHIVED
-  DRAFT
-}
-
-Enum SubmissionStatus {
-  PENDING
-  REVIEWED
-  APPROVED
-  REJECTED
-  PROCESSING
-}
-
-Enum CampaignStatus {
-  ACTIVE
-  COMPLETED
-  EXPIRED
-  PAUSED
-  CANCELLED
-}
-
-Enum DonationStatus {
-  PENDING
-  VERIFIED
-  COMPLETED
-  FAILED
-  REFUNDED
 }
 
 Enum ContactStatus {
@@ -518,15 +361,5 @@ Ref: activities.authorId > users.id
 Ref: activities.projectId > projects.id
 
 Ref: projects.authorId > users.id
-
-Ref: project_reports.projectId > projects.id [delete: Cascade]
-
-Ref: form_submissions.formId > forms.id [delete: Cascade]
-
-Ref: form_submissions.userId > users.id
-
-Ref: donations.campaignId > donation_campaigns.id [delete: Cascade]
-
-Ref: donations.donorId > users.id
 
 Ref: contacts.userId > users.id
