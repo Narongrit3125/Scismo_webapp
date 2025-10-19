@@ -88,30 +88,6 @@ model Staff {
   @@map("staff")
 }
 
-// Position/Role definitions - ตำแหน่งและบทบาทในองค์กร
-model Position {
-  id          String       @id @default(cuid())
-  title       String       @unique // ชื่อตำแหน่ง
-  description String?      // รายละเอียด
-  type        PositionType // ประเภทตำแหน่ง
-  level       Int          @default(0) // ระดับตำแหน่ง
-  division    String?      // ฝ่าย/แผนก
-  responsibilities String?  // หน้าที่ความรับผิดชอบ
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  @@map("positions")
-}
-
-enum PositionType {
-  EXECUTIVE   // ฝ่ายบริหาร
-  COMMITTEE   // คณะกรรมการ
-  ADVISOR     // ที่ปรึกษา
-  COORDINATOR // ผู้ประสานงาน
-  MEMBER      // สมาชิกทั่วไป
-}
-
 // Category - หมวดหมู่สำหรับเนื้อหาต่างๆ
 model Category {
   id          String       @id @default(cuid())
@@ -130,7 +106,6 @@ model Category {
   news        News[]
   activities  Activity[]
   documents   Document[]
-  galleries   Gallery[]
 
   @@unique([type, slug])
   @@index([type])
@@ -142,7 +117,6 @@ enum CategoryType {
   NEWS      // ข่าวสาร
   ACTIVITY  // กิจกรรม
   DOCUMENT  // เอกสาร
-  GALLERY   // แกลเลอรี
   GENERAL   // ทั่วไป
 }
 
@@ -379,38 +353,6 @@ model DocumentTag {
   @@index([documentId])
   @@index([tagId])
   @@map("document_tags")
-}
-
-// Gallery - แกลเลอรีภาพกิจกรรม
-model Gallery {
-  id          String    @id @default(cuid())
-  title       String    // ชื่ออัลบั้ม/หัวข้อ
-  description String?   // คำอธิบาย
-  categoryId  String    @default("default") // หมวดหมู่
-  albumType   AlbumType @default(ACTIVITY) // ประเภทอัลบั้ม
-  images      String    // รูปภาพ (JSON array)
-  coverImage  String?   // รูปปกอัลบั้ม
-  eventDate   DateTime  // วันที่จัดกิจกรรม
-  uploadedBy  String    // ผู้อัปโหลด
-  viewCount   Int       @default(0) // จำนวนการเข้าชม
-  isPublic    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  category    Category?  @relation(fields: [categoryId], references: [id])
-
-  @@index([categoryId])
-  @@index([eventDate])
-  @@map("gallery")
-}
-
-enum AlbumType {
-  ACTIVITY    // กิจกรรม
-  EVENT       // งาน/อีเวนต์
-  CEREMONY    // พิธีการ
-  ACHIEVEMENT // ผลงาน
-  FACILITY    // สถานที่/อุปกรณ์
-  OTHER       // อื่นๆ
 }
 
 // Contact messages - ข้อความติดต่อ

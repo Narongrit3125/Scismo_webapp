@@ -53,19 +53,6 @@ Table staff {
   user users [not null]
 }
 
-Table positions {
-  id String [pk]
-  title String [unique, not null]
-  description String
-  type PositionType [not null]
-  level Int [not null, default: 0]
-  division String
-  responsibilities String
-  isActive Boolean [not null, default: true]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
 Table categories {
   id String [pk]
   name String [not null]
@@ -81,7 +68,6 @@ Table categories {
   news news [not null]
   activities activities [not null]
   documents documents [not null]
-  galleries gallery [not null]
 
   indexes {
     (type, slug) [unique]
@@ -225,23 +211,6 @@ Table document_tags {
   }
 }
 
-Table gallery {
-  id String [pk]
-  title String [not null]
-  description String
-  categoryId String [not null, default: 'default']
-  albumType AlbumType [not null, default: 'ACTIVITY']
-  images String [not null]
-  coverImage String
-  eventDate DateTime [not null]
-  uploadedBy String [not null]
-  viewCount Int [not null, default: 0]
-  isPublic Boolean [not null, default: true]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  category categories
-}
-
 Table contacts {
   id String [pk]
   name String [not null]
@@ -268,19 +237,10 @@ Enum Role {
   USER
 }
 
-Enum PositionType {
-  EXECUTIVE
-  COMMITTEE
-  ADVISOR
-  COORDINATOR
-  MEMBER
-}
-
 Enum CategoryType {
   NEWS
   ACTIVITY
   DOCUMENT
-  GALLERY
   GENERAL
 }
 
@@ -341,15 +301,6 @@ Enum AccessLevel {
   RESTRICTED
 }
 
-Enum AlbumType {
-  ACTIVITY
-  EVENT
-  CEREMONY
-  ACHIEVEMENT
-  FACILITY
-  OTHER
-}
-
 Enum ContactStatus {
   PENDING
   IN_PROGRESS
@@ -386,7 +337,5 @@ Ref: documents.categoryId > categories.id
 Ref: document_tags.documentId > documents.id [delete: Cascade]
 
 Ref: document_tags.tagId > tags.id [delete: Cascade]
-
-Ref: gallery.categoryId > categories.id
 
 Ref: contacts.userId > users.id
