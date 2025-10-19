@@ -44,9 +44,7 @@ export async function GET(request: NextRequest) {
           year: member.year,
           phone: member.phone,
           position: member.position,
-          bio: member.bio,
-          interests: member.interests ? JSON.parse(member.interests) : [],
-          skills: member.skills ? JSON.parse(member.skills) : [],
+          division: member.division,
           avatar: member.avatar,
           isActive: member.isActive,
           joinDate: member.joinDate
@@ -103,9 +101,7 @@ export async function GET(request: NextRequest) {
       year: member.year,
       phone: member.phone,
       position: member.position,
-      bio: member.bio,
-      interests: member.interests ? JSON.parse(member.interests) : [],
-      skills: member.skills ? JSON.parse(member.skills) : [],
+      division: member.division,
       avatar: member.avatar,
       isActive: member.isActive,
       joinDate: member.joinDate
@@ -136,9 +132,7 @@ export async function POST(request: NextRequest) {
       year,
       phone,
       position,
-      bio,
-      interests = [],
-      skills = [],
+      division,
       avatar
     } = body;
 
@@ -172,9 +166,7 @@ export async function POST(request: NextRequest) {
         year: parseInt(year),
         phone,
         position,
-        bio,
-        interests: JSON.stringify(interests),
-        skills: JSON.stringify(skills),
+        division,
         avatar,
         isActive: true
       },
@@ -202,9 +194,7 @@ export async function POST(request: NextRequest) {
         year: newMember.year,
         phone: newMember.phone,
         position: newMember.position,
-        bio: newMember.bio,
-        interests: newMember.interests ? JSON.parse(newMember.interests) : [],
-        skills: newMember.skills ? JSON.parse(newMember.skills) : [],
+        division: newMember.division,
         avatar: newMember.avatar,
         isActive: newMember.isActive,
         joinDate: newMember.joinDate
@@ -240,9 +230,7 @@ export async function PUT(request: NextRequest) {
       year,
       phone,
       position,
-      bio,
-      interests,
-      skills,
+      division,
       avatar,
       isActive
     } = body;
@@ -256,9 +244,7 @@ export async function PUT(request: NextRequest) {
         ...(year && { year: parseInt(year) }),
         ...(phone && { phone }),
         ...(position && { position }),
-        ...(bio && { bio }),
-        ...(interests && { interests: JSON.stringify(interests) }),
-        ...(skills && { skills: JSON.stringify(skills) }),
+        ...(division && { division }),
         ...(avatar && { avatar }),
         ...(isActive !== undefined && { isActive })
       },
@@ -286,9 +272,7 @@ export async function PUT(request: NextRequest) {
         year: updatedMember.year,
         phone: updatedMember.phone,
         position: updatedMember.position,
-        bio: updatedMember.bio,
-        interests: updatedMember.interests ? JSON.parse(updatedMember.interests) : [],
-        skills: updatedMember.skills ? JSON.parse(updatedMember.skills) : [],
+        division: updatedMember.division,
         avatar: updatedMember.avatar,
         isActive: updatedMember.isActive,
         joinDate: updatedMember.joinDate

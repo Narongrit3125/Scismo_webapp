@@ -41,11 +41,9 @@ export async function GET(request: NextRequest) {
           department: staff.department,
           position: staff.position,
           phone: staff.phone,
-          office: staff.office,
-          bio: staff.bio,
-          expertise: staff.expertise ? JSON.parse(staff.expertise) : [],
           avatar: staff.avatar,
-          isActive: staff.isActive
+          isActive: staff.isActive,
+          startDate: staff.startDate
         }
       });
     }
@@ -94,11 +92,9 @@ export async function GET(request: NextRequest) {
       department: staff.department,
       position: staff.position,
       phone: staff.phone,
-      office: staff.office,
-      bio: staff.bio,
-      expertise: staff.expertise ? JSON.parse(staff.expertise) : [],
       avatar: staff.avatar,
-      isActive: staff.isActive
+      isActive: staff.isActive,
+      startDate: staff.startDate
     }));
 
     return NextResponse.json({
@@ -124,9 +120,6 @@ export async function POST(request: NextRequest) {
       department, 
       position,
       phone,
-      office,
-      bio,
-      expertise = [],
       avatar
     } = body;
 
@@ -158,9 +151,6 @@ export async function POST(request: NextRequest) {
         department,
         position,
         phone,
-        office,
-        bio,
-        expertise: JSON.stringify(expertise),
         avatar,
         isActive: true
       },
@@ -186,11 +176,9 @@ export async function POST(request: NextRequest) {
         department: newStaff.department,
         position: newStaff.position,
         phone: newStaff.phone,
-        office: newStaff.office,
-        bio: newStaff.bio,
-        expertise: newStaff.expertise ? JSON.parse(newStaff.expertise) : [],
         avatar: newStaff.avatar,
-        isActive: newStaff.isActive
+        isActive: newStaff.isActive,
+        startDate: newStaff.startDate
       },
       message: 'Staff created successfully'
     });
@@ -221,9 +209,6 @@ export async function PUT(request: NextRequest) {
       department, 
       position,
       phone,
-      office,
-      bio,
-      expertise,
       avatar,
       isActive
     } = body;
@@ -235,9 +220,6 @@ export async function PUT(request: NextRequest) {
         ...(department && { department }),
         ...(position && { position }),
         ...(phone && { phone }),
-        ...(office && { office }),
-        ...(bio && { bio }),
-        ...(expertise && { expertise: JSON.stringify(expertise) }),
         ...(avatar && { avatar }),
         ...(isActive !== undefined && { isActive })
       },
@@ -263,11 +245,9 @@ export async function PUT(request: NextRequest) {
         department: updatedStaff.department,
         position: updatedStaff.position,
         phone: updatedStaff.phone,
-        office: updatedStaff.office,
-        bio: updatedStaff.bio,
-        expertise: updatedStaff.expertise ? JSON.parse(updatedStaff.expertise) : [],
         avatar: updatedStaff.avatar,
-        isActive: updatedStaff.isActive
+        isActive: updatedStaff.isActive,
+        startDate: updatedStaff.startDate
       },
       message: 'Staff updated successfully'
     });
