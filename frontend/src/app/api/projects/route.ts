@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
               }
             },
             orderBy: {
-              order: 'asc'
+              startDate: 'asc'
             }
           }
         }
@@ -52,25 +52,21 @@ export async function GET(request: NextRequest) {
         success: true,
         data: {
           id: project.id,
+          code: project.code,
           title: project.title,
           description: project.description,
-          shortDescription: project.shortDescription,
           academicYear: project.academicYear,
+          semester: project.semester,
           status: project.status,
-          priority: project.priority,
           startDate: project.startDate,
           endDate: project.endDate,
-          totalBudget: project.totalBudget,
-          usedBudget: project.usedBudget,
-          objectives: project.objectives,
-          targetGroup: project.targetGroup,
-          expectedResults: project.expectedResults,
-          sponsor: project.sponsor,
-          coordinator: project.coordinator,
+          budget: project.budget,
           isActive: project.isActive,
           image: project.image,
+          planFile: project.planFile,
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
+          authorId: project.authorId,
           author: {
             firstName: project.author?.firstName || '',
             lastName: project.author?.lastName || '',
@@ -107,7 +103,6 @@ export async function GET(request: NextRequest) {
         }
       },
       orderBy: [
-        { priority: 'desc' },
         { startDate: 'desc' },
         { createdAt: 'desc' }
       ]
@@ -118,23 +113,18 @@ export async function GET(request: NextRequest) {
           code: project.code,
           title: project.title,
           description: project.description,
-          shortDescription: project.shortDescription,
           academicYear: project.academicYear,
+          semester: project.semester,
           status: project.status,
-          priority: project.priority,
           startDate: project.startDate,
           endDate: project.endDate,
-          totalBudget: project.totalBudget,
-          usedBudget: project.usedBudget,
-          objectives: project.objectives,
-          targetGroup: project.targetGroup,
-          expectedResults: project.expectedResults,
-          sponsor: project.sponsor,
-          coordinator: project.coordinator,
+          budget: project.budget,
           isActive: project.isActive,
           image: project.image,
+          planFile: project.planFile,
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
+          authorId: project.authorId,
           author: {
             firstName: project.author?.firstName || '',
             lastName: project.author?.lastName || '',
@@ -163,20 +153,15 @@ export async function POST(request: NextRequest) {
       code,
       title,
       description,
-      shortDescription,
-      year,
+      academicYear,
+      semester,
       status = 'PLANNING',
-      priority = 'MEDIUM',
       startDate,
       endDate,
-      totalBudget,
-      objectives,
-      targetGroup,
-      expectedResults,
-      sponsor,
-      coordinator,
+      budget,
       isActive = true,
-      image
+      image,
+      planFile
     } = body;
 
     if (!code || !title || !description || !startDate) {
@@ -214,21 +199,16 @@ export async function POST(request: NextRequest) {
         code,
         title,
         description,
-        shortDescription,
-        authorId: user.id, // Use the found user ID
-        academicYear: year ? parseInt(year) : new Date().getFullYear(),
+        authorId: user.id,
+        academicYear: academicYear ? parseInt(academicYear) : new Date().getFullYear(),
+        semester: semester ? parseInt(semester) : 1,
         status: status.toUpperCase(),
-        priority: priority.toUpperCase(),
         startDate: new Date(startDate),
         endDate: endDate ? new Date(endDate) : new Date(startDate),
-        totalBudget: totalBudget ? parseFloat(totalBudget) : null,
-        objectives,
-        targetGroup,
-        expectedResults,
-        sponsor,
-        coordinator,
+        budget: budget ? parseFloat(budget) : null,
         isActive: isActive !== false,
-        image
+        image: image || null,
+        planFile: planFile || null
       },
       include: {
         author: {
@@ -248,23 +228,18 @@ export async function POST(request: NextRequest) {
         code: newProject.code,
         title: newProject.title,
         description: newProject.description,
-        shortDescription: newProject.shortDescription,
         academicYear: newProject.academicYear,
+        semester: newProject.semester,
         status: newProject.status,
-        priority: newProject.priority,
         startDate: newProject.startDate,
         endDate: newProject.endDate,
-        totalBudget: newProject.totalBudget,
-        usedBudget: newProject.usedBudget,
-        objectives: newProject.objectives,
-        targetGroup: newProject.targetGroup,
-        expectedResults: newProject.expectedResults,
-        sponsor: newProject.sponsor,
-        coordinator: newProject.coordinator,
+        budget: newProject.budget,
         isActive: newProject.isActive,
         image: newProject.image,
+        planFile: newProject.planFile,
         createdAt: newProject.createdAt,
         updatedAt: newProject.updatedAt,
+        authorId: newProject.authorId,
         author: newProject.author
       },
       message: 'Project created successfully'
@@ -292,50 +267,34 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const { 
+      code,
       title,
       description,
-      shortDescription,
-      category,
+      academicYear,
+      semester,
       status,
-      priority,
       startDate,
       endDate,
-      progress,
-      technologies,
-      features,
-      challenges,
-      achievements,
       budget,
-      sponsor,
-      targetUsers,
-      impact,
-      githubUrl,
-      demoUrl,
-      images
+      isActive,
+      image,
+      planFile
     } = body;
 
     const updateData: any = {};
     
+    if (code) updateData.code = code;
     if (title) updateData.title = title;
     if (description) updateData.description = description;
-    if (shortDescription) updateData.shortDescription = shortDescription;
-    if (category) updateData.category = category;
+    if (academicYear !== undefined) updateData.academicYear = parseInt(academicYear);
+    if (semester !== undefined) updateData.semester = parseInt(semester);
     if (status) updateData.status = status.toUpperCase();
-    if (priority) updateData.priority = priority.toUpperCase();
     if (startDate) updateData.startDate = new Date(startDate);
     if (endDate) updateData.endDate = new Date(endDate);
-    if (progress !== undefined) updateData.progress = parseInt(progress);
-    if (technologies) updateData.technologies = JSON.stringify(technologies);
-    if (features) updateData.features = JSON.stringify(features);
-    if (challenges) updateData.challenges = JSON.stringify(challenges);
-    if (achievements) updateData.achievements = JSON.stringify(achievements);
     if (budget !== undefined) updateData.budget = budget ? parseFloat(budget) : null;
-    if (sponsor) updateData.sponsor = sponsor;
-    if (targetUsers) updateData.targetUsers = targetUsers;
-    if (impact) updateData.impact = impact;
-    if (githubUrl) updateData.githubUrl = githubUrl;
-    if (demoUrl) updateData.demoUrl = demoUrl;
-    if (images) updateData.images = JSON.stringify(images);
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (image !== undefined) updateData.image = image;
+    if (planFile !== undefined) updateData.planFile = planFile;
 
     const updatedProject = await prisma.project.update({
       where: { id },
@@ -355,25 +314,21 @@ export async function PUT(request: NextRequest) {
       success: true,
       data: {
         id: updatedProject.id,
+        code: updatedProject.code,
         title: updatedProject.title,
         description: updatedProject.description,
-        shortDescription: updatedProject.shortDescription,
         academicYear: updatedProject.academicYear,
+        semester: updatedProject.semester,
         status: updatedProject.status,
-        priority: updatedProject.priority,
         startDate: updatedProject.startDate,
         endDate: updatedProject.endDate,
-        totalBudget: updatedProject.totalBudget,
-        usedBudget: updatedProject.usedBudget,
-        objectives: updatedProject.objectives,
-        targetGroup: updatedProject.targetGroup,
-        expectedResults: updatedProject.expectedResults,
-        sponsor: updatedProject.sponsor,
-        coordinator: updatedProject.coordinator,
+        budget: updatedProject.budget,
         isActive: updatedProject.isActive,
         image: updatedProject.image,
+        planFile: updatedProject.planFile,
         createdAt: updatedProject.createdAt,
         updatedAt: updatedProject.updatedAt,
+        authorId: updatedProject.authorId,
         author: {
           firstName: updatedProject.author?.firstName || '',
           lastName: updatedProject.author?.lastName || '',
