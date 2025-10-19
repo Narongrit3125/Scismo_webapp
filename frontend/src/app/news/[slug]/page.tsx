@@ -2,8 +2,9 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, User, Eye, Tag, Clock, ZoomIn, X } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Eye, Tag, Clock, ZoomIn, X, ArrowRight } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
+import Link from 'next/link';
 
 interface News {
   id: string;
@@ -32,6 +33,7 @@ export default function NewsDetail() {
   const params = useParams();
   const router = useRouter();
   const [news, setNews] = useState<News | null>(null);
+  const [relatedNews, setRelatedNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -54,6 +56,17 @@ export default function NewsDetail() {
         if (result.success && result.data) {
           console.log('Setting news data:', result.data);
           setNews(result.data);
+          
+          // Fetch related news
+          const relatedResponse = await fetch('/api/news?status=PUBLISHED');
+          const relatedResult = await relatedResponse.json();
+          if (relatedResult.success && relatedResult.data) {
+            // Filter out current news and limit to 3 items
+            const filtered = relatedResult.data
+              .filter((item: News) => item.slug !== slug)
+              .slice(0, 3);
+            setRelatedNews(filtered);
+          }
         } else {
           console.error('News not found or error:', result);
           setError(result.error || 'ไม่พบข่าวสารที่ต้องการ');
@@ -89,7 +102,7 @@ export default function NewsDetail() {
       <PageLayout title="กำลังโหลด..." subtitle="กรุณารอสักครู่">
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
             <p className="text-gray-600">กำลังโหลดข่าวสาร...</p>
           </div>
         </div>
@@ -107,7 +120,7 @@ export default function NewsDetail() {
             <p className="text-gray-600 mb-6">{error}</p>
             <button
               onClick={() => router.push('/news')}
-              className="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg"
             >
               กลับไปหน้าข่าวสาร
             </button>
@@ -276,6 +289,68 @@ export default function NewsDetail() {
             </div>
           </div>
         </article>
+
+      {/* Related News Section */}
+      {relatedNews.length > 0 && (
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">ข่าวสารเพิ่มเติม</h2>
+            <Link 
+              href="/news"
+              className="flex items-center text-purple-600 hover:text-purple-700 font-medium"
+            >
+              ดูทั้งหมด
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedNews.map((item) => (
+              <Link key={item.id} href={`/news/${item.slug}`}>
+                <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow group cursor-pointer">
+                  {item.image ? (
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-48 w-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center">
+                      <div className="text-white text-6xl">📰</div>
+                    </div>
+                  )}
+                  
+                  <div className="p-4">
+                    <div className="flex items-center text-sm text-gray-500 mb-2">
+                      <Clock size={14} className="mr-1" />
+                      <span>{new Date(item.publishedAt || item.createdAt).toLocaleDateString('th-TH', { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                      })}</span>
+                    </div>
+                    
+                    <h3 className="font-semibold text-lg text-gray-900 line-clamp-2 group-hover:text-purple-600 transition-colors mb-2">
+                      {item.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm line-clamp-2">
+                      {item.excerpt || item.content?.substring(0, 80)}...
+                    </p>
+                    
+                    <div className="flex items-center text-purple-600 font-medium text-sm mt-3 group-hover:text-purple-700">
+                      <span>อ่านต่อ</span>
+                      <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Image Modal */}
       {showImageModal && news?.image && (
