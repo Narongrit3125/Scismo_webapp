@@ -1,0 +1,123 @@
+# Database Schema Visualization Guide
+
+## 📊 DBML File Generated
+
+ไฟล์ `database.dbml` ถูกสร้างจาก PostgreSQL database โดยอัตโนมัติ
+
+## 🚀 วิธีสร้างไฟล์ DBML
+
+```bash
+npm run generate-dbml
+```
+
+Script จะ:
+1. เชื่อมต่อกับ PostgreSQL database
+2. อ่าน schema ทั้งหมด (tables, columns, relationships)
+3. สร้างไฟล์ `database.dbml` ที่ root ของโปรเจค
+
+## 📈 วิธีแสดงผล ER Diagram
+
+### วิธีที่ 1: ใช้ dbdiagram.io (แนะนำ)
+
+1. ไปที่ https://dbdiagram.io/
+2. คลิก **"Import"** หรือเปิด editor ใหม่
+3. คัดลอกเนื้อหาจาก `database.dbml`
+4. Paste ลงใน editor
+5. Diagram จะถูกสร้างอัตโนมัติ ✨
+
+**Features:**
+- 🎨 แสดง ER Diagram แบบ Interactive
+- 📤 Export เป็น PNG, SVG, PDF
+- 🔗 แสดง Relationships ระหว่าง tables
+- 💾 บันทึกและแชร์ diagram
+
+### วิธีที่ 2: ใช้ VS Code Extension
+
+1. ติดตั้ง extension: **"vscode-dbml"**
+2. เปิดไฟล์ `database.dbml`
+3. กด `Ctrl+Shift+P` (Windows) หรือ `Cmd+Shift+P` (Mac)
+4. พิมพ์ "DBML: Preview"
+5. Diagram จะแสดงใน preview pane
+
+### วิธีที่ 3: ใช้ DBeaver หรือ DataGrip
+
+Tools เหล่านี้สามารถ import DBML หรือแสดง ER Diagram โดยตรงจาก database connection
+
+## 📋 โครงสร้าง Database
+
+ไฟล์ DBML ประกอบด้วย **17 tables**:
+
+### 👥 User Management
+- `users` - ข้อมูลผู้ใช้งาน
+- `members` - ข้อมูลสมาชิก
+- `staff` - ข้อมูลเจ้าหน้าที่
+- `positions` - ตำแหน่ง
+
+### 📰 Content Management
+- `news` - ข่าวสาร
+- `activities` - กิจกรรม
+- `contents` - เนื้อหาทั่วไป
+- `gallery` - รูปภาพ
+- `documents` - เอกสาร
+
+### 📊 Project Management
+- `projects` - โครงการ
+- `project_reports` - รายงานโครงการ
+
+### 💰 Donations
+- `donation_campaigns` - แคมเปญบริจาค
+- `donations` - การบริจาค
+
+### 📝 Forms & Contact
+- `forms` - ฟอร์ม
+- `form_submissions` - การส่งฟอร์ม
+- `contacts` - ข้อความติดต่อ
+- `contact_info` - ข้อมูลติดต่อ
+
+## 🔗 Relationships
+
+ไฟล์ DBML แสดง relationships ทั้งหมด:
+
+```dbml
+Ref: members.userId > users.id
+Ref: staff.userId > users.id
+Ref: news.authorId > users.id
+Ref: activities.authorId > users.id
+Ref: activities.projectId > projects.id
+Ref: projects.authorId > users.id
+Ref: project_reports.projectId > projects.id
+Ref: form_submissions.formId > forms.id
+Ref: form_submissions.userId > users.id
+Ref: donations.campaignId > donation_campaigns.id
+Ref: donations.donorId > users.id
+Ref: contacts.userId > users.id
+```
+
+## 🔧 Update DBML
+
+ทุกครั้งที่มีการเปลี่ยนแปลง database schema:
+
+```bash
+# 1. อัปเดต Prisma schema
+npx prisma db pull
+
+# 2. Generate ไฟล์ DBML ใหม่
+npm run generate-dbml
+```
+
+## 📚 เอกสารเพิ่มเติม
+
+- [DBML Documentation](https://dbml.dbdiagram.io/)
+- [dbdiagram.io Guide](https://dbdiagram.io/docs)
+- [Prisma Schema](https://www.prisma.io/docs/concepts/components/prisma-schema)
+
+## 💡 Tips
+
+1. **Export Diagram**: ใช้ dbdiagram.io export เป็น PNG สำหรับเอกสาร
+2. **Version Control**: Commit ไฟล์ `.dbml` เพื่อติดตามการเปลี่ยนแปลง schema
+3. **Documentation**: ใช้ diagram ในเอกสารโปรเจคหรือ README
+4. **Team Collaboration**: แชร์ URL จาก dbdiagram.io กับทีม
+
+---
+
+Generated: October 19, 2025
