@@ -62,8 +62,7 @@ export default function AdminDashboard() {
     try {
       const endpoints = [
         '/api/users',
-        '/api/members', 
-        '/api/staff',
+        '/api/members',
         '/api/news',
         '/api/activities',
         '/api/projects',
@@ -82,12 +81,12 @@ export default function AdminDashboard() {
       setStats({
         users: data[0].total || 0,
         members: data[1].total || 0,
-        staff: data[2].total || 0,
-        news: data[3].total || 0,
-        activities: data[4].total || 0,
-        projects: data[5].total || 0,
-        documents: data[6].total || 0,
-        contacts: data[7].total || 0
+        staff: 0,
+        news: data[2].total || 0,
+        activities: data[3].total || 0,
+        projects: data[4].total || 0,
+        documents: data[5].total || 0,
+        contacts: data[6].total || 0
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -102,7 +101,6 @@ export default function AdminDashboard() {
       items: [
         { name: 'จัดการผู้ใช้', icon: Users, href: '/admin/users', count: stats.users, bgColor: 'bg-blue-100', iconColor: 'text-blue-600', textColor: 'text-blue-600' },
         { name: 'สมาชิก', icon: UserCog, href: '/admin/members', count: stats.members, bgColor: 'bg-green-100', iconColor: 'text-purple-600', textColor: 'text-purple-600' },
-        { name: 'เจ้าหน้าที่', icon: UserCog, href: '/admin/staff', count: stats.staff, bgColor: 'bg-purple-100', iconColor: 'text-purple-600', textColor: 'text-purple-600' },
       ]
     },
     {

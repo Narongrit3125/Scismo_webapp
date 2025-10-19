@@ -27,7 +27,6 @@ export default function Footer() {
       { name: 'ประวัติสโมสร', href: '/about/history' },
       { name: 'โครงสร้างองค์กร', href: '/about/organization' },
       { name: 'สมาชิก', href: '/members' },
-      { name: 'คณะกรรมการ', href: '/staff' },
       { name: 'ติดต่อเรา', href: '/contact' }
     ],
     forStudents: [

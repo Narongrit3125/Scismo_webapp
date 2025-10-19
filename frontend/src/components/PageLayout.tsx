@@ -73,12 +73,6 @@ export default function PageLayout({
                         </a>
                       </li>
                       <li>
-                        <a href="/staff" className="flex items-center text-white hover:text-yellow-100 transition-colors">
-                          <span className="w-2 h-2 bg-white rounded-full mr-3"></span>
-                          ข้อมูลบุคลากร
-                        </a>
-                      </li>
-                      <li>
                         <a href="/projects" className="flex items-center text-white hover:text-yellow-100 transition-colors">
                           <span className="w-2 h-2 bg-white rounded-full mr-3"></span>
                           โครงการ

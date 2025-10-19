@@ -13,8 +13,7 @@ export async function GET(request: NextRequest) {
       const user = await prisma.user.findUnique({
         where: { id },
         include: {
-          memberProfile: true,
-          staffProfile: true
+          memberProfile: true
         }
       });
 
@@ -37,8 +36,7 @@ export async function GET(request: NextRequest) {
           isActive: user.isActive,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
-          memberProfile: user.memberProfile,
-          staffProfile: user.staffProfile
+          memberProfile: user.memberProfile
         }
       });
     }
@@ -53,8 +51,7 @@ export async function GET(request: NextRequest) {
     const users = await prisma.user.findMany({
       where: whereCondition,
       include: {
-        memberProfile: true,
-        staffProfile: true
+        memberProfile: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -71,8 +68,7 @@ export async function GET(request: NextRequest) {
       isActive: user.isActive,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      memberProfile: user.memberProfile,
-      staffProfile: user.staffProfile
+      memberProfile: user.memberProfile
     }));
 
     return NextResponse.json({
@@ -207,8 +203,7 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: updateData,
       include: {
-        memberProfile: true,
-        staffProfile: true
+        memberProfile: true
       }
     });
 
@@ -224,8 +219,7 @@ export async function PUT(request: NextRequest) {
         isActive: updatedUser.isActive,
         createdAt: updatedUser.createdAt,
         updatedAt: updatedUser.updatedAt,
-        memberProfile: updatedUser.memberProfile,
-        staffProfile: updatedUser.staffProfile
+        memberProfile: updatedUser.memberProfile
       },
       message: 'User updated successfully'
     });

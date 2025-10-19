@@ -40,7 +40,7 @@ async function main() {
       password: 'password123',
       firstName: 'Regular',
       lastName: 'User',
-      role: 'USER' as const,
+      role: 'MEMBER' as const,
     },
   ]
 

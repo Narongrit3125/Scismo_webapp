@@ -17,7 +17,6 @@ Table users {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   memberProfile members
-  staffProfile staff
   authoredNews news [not null]
   authoredActivities activities [not null]
   authoredProjects projects [not null]
@@ -37,19 +36,6 @@ Table members {
   joinDate DateTime [default: `now()`, not null]
   isActive Boolean [not null, default: true]
   avatar String
-  user users [not null]
-}
-
-Table staff {
-  id String [pk]
-  userId String [unique, not null]
-  staffId String [unique, not null]
-  department String [not null]
-  position String [not null]
-  phone String
-  avatar String
-  isActive Boolean [not null, default: true]
-  startDate DateTime [default: `now()`, not null]
   user users [not null]
 }
 
@@ -308,8 +294,6 @@ Enum ContactStatus {
 }
 
 Ref: members.userId - users.id [delete: Cascade]
-
-Ref: staff.userId - users.id [delete: Cascade]
 
 Ref: news.authorId > users.id
 

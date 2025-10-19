@@ -36,7 +36,6 @@ model User {
 
   // Relations
   memberProfile Member?
-  staffProfile  Staff?
   authoredNews  News[]
   authoredActivities Activity[]
   authoredProjects Project[]
@@ -68,23 +67,6 @@ model Member {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("members")
-}
-
-// Staff information - ข้อมูลบุคลากร/เจ้าหน้าที่
-model Staff {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  staffId     String   @unique // รหัสเจ้าหน้าที่
-  department  String   // แผนก/ฝ่าย
-  position    String   // ตำแหน่ง
-  phone       String?
-  avatar      String?
-  isActive    Boolean  @default(true)
-  startDate   DateTime @default(now()) // วันที่เริ่มงาน
-
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("staff")
 }
 
 // Category - หมวดหมู่สำหรับเนื้อหาต่างๆ

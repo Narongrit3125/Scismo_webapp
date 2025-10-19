@@ -60,18 +60,6 @@ export const documentAPI = {
   getById: (id: number) => api.get<APIResponse<Document>>(`/documents?id=${id}`),
 };
 
-// Staff API
-export const staffAPI = {
-  getAll: () => api.get<APIResponse<any[]>>('/staff'),
-  getByDepartment: (department: string) => api.get<APIResponse<any[]>>(`/staff?department=${department}`),
-};
-
-// Gallery API
-export const galleryAPI = {
-  getAll: () => api.get<APIResponse<any[]>>('/gallery'),
-  getByCategory: (category: string) => api.get<APIResponse<any[]>>(`/gallery?category=${category}`),
-};
-
 // Forms API
 export const formsAPI = {
   getAll: () => api.get<APIResponse<any[]>>('/forms'),

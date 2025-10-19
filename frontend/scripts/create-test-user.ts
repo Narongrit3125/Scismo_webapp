@@ -67,7 +67,7 @@ async function main() {
         password: hashedPassword,
         firstName: 'ผู้ใช้',
         lastName: 'ทั่วไป',
-        role: 'USER',
+        role: 'MEMBER',
         isActive: true
       }
     })

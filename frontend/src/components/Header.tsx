@@ -74,23 +74,10 @@ export default function Header() {
       ]
     },
     { 
-      name: 'บุคลากร', 
-      href: '#',
+      name: 'โครงการ', 
+      href: '/projects',
       icon: FolderOpen,
-      dropdown: [
-        { 
-          name: 'คณะกรรมการ', 
-          href: '/staff',
-          icon: Users,
-          description: 'คณะกรรมการบริหารสโมสร'
-        },
-        { 
-          name: 'โครงการ', 
-          href: '/projects',
-          icon: FolderOpen,
-          description: 'โครงการและกิจกรรมต่างๆ'
-        }
-      ]
+      description: 'โครงการและกิจกรรมต่างๆ'
     },
     { name: 'ติดต่อ', href: '/contact', icon: MessageCircle }
   ], []);
