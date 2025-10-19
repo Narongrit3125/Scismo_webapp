@@ -36,13 +36,7 @@ Table members {
   division String
   joinDate DateTime [default: `now()`, not null]
   isActive Boolean [not null, default: true]
-  bio String
-  skills String
-  interests String
   avatar String
-  address String
-  emergencyContact String
-  emergencyPhone String
   user users [not null]
 }
 
@@ -53,9 +47,6 @@ Table staff {
   department String [not null]
   position String [not null]
   phone String
-  office String
-  bio String
-  expertise String
   avatar String
   isActive Boolean [not null, default: true]
   startDate DateTime [default: `now()`, not null]
@@ -155,19 +146,12 @@ Table activities {
   startDate DateTime [not null]
   endDate DateTime
   location String
-  maxParticipants Int
-  currentParticipants Int [not null, default: 0]
-  coordinator String
   status ActivityStatus [not null, default: 'PLANNING']
   isPublic Boolean [not null, default: true]
-  requirements String
-  budget Float
-  actualExpense Float
-  order Int [not null, default: 0]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
   image String
   gallery String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
   author users [not null]
   project projects
   category categories
@@ -191,25 +175,13 @@ Table projects {
   code String [unique, not null]
   title String [not null]
   description String [not null]
-  shortDescription String
   authorId String [not null]
   academicYear Int [not null]
   semester Int
   status ProjectStatus [not null, default: 'PLANNING']
-  priority Priority [not null, default: 'MEDIUM']
   startDate DateTime [not null]
   endDate DateTime [not null]
-  totalBudget Float
-  approvedBudget Float
-  usedBudget Float [not null, default: 0]
-  objectives String
-  targetGroup String
-  expectedResults String
-  keyPerformance String
-  sponsor String
-  coordinator String
-  approvedBy String
-  approvedDate DateTime
+  budget Float
   isActive Boolean [not null, default: true]
   image String
   planFile String

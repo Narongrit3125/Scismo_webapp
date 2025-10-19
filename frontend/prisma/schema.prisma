@@ -63,13 +63,7 @@ model Member {
   division    String?   // ฝ่ายงาน
   joinDate    DateTime  @default(now())
   isActive    Boolean   @default(true)
-  bio         String?   // ประวัติส่วนตัว
-  skills      String?   // ทักษะ (JSON array)
-  interests   String?   // ความสนใจ (JSON array)
   avatar      String?
-  address     String?   // ที่อยู่
-  emergencyContact String? // ผู้ติดต่อฉุกเฉิน
-  emergencyPhone String?   // เบอร์ฉุกเฉิน
 
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -84,9 +78,6 @@ model Staff {
   department  String   // แผนก/ฝ่าย
   position    String   // ตำแหน่ง
   phone       String?
-  office      String?  // สำนักงาน/ห้องทำงาน
-  bio         String?  // ประวัติ
-  expertise   String?  // ความเชี่ยวชาญ (JSON array)
   avatar      String?
   isActive    Boolean  @default(true)
   startDate   DateTime @default(now()) // วันที่เริ่มงาน
@@ -242,19 +233,12 @@ model Activity {
   startDate           DateTime       // วันเริ่มต้น
   endDate             DateTime?      // วันสิ้นสุด
   location            String?        // สถานที่จัดกิจกรรม
-  maxParticipants     Int?           // จำนวนผู้เข้าร่วมสูงสุด
-  currentParticipants Int            @default(0) // จำนวนผู้ลงทะเบียนปัจจุบัน
-  coordinator         String?        // ผู้ประสานงาน
   status              ActivityStatus @default(PLANNING) // สถานะ
   isPublic            Boolean        @default(true)
-  requirements        String?        // คุณสมบัติผู้เข้าร่วม
-  budget              Float?         // งบประมาณ
-  actualExpense       Float?         // ค่าใช้จ่ายจริง
-  order               Int            @default(0) // ลำดับในโครงการ
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
   image               String?        // รูปภาพ
   gallery             String?        // แกลเลอรีภาพกิจกรรม (JSON array)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   author              User           @relation(fields: [authorId], references: [id])
   project             Project?       @relation(fields: [projectId], references: [id])
@@ -314,25 +298,13 @@ model Project {
   code              String        @unique // รหัสโครงการ เช่น "SC2567-001"
   title             String        // ชื่อโครงการ
   description       String        // รายละเอียด
-  shortDescription  String?       // รายละเอียดย่อ
   authorId          String        // ผู้รับผิดชอบหลัก
   academicYear      Int           // ปีการศึกษา เช่น 2567
   semester          Int?          // ภาคการศึกษา (1, 2, หรือ summer)
   status            ProjectStatus @default(PLANNING)
-  priority          Priority      @default(MEDIUM)
   startDate         DateTime      // วันเริ่มโครงการ
   endDate           DateTime      // วันสิ้นสุดโครงการ
-  totalBudget       Float?        // งบประมาณรวม
-  approvedBudget    Float?        // งบประมาณที่ได้รับอนุมัติ
-  usedBudget        Float         @default(0) // งบประมาณที่ใช้ไป
-  objectives        String?       // วัตถุประสงค์
-  targetGroup       String?       // กลุ่มเป้าหมาย
-  expectedResults   String?       // ผลที่คาดหวัง
-  keyPerformance    String?       // ตัวชี้วัดความสำเร็จ (JSON array)
-  sponsor           String?       // ผู้สนับสนุน
-  coordinator       String?       // ผู้ประสานงาน
-  approvedBy        String?       // ผู้อนุมัติ
-  approvedDate      DateTime?     // วันที่อนุมัติ
+  budget            Float?        // งบประมาณ
   isActive          Boolean       @default(true)
   image             String?       // รูปปกโครงการ
   planFile          String?       // ไฟล์แผนโครงการ
