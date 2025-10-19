@@ -18,6 +18,7 @@ import {
 
 interface User {
   id: string;
+  username?: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -38,6 +39,7 @@ export default function AdminUsers() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     firstName: '',
     lastName: '',
@@ -96,6 +98,7 @@ export default function AdminUsers() {
         await fetchUsers();
         setShowCreateForm(false);
         setFormData({
+          username: '',
           email: '',
           firstName: '',
           lastName: '',
@@ -137,6 +140,7 @@ export default function AdminUsers() {
         await fetchUsers();
         setEditingUser(null);
         setFormData({
+          username: '',
           email: '',
           firstName: '',
           lastName: '',
@@ -185,6 +189,7 @@ export default function AdminUsers() {
   const startEdit = (user: User) => {
     setEditingUser(user);
     setFormData({
+      username: user.username || user.email.split('@')[0],
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -383,18 +388,35 @@ export default function AdminUsers() {
             
             <form onSubmit={editingUser ? handleUpdateUser : handleCreateUser}>
               {!editingUser && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    อีเมล
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      ชื่อผู้ใช้ (Username)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.username}
+                      onChange={(e) => setFormData({...formData, username: e.target.value})}
+                      placeholder="ตัวอักษร a-z, 0-9, _, - เท่านั้น"
+                      pattern="[a-zA-Z0-9_-]+"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      อีเมล
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </>
               )}
 
               <div className="mb-4">
@@ -472,6 +494,7 @@ export default function AdminUsers() {
                     setShowCreateForm(false);
                     setEditingUser(null);
                     setFormData({
+                      username: '',
                       email: '',
                       firstName: '',
                       lastName: '',
