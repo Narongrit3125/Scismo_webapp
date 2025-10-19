@@ -70,26 +70,26 @@ export default function DocumentsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-lg p-6 text-center">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 text-center border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
             <FileText className="w-8 h-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">{Array.isArray(documents) ? documents.length : 0}</div>
             <div className="text-sm text-gray-600">เอกสารทั้งหมด</div>
           </div>
-          <div className="bg-white rounded-lg p-6 text-center">
+          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 text-center border border-red-200 shadow-sm hover:shadow-md transition-shadow">
             <FileText className="w-8 h-8 text-red-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">
               {Array.isArray(documents) ? documents.filter((doc: any) => getFileExtension(doc.file_name) === 'pdf').length : 0}
             </div>
             <div className="text-sm text-gray-600">ไฟล์ PDF</div>
           </div>
-          <div className="bg-white rounded-lg p-6 text-center">
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-100 rounded-lg p-6 text-center border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
             <FileText className="w-8 h-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">
               {Array.isArray(documents) ? documents.filter((doc: any) => ['doc', 'docx'].includes(getFileExtension(doc.file_name))).length : 0}
             </div>
             <div className="text-sm text-gray-600">ไฟล์ Word</div>
           </div>
-          <div className="bg-white rounded-lg p-6 text-center">
+          <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg p-6 text-center border border-green-200 shadow-sm hover:shadow-md transition-shadow">
             <FileText className="w-8 h-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">
               {Array.isArray(documents) ? documents.filter((doc: any) => ['xls', 'xlsx'].includes(getFileExtension(doc.file_name))).length : 0}
@@ -99,13 +99,13 @@ export default function DocumentsPage() {
         </div>
 
         {/* Filter by file type */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <h3 className="text-lg font-semibold mb-4">ประเภทไฟล์</h3>
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow-sm p-6 mb-8 border border-purple-100">
+          <h3 className="text-lg font-semibold mb-4 text-gray-800">ประเภทไฟล์</h3>
           <div className="flex flex-wrap gap-2">
             {['ทั้งหมด', 'PDF', 'Word', 'Excel', 'PowerPoint', 'อื่นๆ'].map((type) => (
               <button
                 key={type}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                className="px-4 py-2 text-sm bg-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-blue-500 hover:text-white rounded-full transition-all shadow-sm border border-gray-200"
               >
                 {type}
               </button>
@@ -118,11 +118,11 @@ export default function DocumentsPage() {
           <div className="space-y-4">
             {documents.map((document: any) => (
               <Card key={document.id} hover>
-                <CardContent className="p-6">
+                <CardContent className="p-6 bg-gradient-to-r from-white to-gray-50 hover:from-purple-50 hover:to-blue-50 transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 flex-1">
                       {/* File Icon */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 bg-white p-3 rounded-lg shadow-sm">
                         {getFileIcon(document.file_name)}
                       </div>
 
@@ -136,7 +136,7 @@ export default function DocumentsPage() {
                             <Calendar size={16} />
                             <span>อัปโหลดเมื่อ {new Date(document.uploaded_at).toLocaleDateString('th-TH')}</span>
                           </div>
-                          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">
+                          <span className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">
                             {getFileExtension(document.file_name).toUpperCase()}
                           </span>
                         </div>
@@ -147,7 +147,7 @@ export default function DocumentsPage() {
                     <div className="flex-shrink-0 ml-4">
                       <button
                         onClick={() => downloadFile(document.file_path, document.file_name)}
-                        className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg"
                       >
                         <Download size={16} />
                         <span>ดาวน์โหลด</span>
@@ -159,8 +159,8 @@ export default function DocumentsPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="text-gray-400 mb-4">
+          <div className="text-center py-16 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg border border-purple-100">
+            <div className="text-purple-300 mb-4">
               <FileText className="w-16 h-16 mx-auto" />
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">ยังไม่มีเอกสาร</h3>
