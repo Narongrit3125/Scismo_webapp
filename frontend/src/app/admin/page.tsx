@@ -12,8 +12,6 @@ import {
   FileText, 
   MapPin, 
   Image, 
-  FormInput, 
-  Heart, 
   MessageSquare, 
   File,
   BarChart3,
@@ -124,8 +122,6 @@ export default function AdminDashboard() {
       items: [
         { name: 'ตำแหน่งหน้าที่', icon: MapPin, href: '/admin/positions', count: 0, bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600', textColor: 'text-yellow-600' },
         { name: 'แกลเลอรี่', icon: Image, href: '/admin/gallery', count: 0, bgColor: 'bg-pink-100', iconColor: 'text-pink-600', textColor: 'text-pink-600' },
-        { name: 'ฟอร์ม', icon: FormInput, href: '/admin/forms', count: 0, bgColor: 'bg-indigo-100', iconColor: 'text-indigo-600', textColor: 'text-indigo-600' },
-        { name: 'บริจาค', icon: Heart, href: '/admin/donations', count: 0, bgColor: 'bg-rose-100', iconColor: 'text-rose-600', textColor: 'text-rose-600' },
         { name: 'ติดต่อ', icon: MessageSquare, href: '/admin/contacts', count: stats.contacts, bgColor: 'bg-teal-100', iconColor: 'text-teal-600', textColor: 'text-teal-600' },
         { name: 'เอกสาร', icon: File, href: '/admin/documents', count: stats.documents, bgColor: 'bg-amber-100', iconColor: 'text-amber-600', textColor: 'text-amber-600' },
       ]

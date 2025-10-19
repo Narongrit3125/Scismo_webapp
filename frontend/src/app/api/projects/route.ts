@@ -37,11 +37,6 @@ export async function GET(request: NextRequest) {
             orderBy: {
               order: 'asc'
             }
-          },
-          reports: {
-            orderBy: {
-              reportDate: 'desc'
-            }
           }
         }
       });
