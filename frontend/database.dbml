@@ -75,25 +75,73 @@ Table positions {
   updatedAt DateTime [not null]
 }
 
+Table categories {
+  id String [pk]
+  name String [not null]
+  slug String [unique, not null]
+  type CategoryType [not null]
+  description String
+  color String
+  icon String
+  order Int [not null, default: 0]
+  isActive Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  news news [not null]
+  activities activities [not null]
+  documents documents [not null]
+  galleries gallery [not null]
+
+  indexes {
+    (type, slug) [unique]
+  }
+}
+
+Table tags {
+  id String [pk]
+  name String [unique, not null]
+  slug String [unique, not null]
+  color String
+  usageCount Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  news news_tags [not null]
+  activities activity_tags [not null]
+  documents document_tags [not null]
+}
+
 Table news {
   id String [pk]
   title String [not null]
   content String [not null]
   excerpt String
   authorId String [not null]
-  category String [not null]
+  categoryId String [not null, default: 'default']
   priority Priority [not null, default: 'MEDIUM']
   isPinned Boolean [not null, default: false]
   status NewsStatus [not null, default: 'DRAFT']
   publishedAt DateTime
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  tags String
   slug String [unique, not null]
   viewCount Int [not null, default: 0]
   image String
   attachments String
   author users [not null]
+  category categories
+  tags news_tags [not null]
+}
+
+Table news_tags {
+  newsId String [not null]
+  tagId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  news news [not null]
+  tag tags [not null]
+
+  indexes {
+    (newsId, tagId) [pk]
+  }
 }
 
 Table activities {
@@ -102,7 +150,7 @@ Table activities {
   description String [not null]
   authorId String [not null]
   projectId String
-  category String [not null]
+  categoryId String [not null, default: 'default']
   type ActivityType [not null]
   startDate DateTime [not null]
   endDate DateTime
@@ -118,11 +166,24 @@ Table activities {
   order Int [not null, default: 0]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  tags String
   image String
   gallery String
   author users [not null]
   project projects
+  category categories
+  tags activity_tags [not null]
+}
+
+Table activity_tags {
+  activityId String [not null]
+  tagId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  activity activities [not null]
+  tag tags [not null]
+
+  indexes {
+    (activityId, tagId) [pk]
+  }
 }
 
 Table projects {
@@ -162,7 +223,7 @@ Table documents {
   id String [pk]
   title String [not null]
   description String
-  category String [not null]
+  categoryId String [not null, default: 'default']
   type String [not null]
   fileName String [not null]
   fileUrl String [not null]
@@ -171,19 +232,32 @@ Table documents {
   isPublic Boolean [not null, default: true]
   accessLevel AccessLevel [not null, default: 'PUBLIC']
   downloadCount Int [not null, default: 0]
-  tags String
   uploadedBy String [not null]
   approvedBy String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   expiryDate DateTime
+  category categories
+  tags document_tags [not null]
+}
+
+Table document_tags {
+  documentId String [not null]
+  tagId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  document documents [not null]
+  tag tags [not null]
+
+  indexes {
+    (documentId, tagId) [pk]
+  }
 }
 
 Table gallery {
   id String [pk]
   title String [not null]
   description String
-  category String [not null]
+  categoryId String [not null, default: 'default']
   albumType AlbumType [not null, default: 'ACTIVITY']
   images String [not null]
   coverImage String
@@ -193,6 +267,7 @@ Table gallery {
   isPublic Boolean [not null, default: true]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+  category categories
 }
 
 Table contacts {
@@ -227,6 +302,14 @@ Enum PositionType {
   ADVISOR
   COORDINATOR
   MEMBER
+}
+
+Enum CategoryType {
+  NEWS
+  ACTIVITY
+  DOCUMENT
+  GALLERY
+  GENERAL
 }
 
 Enum Priority {
@@ -308,10 +391,30 @@ Ref: staff.userId - users.id [delete: Cascade]
 
 Ref: news.authorId > users.id
 
+Ref: news.categoryId > categories.id
+
+Ref: news_tags.newsId > news.id [delete: Cascade]
+
+Ref: news_tags.tagId > tags.id [delete: Cascade]
+
 Ref: activities.authorId > users.id
 
 Ref: activities.projectId > projects.id
 
+Ref: activities.categoryId > categories.id
+
+Ref: activity_tags.activityId > activities.id [delete: Cascade]
+
+Ref: activity_tags.tagId > tags.id [delete: Cascade]
+
 Ref: projects.authorId > users.id
+
+Ref: documents.categoryId > categories.id
+
+Ref: document_tags.documentId > documents.id [delete: Cascade]
+
+Ref: document_tags.tagId > tags.id [delete: Cascade]
+
+Ref: gallery.categoryId > categories.id
 
 Ref: contacts.userId > users.id

@@ -120,6 +120,59 @@ enum PositionType {
   MEMBER      // สมาชิกทั่วไป
 }
 
+// Category - หมวดหมู่สำหรับเนื้อหาต่างๆ
+model Category {
+  id          String       @id @default(cuid())
+  name        String       // ชื่อหมวดหมู่
+  slug        String       @unique // URL-friendly name
+  type        CategoryType // ประเภทหมวดหมู่
+  description String?      // คำอธิบาย
+  color       String?      // สีประจำหมวดหมู่ (hex code)
+  icon        String?      // ไอคอน
+  order       Int          @default(0) // ลำดับการแสดงผล
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  news        News[]
+  activities  Activity[]
+  documents   Document[]
+  galleries   Gallery[]
+
+  @@unique([type, slug])
+  @@index([type])
+  @@index([isActive])
+  @@map("categories")
+}
+
+enum CategoryType {
+  NEWS      // ข่าวสาร
+  ACTIVITY  // กิจกรรม
+  DOCUMENT  // เอกสาร
+  GALLERY   // แกลเลอรี
+  GENERAL   // ทั่วไป
+}
+
+// Tag - แท็กสำหรับเนื้อหา
+model Tag {
+  id         String   @id @default(cuid())
+  name       String   @unique // ชื่อแท็ก
+  slug       String   @unique // URL-friendly name
+  color      String?  // สีประจำแท็ก (hex code)
+  usageCount Int      @default(0) // จำนวนการใช้งาน
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  news       NewsTag[]
+  activities ActivityTag[]
+  documents  DocumentTag[]
+
+  @@index([usageCount])
+  @@map("tags")
+}
+
 // News and announcements - ข่าวสารและประกาศ
 model News {
   id          String        @id @default(cuid())
@@ -127,22 +180,23 @@ model News {
   content     String        // เนื้อหา
   excerpt     String?       // สรุปข่าว
   authorId    String        // ผู้เขียน
-  category    String        // หมวดหมู่
+  categoryId  String        @default("default") // หมวดหมู่
   priority    Priority      @default(MEDIUM) // ระดับความสำคัญ
   isPinned    Boolean       @default(false)  // ปักหมุดข่าว
   status      NewsStatus    @default(DRAFT)  // สถานะ
   publishedAt DateTime?     // วันที่เผยแพร่
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  tags        String?       // แท็ก (JSON array)
   slug        String        @unique
   viewCount   Int           @default(0) // จำนวนการเข้าชม
   image       String?       // รูปภาพปก
   attachments String?       // ไฟล์แนบ (JSON array)
 
   author      User          @relation(fields: [authorId], references: [id])
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  tags        NewsTag[]
 
-  @@index([category])
+  @@index([categoryId])
   @@index([status])
   @@index([publishedAt])
   @@map("news")
@@ -161,6 +215,21 @@ enum NewsStatus {
   ARCHIVED
 }
 
+// NewsTag - Many-to-many relationship between News and Tag
+model NewsTag {
+  newsId    String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  news      News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([newsId, tagId])
+  @@index([newsId])
+  @@index([tagId])
+  @@map("news_tags")
+}
+
 // Activities and events - กิจกรรมและงานต่างๆ
 model Activity {
   id                  String         @id @default(cuid())
@@ -168,7 +237,7 @@ model Activity {
   description         String         // รายละเอียด
   authorId            String         // ผู้รับผิดชอบ
   projectId           String?        // เชื่อมโยงกับโครงการหลัก
-  category            String         // หมวดหมู่
+  categoryId          String         @default("default") // หมวดหมู่
   type                ActivityType   // ประเภทกิจกรรม
   startDate           DateTime       // วันเริ่มต้น
   endDate             DateTime?      // วันสิ้นสุด
@@ -184,14 +253,15 @@ model Activity {
   order               Int            @default(0) // ลำดับในโครงการ
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
-  tags                String?        // แท็ก (JSON array)
   image               String?        // รูปภาพ
   gallery             String?        // แกลเลอรีภาพกิจกรรม (JSON array)
 
   author              User           @relation(fields: [authorId], references: [id])
   project             Project?       @relation(fields: [projectId], references: [id])
+  category            Category?      @relation(fields: [categoryId], references: [id])
+  tags                ActivityTag[]
 
-  @@index([category])
+  @@index([categoryId])
   @@index([status])
   @@index([startDate])
   @@map("activities")
@@ -221,6 +291,21 @@ enum ActivityStatus {
   COMPLETED           // เสร็จสิ้น
   CANCELLED           // ยกเลิก
   POSTPONED           // เลื่อน
+}
+
+// ActivityTag - Many-to-many relationship between Activity and Tag
+model ActivityTag {
+  activityId String
+  tagId      String
+  createdAt  DateTime @default(now())
+
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([activityId, tagId])
+  @@index([activityId])
+  @@index([tagId])
+  @@map("activity_tags")
 }
 
 // Projects (โครงการหลัก)
@@ -275,26 +360,28 @@ enum ProjectStatus {
 
 // Documents and files - เอกสารและไฟล์
 model Document {
-  id            String   @id @default(cuid())
-  title         String   // ชื่อเอกสาร
-  description   String?  // คำอธิบาย
-  category      String   // หมวดหมู่ (ระเบียบ, ข้อบังคับ, คู่มือ, แบบฟอร์ม, ฯลฯ)
-  type          String   // ประเภทไฟล์ (PDF, DOC, XLS, etc.)
-  fileName      String   // ชื่อไฟล์
-  fileUrl       String   // URL ไฟล์
-  fileSize      Int      // ขนาดไฟล์ (bytes)
-  version       String?  // เวอร์ชัน
-  isPublic      Boolean  @default(true) // สิทธิ์การเข้าถึง
+  id            String      @id @default(cuid())
+  title         String      // ชื่อเอกสาร
+  description   String?     // คำอธิบาย
+  categoryId    String      @default("default") // หมวดหมู่
+  type          String      // ประเภทไฟล์ (PDF, DOC, XLS, etc.)
+  fileName      String      // ชื่อไฟล์
+  fileUrl       String      // URL ไฟล์
+  fileSize      Int         // ขนาดไฟล์ (bytes)
+  version       String?     // เวอร์ชัน
+  isPublic      Boolean     @default(true) // สิทธิ์การเข้าถึง
   accessLevel   AccessLevel @default(PUBLIC) // ระดับการเข้าถึง
-  downloadCount Int      @default(0) // จำนวนดาวน์โหลด
-  tags          String?  // แท็ก (JSON array)
-  uploadedBy    String   // ผู้อัปโหลด
-  approvedBy    String?  // ผู้อนุมัติ
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  expiryDate    DateTime? // วันหมดอายุ (ถ้ามี)
+  downloadCount Int         @default(0) // จำนวนดาวน์โหลด
+  uploadedBy    String      // ผู้อัปโหลด
+  approvedBy    String?     // ผู้อนุมัติ
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  expiryDate    DateTime?   // วันหมดอายุ (ถ้ามี)
 
-  @@index([category])
+  category      Category?      @relation(fields: [categoryId], references: [id])
+  tags          DocumentTag[]
+
+  @@index([categoryId])
   @@index([isPublic])
   @@map("documents")
 }
@@ -306,23 +393,40 @@ enum AccessLevel {
   RESTRICTED  // จำกัดเฉพาะบุคคล
 }
 
+// DocumentTag - Many-to-many relationship between Document and Tag
+model DocumentTag {
+  documentId String
+  tagId      String
+  createdAt  DateTime @default(now())
+
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([documentId, tagId])
+  @@index([documentId])
+  @@index([tagId])
+  @@map("document_tags")
+}
+
 // Gallery - แกลเลอรีภาพกิจกรรม
 model Gallery {
-  id          String   @id @default(cuid())
-  title       String   // ชื่ออัลบั้ม/หัวข้อ
-  description String?  // คำอธิบาย
-  category    String   // หมวดหมู่
+  id          String    @id @default(cuid())
+  title       String    // ชื่ออัลบั้ม/หัวข้อ
+  description String?   // คำอธิบาย
+  categoryId  String    @default("default") // หมวดหมู่
   albumType   AlbumType @default(ACTIVITY) // ประเภทอัลบั้ม
-  images      String   // รูปภาพ (JSON array)
-  coverImage  String?  // รูปปกอัลบั้ม
-  eventDate   DateTime // วันที่จัดกิจกรรม
-  uploadedBy  String   // ผู้อัปโหลด
-  viewCount   Int      @default(0) // จำนวนการเข้าชม
-  isPublic    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  images      String    // รูปภาพ (JSON array)
+  coverImage  String?   // รูปปกอัลบั้ม
+  eventDate   DateTime  // วันที่จัดกิจกรรม
+  uploadedBy  String    // ผู้อัปโหลด
+  viewCount   Int       @default(0) // จำนวนการเข้าชม
+  isPublic    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  @@index([category])
+  category    Category?  @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId])
   @@index([eventDate])
   @@map("gallery")
 }
