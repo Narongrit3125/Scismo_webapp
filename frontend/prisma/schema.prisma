@@ -12,9 +12,10 @@ generator dbml {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Prisma Accelerate extension for connection pooling
+  relationMode = "prisma"
 }
 
 // User management - ระบบจัดการผู้ใช้งาน
