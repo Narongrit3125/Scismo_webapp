@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       firstName, 
       lastName, 
       password,
-      role = 'USER'  // เปลี่ยน default จาก MEMBER เป็น USER
+      role = 'MEMBER'  // default role เป็น MEMBER
     } = body;
 
     if (!username || !email || !firstName || !lastName) {

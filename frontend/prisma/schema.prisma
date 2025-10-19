@@ -26,7 +26,7 @@ model User {
   password    String
   firstName   String
   lastName    String
-  role        Role     @default(USER)
+  role        Role     @default(MEMBER)
   isActive    Boolean  @default(true)
   lastLoginAt DateTime?
   resetToken  String?
@@ -48,7 +48,6 @@ model User {
 enum Role {
   ADMIN   // ผู้ดูแลระบบ
   MEMBER  // สมาชิกสโมสร
-  USER    // ผู้ใช้งานทั่วไป
 }
 
 // Member information - ข้อมูลสมาชิกสโมสร

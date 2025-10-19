@@ -272,7 +272,6 @@ export default function AdminUsers() {
                 <option value="ALL">บทบาททั้งหมด</option>
                 <option value="ADMIN">ผู้ดูแลระบบ</option>
                 <option value="MEMBER">สมาชิกสโมสร</option>
-                <option value="USER">ผู้ใช้งานทั่วไป</option>
               </select>
             </div>
           </div>
@@ -328,11 +327,9 @@ export default function AdminUsers() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         user.role === 'ADMIN' ? 'bg-red-100 text-red-800' :
-                        user.role === 'MEMBER' ? 'bg-blue-100 text-blue-800' :
-                        'bg-green-100 text-green-800'
+                        'bg-blue-100 text-blue-800'
                       }`}>
-                        {user.role === 'ADMIN' ? 'ผู้ดูแลระบบ' :
-                         user.role === 'MEMBER' ? 'สมาชิกสโมสร' : 'ผู้ใช้งานทั่วไป'}
+                        {user.role === 'ADMIN' ? 'ผู้ดูแลระบบ' : 'สมาชิกสโมสร'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -469,7 +466,6 @@ export default function AdminUsers() {
                   onChange={(e) => setFormData({...formData, role: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="USER">ผู้ใช้งานทั่วไป</option>
                   <option value="MEMBER">สมาชิกสโมสร</option>
                   <option value="ADMIN">ผู้ดูแลระบบ</option>
                 </select>

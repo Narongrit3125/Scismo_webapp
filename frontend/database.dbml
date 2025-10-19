@@ -9,7 +9,7 @@ Table users {
   password String [not null]
   firstName String [not null]
   lastName String [not null]
-  role Role [not null, default: 'USER']
+  role Role [not null, default: 'MEMBER']
   isActive Boolean [not null, default: true]
   lastLoginAt DateTime
   resetToken String
@@ -234,7 +234,6 @@ Table contacts {
 Enum Role {
   ADMIN
   MEMBER
-  USER
 }
 
 Enum CategoryType {
