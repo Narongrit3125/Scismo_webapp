@@ -25,22 +25,17 @@ interface Activity {
   description: string;
   authorId: string;
   projectId?: string;
-  category: string;
+  categoryId: string;
   type: 'WORKSHOP' | 'SEMINAR' | 'COMPETITION' | 'VOLUNTEER' | 'SOCIAL' | 'TRAINING' | 'MEETING' | 'CEREMONY' | 'FUNDRAISING' | 'EXHIBITION';
   startDate: string;
   endDate?: string;
   location?: string;
-  maxParticipants?: number;
-  currentParticipants: number;
   status: 'PLANNING' | 'OPEN_REGISTRATION' | 'FULL' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   isPublic: boolean;
-  requirements?: string;
-  budget?: number;
-  order: number;
+  gallery?: string;
+  image?: string;
   createdAt: string;
   updatedAt: string;
-  tags?: string[];
-  image?: string;
   author: {
     firstName: string;
     lastName: string;
@@ -71,15 +66,11 @@ export default function AdminActivities() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'WORKSHOP',
+    categoryId: 'ACADEMIC',
     type: 'WORKSHOP' as 'WORKSHOP' | 'SEMINAR' | 'COMPETITION' | 'VOLUNTEER' | 'SOCIAL' | 'TRAINING' | 'MEETING' | 'CEREMONY' | 'FUNDRAISING' | 'EXHIBITION',
     location: '',
     startDate: '',
     endDate: '',
-    maxParticipants: 30,
-    requirements: '',
-    budget: 0,
-    tags: '',
     image: '',
     isPublic: true,
     projectId: ''
@@ -202,7 +193,7 @@ export default function AdminActivities() {
       alert('กรุณากรอกรายละเอียดกิจกรรม');
       return;
     }
-    if (!formData.category) {
+    if (!formData.categoryId) {
       alert('กรุณาเลือกหมวดหมู่');
       return;
     }
@@ -220,8 +211,6 @@ export default function AdminActivities() {
     }
     
     try {
-      const tagsArray = formData.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag);
-      
       // Upload image if user selected a file
       let imageUrl = formData.image;
       if (imageFile) {
@@ -231,15 +220,11 @@ export default function AdminActivities() {
       const activityData = {
         title: formData.title,
         description: formData.description,
-        category: formData.category,
+        category: formData.categoryId,
         type: formData.type,
         startDate: formData.startDate,
         endDate: formData.endDate || null,
         location: formData.location || null,
-        maxParticipants: formData.maxParticipants || null,
-        requirements: formData.requirements || null,
-        budget: formData.budget && formData.budget > 0 ? formData.budget : null,
-        tags: tagsArray,
         image: imageUrl || null,
         isPublic: formData.isPublic,
         projectId: formData.projectId || null,
@@ -278,8 +263,6 @@ export default function AdminActivities() {
     if (!editingActivity) return;
 
     try {
-      const tagsArray = formData.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag);
-      
       // Upload new image if user selected a file
       let imageUrl = formData.image;
       if (imageFile) {
@@ -293,8 +276,8 @@ export default function AdminActivities() {
         },
         body: JSON.stringify({
           ...formData,
-          image: imageUrl,
-          tags: tagsArray
+          category: formData.categoryId,
+          image: imageUrl
         }),
       });
 
@@ -338,15 +321,11 @@ export default function AdminActivities() {
     setFormData({
       title: '',
       description: '',
-      category: 'WORKSHOP',
+      categoryId: 'ACADEMIC',
       type: 'WORKSHOP' as const,
       location: '',
       startDate: '',
       endDate: '',
-      maxParticipants: 30,
-      requirements: '',
-      budget: 0,
-      tags: '',
       image: '',
       isPublic: true,
       projectId: ''
@@ -360,15 +339,11 @@ export default function AdminActivities() {
     setFormData({
       title: activity.title,
       description: activity.description,
-      category: activity.category,
+      categoryId: activity.categoryId,
       type: activity.type,
       location: activity.location || '',
       startDate: activity.startDate.slice(0, 16), // Format for datetime-local input
       endDate: activity.endDate?.slice(0, 16) || '',
-      maxParticipants: activity.maxParticipants || 30,
-      requirements: activity.requirements || '',
-      budget: activity.budget || 0,
-      tags: activity.tags?.join(', ') || '',
       image: activity.image || '',
       isPublic: activity.isPublic,
       projectId: activity.projectId || ''
@@ -380,7 +355,7 @@ export default function AdminActivities() {
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          activity.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'ALL' || activity.category === categoryFilter;
+    const matchesCategory = categoryFilter === 'ALL' || activity.categoryId === categoryFilter;
     const matchesStatus = statusFilter === 'ALL' ||
                          (statusFilter === 'COMPLETED' && activity.status === 'COMPLETED') ||
                          (statusFilter === 'IN_PROGRESS' && activity.status === 'IN_PROGRESS');
@@ -520,7 +495,7 @@ export default function AdminActivities() {
                        status === 'ongoing' ? 'กำลังดำเนินการ' : 'สิ้นสุดแล้ว'}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {categories.find(cat => cat.value === activity.category)?.label}
+                      {categories.find(cat => cat.value === activity.categoryId)?.label}
                     </span>
                   </div>
                   
@@ -552,28 +527,7 @@ export default function AdminActivities() {
                       <Clock className="w-4 h-4 mr-2" />
                       {new Date(activity.startDate).toLocaleDateString('th-TH')}
                     </div>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Users className="w-4 h-4 mr-2" />
-                      {activity.currentParticipants}/{activity.maxParticipants} คน
-                    </div>
                   </div>
-
-                  {activity.tags && activity.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {activity.tags.slice(0, 2).map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
-                        >
-                          <Tag className="w-3 h-3 mr-1" />
-                          {tag}
-                        </span>
-                      ))}
-                      {activity.tags.length > 2 && (
-                        <span className="text-xs text-gray-500">+{activity.tags.length - 2} อื่นๆ</span>
-                      )}
-                    </div>
-                  )}
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
@@ -675,8 +629,8 @@ export default function AdminActivities() {
                     หมวดหมู่
                   </label>
                   <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    value={formData.categoryId}
+                    onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     {categories.map(cat => (
@@ -740,61 +694,6 @@ export default function AdminActivities() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    จำนวนผู้เข้าร่วมสูงสุด
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={formData.maxParticipants}
-                    onChange={(e) => setFormData({...formData, maxParticipants: parseInt(e.target.value)})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    งบประมาณ (บาท)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.budget}
-                    onChange={(e) => setFormData({...formData, budget: parseFloat(e.target.value) || 0})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ข้อกำหนดการเข้าร่วม
-                </label>
-                <textarea
-                  rows={3}
-                  value={formData.requirements}
-                  onChange={(e) => setFormData({...formData, requirements: e.target.value})}
-                  placeholder="ระบุข้อกำหนดหรือเงื่อนไขการเข้าร่วมกิจกรรม..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  แท็ก (คั่นด้วยจุลภาค)
-                </label>
-                <input
-                  type="text"
-                  value={formData.tags}
-                  onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                  placeholder="แท็ก1, แท็ก2, แท็ก3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
               </div>
 
               <div className="mb-4">
