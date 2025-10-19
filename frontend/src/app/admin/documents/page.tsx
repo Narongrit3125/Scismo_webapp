@@ -26,7 +26,7 @@ interface Document {
   file_path: string;
   file_size: number;
   file_type: string;
-  category: string;
+  categoryId: string;
   upload_date: string;
   uploaded_by: string;
   downloads: number;
@@ -81,7 +81,7 @@ export default function AdminDocumentsPage() {
     const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.file_name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === '' || doc.category === filterCategory;
+    const matchesCategory = filterCategory === '' || doc.categoryId === filterCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -274,7 +274,7 @@ export default function AdminDocumentsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
-                          {doc.category}
+                          {doc.categoryId}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
