@@ -70,14 +70,12 @@ export async function PUT(
       title, 
       description, 
       year, 
-      totalBudget, 
-      objectives, 
-      coordinator,
+      budget,
       status,
-      priority,
       startDate,
       endDate,
-      planFile
+      planFile,
+      semester
     } = body;
 
     // Check if project exists and user has permission
@@ -122,11 +120,8 @@ export async function PUT(
         title: title || existingProject.title,
         description: description || existingProject.description,
         academicYear: year ? parseInt(year) : existingProject.academicYear,
-        totalBudget: totalBudget !== undefined ? parseFloat(totalBudget) : existingProject.totalBudget,
-        objectives: objectives || existingProject.objectives,
-        coordinator: coordinator || existingProject.coordinator,
+        budget: budget !== undefined ? parseFloat(budget) : existingProject.budget,
         status: status || existingProject.status,
-        priority: priority || existingProject.priority,
         startDate: startDate ? new Date(startDate) : existingProject.startDate,
         endDate: endDate ? new Date(endDate) : existingProject.endDate,
         planFile: planFile || existingProject.planFile

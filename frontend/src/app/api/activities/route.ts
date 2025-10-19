@@ -80,13 +80,8 @@ export async function GET(request: NextRequest) {
           startDate: activity.startDate,
           endDate: activity.endDate,
           location: activity.location,
-          maxParticipants: activity.maxParticipants,
-          currentParticipants: activity.currentParticipants,
           status: activity.status,
           isPublic: activity.isPublic,
-          requirements: activity.requirements,
-          budget: activity.budget,
-          order: activity.order,
           createdAt: activity.createdAt,
           updatedAt: activity.updatedAt,
           tags: activity.tags?.map((t: any) => ({
@@ -95,6 +90,7 @@ export async function GET(request: NextRequest) {
             slug: t.tag.slug
           })) || [],
           image: activity.image,
+          gallery: activity.gallery,
           author: activity.author ? {
             firstName: activity.author.firstName || '',
             lastName: activity.author.lastName || '',
@@ -162,24 +158,18 @@ export async function GET(request: NextRequest) {
       title: activity.title,
       description: activity.description,
       categoryId: activity.categoryId,
-      category: activity.category ? {
-        id: activity.category.id,
-        name: activity.category.name,
-        slug: activity.category.slug
-      } : { id: "default", name: "ทั่วไป", slug: "general" },
       type: activity.type,
       startDate: activity.startDate,
       endDate: activity.endDate,
       location: activity.location,
-      maxParticipants: activity.maxParticipants,
-      currentParticipants: activity.currentParticipants,
       status: activity.status,
       isPublic: activity.isPublic,
-      requirements: activity.requirements,
       createdAt: activity.createdAt,
       updatedAt: activity.updatedAt,
-      tags: activity.tags ? JSON.parse(activity.tags) : [],
       image: activity.image,
+      gallery: activity.gallery,
+      projectId: activity.projectId,
+      authorId: activity.authorId,
       author: {
         firstName: activity.author?.firstName || '',
         lastName: activity.author?.lastName || '',
@@ -210,20 +200,17 @@ export async function POST(request: NextRequest) {
       authorId,
       authorEmail,
       projectId,
-      category,
+      categoryId,
       type,
       startDate,
       endDate,
       location,
-      maxParticipants,
       isPublic = true,
-      requirements,
-      budget,
-      tags = [],
-      image
+      image,
+      gallery
     } = body;
 
-    if (!title || !description || !category || !type || !startDate) {
+    if (!title || !description || !type || !startDate) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
@@ -276,19 +263,14 @@ export async function POST(request: NextRequest) {
         description,
         authorId: author.id,
         projectId: projectId || null,
-        category,
+        categoryId: categoryId || null,
         type: type.toUpperCase(),
         startDate: new Date(startDate),
         endDate: endDate ? new Date(endDate) : null,
-        location,
-        maxParticipants: maxParticipants && typeof maxParticipants === 'string' ? 
-          parseInt(maxParticipants) : maxParticipants,
+        location: location || null,
         isPublic,
-        requirements,
-        budget: budget && typeof budget === 'string' ? 
-          parseFloat(budget) : budget,
-        tags: JSON.stringify(tags),
-        image,
+        image: image || null,
+        gallery: gallery || null,
         status: 'PLANNING'
       },
       include: {
@@ -308,24 +290,20 @@ export async function POST(request: NextRequest) {
         id: newActivity.id,
         title: newActivity.title,
         description: newActivity.description,
-        category: newActivity.category,
+        categoryId: newActivity.categoryId,
         type: newActivity.type,
         startDate: newActivity.startDate,
         endDate: newActivity.endDate,
         location: newActivity.location,
-        maxParticipants: newActivity.maxParticipants,
-        currentParticipants: newActivity.currentParticipants,
         status: newActivity.status,
         isPublic: newActivity.isPublic,
-        requirements: newActivity.requirements,
         createdAt: newActivity.createdAt,
-        tags: newActivity.tags ? JSON.parse(newActivity.tags) : [],
+        updatedAt: newActivity.updatedAt,
         image: newActivity.image,
-        author: {
-          firstName: newActivity.author?.firstName || '',
-          lastName: newActivity.author?.lastName || '',
-          email: newActivity.author?.email || ''
-        }
+        gallery: newActivity.gallery,
+        projectId: newActivity.projectId,
+        authorId: newActivity.authorId,
+        author: newActivity.author
       },
       message: 'Activity created successfully'
     });
@@ -354,36 +332,32 @@ export async function PUT(request: NextRequest) {
     const { 
       title,
       description,
-      category,
+      categoryId,
       type,
       startDate,
       endDate,
       location,
-      maxParticipants,
-      currentParticipants,
       status,
       isPublic,
-      requirements,
-      tags,
-      image
+      image,
+      gallery,
+      projectId
     } = body;
 
     const updateData: any = {};
     
     if (title) updateData.title = title;
     if (description) updateData.description = description;
-    if (category) updateData.category = category;
+    if (categoryId !== undefined) updateData.categoryId = categoryId;
     if (type) updateData.type = type.toUpperCase();
     if (startDate) updateData.startDate = new Date(startDate);
-    if (endDate) updateData.endDate = new Date(endDate);
-    if (location) updateData.location = location;
-    if (maxParticipants) updateData.maxParticipants = parseInt(maxParticipants);
-    if (currentParticipants !== undefined) updateData.currentParticipants = parseInt(currentParticipants);
+    if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
+    if (location !== undefined) updateData.location = location;
     if (status) updateData.status = status.toUpperCase();
     if (isPublic !== undefined) updateData.isPublic = isPublic;
-    if (requirements) updateData.requirements = requirements;
-    if (tags) updateData.tags = JSON.stringify(tags);
-    if (image) updateData.image = image;
+    if (image !== undefined) updateData.image = image;
+    if (gallery !== undefined) updateData.gallery = gallery;
+    if (projectId !== undefined) updateData.projectId = projectId;
 
     const updatedActivity = await prisma.activity.update({
       where: { id },
@@ -405,20 +379,19 @@ export async function PUT(request: NextRequest) {
         id: updatedActivity.id,
         title: updatedActivity.title,
         description: updatedActivity.description,
-        category: updatedActivity.category,
+        categoryId: updatedActivity.categoryId,
         type: updatedActivity.type,
         startDate: updatedActivity.startDate,
         endDate: updatedActivity.endDate,
         location: updatedActivity.location,
-        maxParticipants: updatedActivity.maxParticipants,
-        currentParticipants: updatedActivity.currentParticipants,
         status: updatedActivity.status,
         isPublic: updatedActivity.isPublic,
-        requirements: updatedActivity.requirements,
         createdAt: updatedActivity.createdAt,
         updatedAt: updatedActivity.updatedAt,
-        tags: updatedActivity.tags ? JSON.parse(updatedActivity.tags) : [],
         image: updatedActivity.image,
+        gallery: updatedActivity.gallery,
+        projectId: updatedActivity.projectId,
+        authorId: updatedActivity.authorId,
         author: {
           firstName: updatedActivity.author?.firstName || '',
           lastName: updatedActivity.author?.lastName || '',

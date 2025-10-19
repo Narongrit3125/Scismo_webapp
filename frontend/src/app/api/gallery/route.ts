@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
           id: gallery.id,
           title: gallery.title,
           description: gallery.description,
-          category: gallery.category,
+          categoryId: gallery.categoryId,
           images: gallery.images ? JSON.parse(gallery.images) : [],
           eventDate: gallery.eventDate,
           viewCount: gallery.viewCount + 1,
@@ -46,10 +46,7 @@ export async function GET(request: NextRequest) {
     const whereCondition: any = {};
     
     if (category) {
-      whereCondition.category = {
-        contains: category,
-        mode: 'insensitive'
-      };
+      whereCondition.categoryId = category;
     }
 
     const galleries = await prisma.gallery.findMany({
@@ -64,7 +61,7 @@ export async function GET(request: NextRequest) {
       id: gallery.id,
       title: gallery.title,
       description: gallery.description,
-      category: gallery.category,
+      categoryId: gallery.categoryId,
       images: gallery.images ? JSON.parse(gallery.images) : [],
       eventDate: gallery.eventDate,
       viewCount: gallery.viewCount,
@@ -92,12 +89,12 @@ export async function POST(request: NextRequest) {
     const { 
       title,
       description,
-      category,
+      categoryId,
       images = [],
       date
     } = body;
 
-    if (!title || !category || !date) {
+    if (!title || !categoryId || !date) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
@@ -108,7 +105,7 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         description,
-        category,
+        categoryId,
         images: JSON.stringify(images),
         eventDate: new Date(date),
         uploadedBy: 'system' // TODO: ใช้ user ID จาก session
@@ -121,7 +118,7 @@ export async function POST(request: NextRequest) {
         id: newGallery.id,
         title: newGallery.title,
         description: newGallery.description,
-        category: newGallery.category,
+        categoryId: newGallery.categoryId,
         images: newGallery.images ? JSON.parse(newGallery.images) : [],
         eventDate: newGallery.eventDate,
         viewCount: newGallery.viewCount,
@@ -154,7 +151,7 @@ export async function PUT(request: NextRequest) {
     const { 
       title,
       description,
-      category,
+      categoryId,
       images,
       date
     } = body;
@@ -163,9 +160,9 @@ export async function PUT(request: NextRequest) {
     
     if (title) updateData.title = title;
     if (description) updateData.description = description;
-    if (category) updateData.category = category;
+    if (categoryId !== undefined) updateData.categoryId = categoryId;
     if (images) updateData.images = JSON.stringify(images);
-    if (date) updateData.date = new Date(date);
+    if (date) updateData.eventDate = new Date(date);
 
     const updatedGallery = await prisma.gallery.update({
       where: { id },
@@ -178,7 +175,7 @@ export async function PUT(request: NextRequest) {
         id: updatedGallery.id,
         title: updatedGallery.title,
         description: updatedGallery.description,
-        category: updatedGallery.category,
+        categoryId: updatedGallery.categoryId,
         images: updatedGallery.images ? JSON.parse(updatedGallery.images) : [],
         eventDate: updatedGallery.eventDate,
         viewCount: updatedGallery.viewCount,
