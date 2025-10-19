@@ -111,7 +111,6 @@ export default function AdminDashboard() {
         { name: 'ข่าวสาร', icon: Newspaper, href: '/admin/news', count: stats.news, bgColor: 'bg-red-100', iconColor: 'text-red-600', textColor: 'text-red-600' },
         { name: 'กิจกรรม', icon: Calendar, href: '/admin/activities', count: stats.activities, bgColor: 'bg-orange-100', iconColor: 'text-purple-600', textColor: 'text-purple-600' },
         { name: 'โครงการ', icon: FolderOpen, href: '/admin/projects', count: stats.projects, bgColor: 'bg-cyan-100', iconColor: 'text-cyan-600', textColor: 'text-cyan-600' },
-        { name: 'เนื้อหาทั่วไป', icon: FileText, href: '/admin/content', count: 0, bgColor: 'bg-gray-100', iconColor: 'text-gray-600', textColor: 'text-gray-600' },
       ]
     },
     {

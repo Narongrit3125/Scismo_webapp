@@ -120,36 +120,6 @@ enum PositionType {
   MEMBER      // สมาชิกทั่วไป
 }
 
-// Content management
-model Content {
-  id          String      @id @default(cuid())
-  title       String
-  content     String
-  excerpt     String?
-  type        ContentType
-  status      ContentStatus @default(DRAFT)
-  publishedAt DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  tags        String?     // JSON string array
-  slug        String      @unique
-  viewCount   Int         @default(0)
-  
-  @@map("contents")
-}
-
-enum ContentType {
-  PAGE
-  POST
-  ANNOUNCEMENT
-}
-
-enum ContentStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
 // News and announcements - ข่าวสารและประกาศ
 model News {
   id          String        @id @default(cuid())
@@ -160,7 +130,7 @@ model News {
   category    String        // หมวดหมู่
   priority    Priority      @default(MEDIUM) // ระดับความสำคัญ
   isPinned    Boolean       @default(false)  // ปักหมุดข่าว
-  status      ContentStatus @default(DRAFT)  // สถานะ
+  status      NewsStatus    @default(DRAFT)  // สถานะ
   publishedAt DateTime?     // วันที่เผยแพร่
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -183,6 +153,12 @@ enum Priority {
   MEDIUM  // ปานกลาง
   HIGH    // สูง
   URGENT  // ด่วน
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
 
 // Activities and events - กิจกรรมและงานต่างๆ
