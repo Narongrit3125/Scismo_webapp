@@ -22,8 +22,7 @@ interface News {
   title: string;
   excerpt: string;
   content: string;
-  category: string;
-  tags: string[];
+  categoryId: string;
   image: string;
   status: string;
   priority: string;
@@ -54,8 +53,7 @@ export default function AdminNews() {
     title: '',
     excerpt: '',
     content: '',
-    category: 'general',
-    tags: '',
+    categoryId: 'GENERAL',
     image: '',
     status: 'DRAFT',
     priority: 'MEDIUM',
@@ -119,8 +117,6 @@ export default function AdminNews() {
     e.preventDefault();
     
     try {
-      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-      
       if (!session?.user?.id) {
         alert('ไม่พบข้อมูลผู้ใช้ กรุณาเข้าสู่ระบบใหม่');
         return;
@@ -140,7 +136,6 @@ export default function AdminNews() {
         ...formData,
         image: imageUrl,
         slug: slug,
-        tags: tagsArray,
         authorId: session.user.id
       };
 
@@ -180,8 +175,6 @@ export default function AdminNews() {
     if (!editingNews) return;
 
     try {
-      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-      
       let imageUrl = formData.image;
       
       // If user uploaded a new image, upload it first
@@ -203,8 +196,7 @@ export default function AdminNews() {
         body: JSON.stringify({
           ...formData,
           image: imageUrl,
-          slug: updatedSlug,
-          tags: tagsArray
+          slug: updatedSlug
         }),
       });
 
@@ -249,8 +241,7 @@ export default function AdminNews() {
       title: '',
       excerpt: '',
       content: '',
-      category: 'general',
-      tags: '',
+      categoryId: 'GENERAL',
       image: '',
       status: 'DRAFT',
       priority: 'MEDIUM',
@@ -303,8 +294,7 @@ export default function AdminNews() {
       title: newsItem.title,
       excerpt: newsItem.excerpt,
       content: newsItem.content,
-      category: newsItem.category,
-      tags: newsItem.tags.join(', '),
+      categoryId: newsItem.categoryId,
       image: newsItem.image,
       status: newsItem.status,
       priority: newsItem.priority,
@@ -317,7 +307,7 @@ export default function AdminNews() {
   const filteredNews = news.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'ALL' || item.category === categoryFilter;
+    const matchesCategory = categoryFilter === 'ALL' || item.categoryId === categoryFilter;
     const matchesStatus = statusFilter === 'ALL' || 
                          (statusFilter === 'PUBLISHED' && item.status === 'PUBLISHED') ||
                          (statusFilter === 'DRAFT' && item.status === 'DRAFT');
@@ -433,7 +423,7 @@ export default function AdminNews() {
                     {item.status === 'PUBLISHED' ? 'เผยแพร่แล้ว' : 'ฉบับร่าง'}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {categories.find(cat => cat.value === item.category)?.label}
+                    {categories.find(cat => cat.value === item.categoryId)?.label}
                   </span>
                 </div>
                 
@@ -444,23 +434,6 @@ export default function AdminNews() {
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                   {item.excerpt}
                 </p>
-
-                {item.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {item.tags.slice(0, 3).map((tag, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
-                      >
-                        <Tag className="w-3 h-3 mr-1" />
-                        {tag}
-                      </span>
-                    ))}
-                    {item.tags.length > 3 && (
-                      <span className="text-xs text-gray-500">+{item.tags.length - 3} อื่นๆ</span>
-                    )}
-                  </div>
-                )}
 
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <div className="flex items-center">
@@ -561,27 +534,14 @@ export default function AdminNews() {
                     หมวดหมู่
                   </label>
                   <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    value={formData.categoryId}
+                    onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                   >
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
                     ))}
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    แท็ก (คั่นด้วยจุลภาค)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.tags}
-                    onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                    placeholder="แท็ก1, แท็ก2, แท็ก3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                  />
                 </div>
               </div>
 
