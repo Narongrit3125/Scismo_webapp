@@ -1,330 +1,532 @@
-// Generated DBML from PostgreSQL Database
-// Generated at: 2025-10-19T07:05:52.741Z
-// Database: SMO Web Application
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
 
-Table activities {
-  id text [pk, not null]
-  title text [not null]
-  description text [not null]
-  authorId text [not null]
-  projectId text
-  category text [not null]
-  type USER-DEFINED [not null]
-  startDate timestamp [not null]
-  endDate timestamp
-  location text
-  maxParticipants int
-  currentParticipants int [not null]
-  coordinator text
-  status USER-DEFINED [not null]
-  isPublic boolean [not null, default: true]
-  requirements text
-  budget double
-  actualExpense double
-  order int [not null]
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-  tags text
-  image text
-  gallery text
-}
-
-Table contact_info {
-  id text [pk, not null]
-  type USER-DEFINED [not null]
-  label text [not null]
-  value text [not null]
-  icon text
-  isActive boolean [not null, default: true]
-  order int [not null]
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-}
-
-Table contacts {
-  id text [pk, not null]
-  name text [not null]
-  email text [not null]
-  phone text
-  subject text [not null]
-  message text [not null]
-  category text [not null]
-  priority USER-DEFINED [not null]
-  status USER-DEFINED [not null]
-  userId text
-  assignedTo text
-  repliedBy text
-  repliedAt timestamp
-  reply text
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-}
-
-Table contents {
-  id text [pk, not null]
-  title text [not null]
-  content text [not null]
-  excerpt text
-  type USER-DEFINED [not null]
-  status USER-DEFINED [not null]
-  publishedAt timestamp
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-  tags text
-  slug text [not null]
-  viewCount int [not null]
-}
-
-Table documents {
-  id text [pk, not null]
-  title text [not null]
-  description text
-  category text [not null]
-  type text [not null]
-  fileName text [not null]
-  fileUrl text [not null]
-  fileSize int [not null]
-  version text
-  isPublic boolean [not null, default: true]
-  accessLevel USER-DEFINED [not null]
-  downloadCount int [not null]
-  tags text
-  uploadedBy text [not null]
-  approvedBy text
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-  expiryDate timestamp
-}
-
-Table donation_campaigns {
-  id text [pk, not null]
-  title text [not null]
-  description text [not null]
-  purpose text
-  targetAmount double [not null]
-  currentAmount double [not null]
-  startDate timestamp [not null]
-  endDate timestamp [not null]
-  status USER-DEFINED [not null]
-  category text [not null]
-  image text
-  donorCount int [not null]
-  createdBy text [not null]
-  approvedBy text
-  isPublic boolean [not null, default: true]
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-}
-
-Table donations {
-  id text [pk, not null]
-  campaignId text [not null]
-  donorId text
-  donorName text [not null]
-  donorEmail text
-  donorPhone text
-  amount double [not null]
-  message text
-  isAnonymous boolean [not null, default: false]
-  paymentMethod text
-  transactionId text
-  receiptUrl text
-  status USER-DEFINED [not null]
-  verifiedBy text
-  verifiedAt timestamp
-  createdAt timestamp [not null]
-}
-
-Table form_submissions {
-  id text [pk, not null]
-  formId text [not null]
-  userId text
-  data text [not null]
-  status USER-DEFINED [not null]
-  ipAddress text
-  reviewedBy text
-  reviewedAt timestamp
-  remarks text
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-}
-
-Table forms {
-  id text [pk, not null]
-  title text [not null]
-  description text
-  type USER-DEFINED [not null]
-  status USER-DEFINED [not null]
-  fields text [not null]
-  settings text
-  openDate timestamp
-  closeDate timestamp
-  maxSubmissions int
-  currentSubmissions int [not null]
-  createdBy text [not null]
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-}
-
-Table gallery {
-  id text [pk, not null]
-  title text [not null]
-  description text
-  category text [not null]
-  albumType USER-DEFINED [not null]
-  images text [not null]
-  coverImage text
-  eventDate timestamp [not null]
-  uploadedBy text [not null]
-  viewCount int [not null]
-  isPublic boolean [not null, default: true]
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
+Table users {
+  id String [pk]
+  email String [unique, not null]
+  username String [unique, not null]
+  password String [not null]
+  firstName String [not null]
+  lastName String [not null]
+  role Role [not null, default: 'USER']
+  isActive Boolean [not null, default: true]
+  lastLoginAt DateTime
+  resetToken String
+  resetTokenExpiry DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  memberProfile members
+  staffProfile staff
+  authoredNews news [not null]
+  authoredActivities activities [not null]
+  authoredProjects projects [not null]
+  donations donations [not null]
+  contactMessages contacts [not null]
+  formSubmissions form_submissions [not null]
 }
 
 Table members {
-  id text [pk, not null]
-  userId text [not null]
-  studentId text [not null]
-  phone text
-  year int [not null]
-  department text [not null]
-  faculty text [not null]
-  position text
-  division text
-  joinDate timestamp [not null]
-  isActive boolean [not null, default: true]
-  bio text
-  skills text
-  interests text
-  avatar text
-  address text
-  emergencyContact text
-  emergencyPhone text
-}
-
-Table news {
-  id text [pk, not null]
-  title text [not null]
-  content text [not null]
-  excerpt text
-  authorId text [not null]
-  category text [not null]
-  priority USER-DEFINED [not null]
-  isPinned boolean [not null, default: false]
-  status USER-DEFINED [not null]
-  publishedAt timestamp
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-  tags text
-  slug text [not null]
-  viewCount int [not null]
-  image text
-  attachments text
-}
-
-Table positions {
-  id text [pk, not null]
-  title text [not null]
-  description text
-  type USER-DEFINED [not null]
-  level int [not null]
-  division text
-  responsibilities text
-  isActive boolean [not null, default: true]
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-}
-
-Table project_reports {
-  id text [pk, not null]
-  projectId text [not null]
-  title text [not null]
-  content text [not null]
-  reportType USER-DEFINED [not null]
-  reportDate timestamp [not null]
-  submittedBy text [not null]
-  reviewedBy text
-  approvedBy text
-  status USER-DEFINED [not null]
-  attachments text
-  remarks text
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-}
-
-Table projects {
-  id text [pk, not null]
-  code text [not null]
-  title text [not null]
-  description text [not null]
-  shortDescription text
-  authorId text [not null]
-  academicYear int [not null]
-  semester int
-  status USER-DEFINED [not null]
-  priority USER-DEFINED [not null]
-  startDate timestamp [not null]
-  endDate timestamp [not null]
-  totalBudget double
-  approvedBudget double
-  usedBudget double [not null]
-  objectives text
-  targetGroup text
-  expectedResults text
-  keyPerformance text
-  sponsor text
-  coordinator text
-  approvedBy text
-  approvedDate timestamp
-  isActive boolean [not null, default: true]
-  image text
-  planFile text
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
+  id String [pk]
+  userId String [unique, not null]
+  studentId String [unique, not null]
+  phone String
+  year Int [not null]
+  department String [not null]
+  faculty String [not null]
+  position String
+  division String
+  joinDate DateTime [default: `now()`, not null]
+  isActive Boolean [not null, default: true]
+  bio String
+  skills String
+  interests String
+  avatar String
+  address String
+  emergencyContact String
+  emergencyPhone String
+  user users [not null]
 }
 
 Table staff {
-  id text [pk, not null]
-  userId text [not null]
-  staffId text [not null]
-  department text [not null]
-  position text [not null]
-  phone text
-  office text
-  bio text
-  expertise text
-  avatar text
-  isActive boolean [not null, default: true]
-  startDate timestamp [not null]
+  id String [pk]
+  userId String [unique, not null]
+  staffId String [unique, not null]
+  department String [not null]
+  position String [not null]
+  phone String
+  office String
+  bio String
+  expertise String
+  avatar String
+  isActive Boolean [not null, default: true]
+  startDate DateTime [default: `now()`, not null]
+  user users [not null]
 }
 
-Table users {
-  id text [pk, not null]
-  email text [not null]
-  username text [not null]
-  password text [not null]
-  firstName text [not null]
-  lastName text [not null]
-  role USER-DEFINED [not null]
-  isActive boolean [not null, default: true]
-  lastLoginAt timestamp
-  createdAt timestamp [not null]
-  updatedAt timestamp [not null]
-  resetToken text
-  resetTokenExpiry timestamp
+Table positions {
+  id String [pk]
+  title String [unique, not null]
+  description String
+  type PositionType [not null]
+  level Int [not null, default: 0]
+  division String
+  responsibilities String
+  isActive Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 }
 
-// Relationships
-Ref: members.userId > users.id
-Ref: staff.userId > users.id
+Table contents {
+  id String [pk]
+  title String [not null]
+  content String [not null]
+  excerpt String
+  type ContentType [not null]
+  status ContentStatus [not null, default: 'DRAFT']
+  publishedAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  tags String
+  slug String [unique, not null]
+  viewCount Int [not null, default: 0]
+}
+
+Table news {
+  id String [pk]
+  title String [not null]
+  content String [not null]
+  excerpt String
+  authorId String [not null]
+  category String [not null]
+  priority Priority [not null, default: 'MEDIUM']
+  isPinned Boolean [not null, default: false]
+  status ContentStatus [not null, default: 'DRAFT']
+  publishedAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  tags String
+  slug String [unique, not null]
+  viewCount Int [not null, default: 0]
+  image String
+  attachments String
+  author users [not null]
+}
+
+Table activities {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  authorId String [not null]
+  projectId String
+  category String [not null]
+  type ActivityType [not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  location String
+  maxParticipants Int
+  currentParticipants Int [not null, default: 0]
+  coordinator String
+  status ActivityStatus [not null, default: 'PLANNING']
+  isPublic Boolean [not null, default: true]
+  requirements String
+  budget Float
+  actualExpense Float
+  order Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  tags String
+  image String
+  gallery String
+  author users [not null]
+  project projects
+}
+
+Table projects {
+  id String [pk]
+  code String [unique, not null]
+  title String [not null]
+  description String [not null]
+  shortDescription String
+  authorId String [not null]
+  academicYear Int [not null]
+  semester Int
+  status ProjectStatus [not null, default: 'PLANNING']
+  priority Priority [not null, default: 'MEDIUM']
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  totalBudget Float
+  approvedBudget Float
+  usedBudget Float [not null, default: 0]
+  objectives String
+  targetGroup String
+  expectedResults String
+  keyPerformance String
+  sponsor String
+  coordinator String
+  approvedBy String
+  approvedDate DateTime
+  isActive Boolean [not null, default: true]
+  image String
+  planFile String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  author users [not null]
+  activities activities [not null]
+  reports project_reports [not null]
+}
+
+Table project_reports {
+  id String [pk]
+  projectId String [not null]
+  title String [not null]
+  content String [not null]
+  reportType ReportType [not null]
+  reportDate DateTime [not null]
+  submittedBy String [not null]
+  reviewedBy String
+  approvedBy String
+  status ReportStatus [not null, default: 'DRAFT']
+  attachments String
+  remarks String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  project projects [not null]
+}
+
+Table documents {
+  id String [pk]
+  title String [not null]
+  description String
+  category String [not null]
+  type String [not null]
+  fileName String [not null]
+  fileUrl String [not null]
+  fileSize Int [not null]
+  version String
+  isPublic Boolean [not null, default: true]
+  accessLevel AccessLevel [not null, default: 'PUBLIC']
+  downloadCount Int [not null, default: 0]
+  tags String
+  uploadedBy String [not null]
+  approvedBy String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  expiryDate DateTime
+}
+
+Table gallery {
+  id String [pk]
+  title String [not null]
+  description String
+  category String [not null]
+  albumType AlbumType [not null, default: 'ACTIVITY']
+  images String [not null]
+  coverImage String
+  eventDate DateTime [not null]
+  uploadedBy String [not null]
+  viewCount Int [not null, default: 0]
+  isPublic Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table forms {
+  id String [pk]
+  title String [not null]
+  description String
+  type FormType [not null]
+  status FormStatus [not null, default: 'ACTIVE']
+  fields String [not null]
+  settings String
+  openDate DateTime
+  closeDate DateTime
+  maxSubmissions Int
+  currentSubmissions Int [not null, default: 0]
+  createdBy String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  submissions form_submissions [not null]
+}
+
+Table form_submissions {
+  id String [pk]
+  formId String [not null]
+  userId String
+  data String [not null]
+  status SubmissionStatus [not null, default: 'PENDING']
+  ipAddress String
+  reviewedBy String
+  reviewedAt DateTime
+  remarks String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  form forms [not null]
+  user users
+}
+
+Table donation_campaigns {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  purpose String
+  targetAmount Float [not null]
+  currentAmount Float [not null, default: 0]
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  status CampaignStatus [not null, default: 'ACTIVE']
+  category String [not null]
+  image String
+  donorCount Int [not null, default: 0]
+  createdBy String [not null]
+  approvedBy String
+  isPublic Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  donations donations [not null]
+}
+
+Table donations {
+  id String [pk]
+  campaignId String [not null]
+  donorId String
+  donorName String [not null]
+  donorEmail String
+  donorPhone String
+  amount Float [not null]
+  message String
+  isAnonymous Boolean [not null, default: false]
+  paymentMethod String
+  transactionId String
+  receiptUrl String
+  status DonationStatus [not null, default: 'PENDING']
+  verifiedBy String
+  verifiedAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  campaign donation_campaigns [not null]
+  donor users
+}
+
+Table contacts {
+  id String [pk]
+  name String [not null]
+  email String [not null]
+  phone String
+  subject String [not null]
+  message String [not null]
+  category String [not null, default: 'general']
+  priority Priority [not null, default: 'MEDIUM']
+  status ContactStatus [not null, default: 'PENDING']
+  userId String
+  assignedTo String
+  repliedBy String
+  repliedAt DateTime
+  reply String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users
+}
+
+Table contact_info {
+  id String [pk]
+  type ContactInfoType [not null]
+  label String [not null]
+  value String [not null]
+  icon String
+  isActive Boolean [not null, default: true]
+  order Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Enum Role {
+  ADMIN
+  MEMBER
+  USER
+}
+
+Enum PositionType {
+  EXECUTIVE
+  COMMITTEE
+  ADVISOR
+  COORDINATOR
+  MEMBER
+}
+
+Enum ContentType {
+  PAGE
+  POST
+  ANNOUNCEMENT
+}
+
+Enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+Enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+Enum ActivityType {
+  WORKSHOP
+  SEMINAR
+  COMPETITION
+  VOLUNTEER
+  SOCIAL
+  TRAINING
+  MEETING
+  CEREMONY
+  FUNDRAISING
+  EXHIBITION
+  ACADEMIC
+  SPORT
+  ART_CULTURE
+}
+
+Enum ActivityStatus {
+  PLANNING
+  OPEN_REGISTRATION
+  FULL
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}
+
+Enum ReportType {
+  PROGRESS
+  FINANCIAL
+  FINAL
+  EVALUATION
+  MONTHLY
+  QUARTERLY
+}
+
+Enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  REVISION
+}
+
+Enum ProjectStatus {
+  PLANNING
+  PENDING_APPROVAL
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+  CLOSED
+}
+
+Enum AccessLevel {
+  PUBLIC
+  MEMBER_ONLY
+  ADMIN_ONLY
+  RESTRICTED
+}
+
+Enum AlbumType {
+  ACTIVITY
+  EVENT
+  CEREMONY
+  ACHIEVEMENT
+  FACILITY
+  OTHER
+}
+
+Enum FormType {
+  MEMBERSHIP_APPLICATION
+  EVENT_REGISTRATION
+  FEEDBACK
+  CONTACT
+  SURVEY
+  EVALUATION
+  REQUEST
+  OTHER
+}
+
+Enum FormStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+  DRAFT
+}
+
+Enum SubmissionStatus {
+  PENDING
+  REVIEWED
+  APPROVED
+  REJECTED
+  PROCESSING
+}
+
+Enum CampaignStatus {
+  ACTIVE
+  COMPLETED
+  EXPIRED
+  PAUSED
+  CANCELLED
+}
+
+Enum DonationStatus {
+  PENDING
+  VERIFIED
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+Enum ContactStatus {
+  PENDING
+  IN_PROGRESS
+  REPLIED
+  CLOSED
+}
+
+Enum ContactInfoType {
+  ADDRESS
+  PHONE
+  EMAIL
+  FAX
+  WEBSITE
+  FACEBOOK
+  LINE
+  INSTAGRAM
+  TWITTER
+  YOUTUBE
+  TIKTOK
+  OTHER
+}
+
+Ref: members.userId - users.id [delete: Cascade]
+
+Ref: staff.userId - users.id [delete: Cascade]
+
 Ref: news.authorId > users.id
+
 Ref: activities.authorId > users.id
+
 Ref: activities.projectId > projects.id
+
 Ref: projects.authorId > users.id
-Ref: project_reports.projectId > projects.id
-Ref: form_submissions.formId > forms.id
+
+Ref: project_reports.projectId > projects.id [delete: Cascade]
+
+Ref: form_submissions.formId > forms.id [delete: Cascade]
+
 Ref: form_submissions.userId > users.id
-Ref: donations.campaignId > donation_campaigns.id
+
+Ref: donations.campaignId > donation_campaigns.id [delete: Cascade]
+
 Ref: donations.donorId > users.id
+
 Ref: contacts.userId > users.id

@@ -2,18 +2,30 @@
 
 ## 📊 DBML File Generated
 
-ไฟล์ `database.dbml` ถูกสร้างจาก PostgreSQL database โดยอัตโนมัติ
+ไฟล์ `database.dbml` ถูกสร้างจาก **Prisma Schema** โดยอัตโนมัติผ่าน `prisma-dbml-generator`
 
 ## 🚀 วิธีสร้างไฟล์ DBML
 
+### วิธีที่ 1: ใช้ npm script (แนะนำ)
 ```bash
 npm run generate-dbml
 ```
 
-Script จะ:
-1. เชื่อมต่อกับ PostgreSQL database
-2. อ่าน schema ทั้งหมด (tables, columns, relationships)
-3. สร้างไฟล์ `database.dbml` ที่ root ของโปรเจค
+### วิธีที่ 2: ใช้ Prisma CLI โดยตรง
+```bash
+npx prisma generate
+```
+
+Generator จะ:
+1. อ่าน Prisma schema (`prisma/schema.prisma`)
+2. แปลงเป็น DBML format
+3. สร้างไฟล์ `database.dbml` พร้อม:
+   - ✅ Tables และ columns ทั้งหมด
+   - ✅ Relationships (one-to-one, one-to-many)
+   - ✅ Enums (Role, Status types)
+   - ✅ Constraints (primary key, unique, not null)
+   - ✅ Default values
+   - ✅ Cascade delete rules
 
 ## 📈 วิธีแสดงผล ER Diagram
 
@@ -97,13 +109,36 @@ Ref: contacts.userId > users.id
 
 ทุกครั้งที่มีการเปลี่ยนแปลง database schema:
 
+### สำหรับการแก้ไข Prisma Schema:
 ```bash
-# 1. อัปเดต Prisma schema
-npx prisma db pull
-
-# 2. Generate ไฟล์ DBML ใหม่
+# เมื่อแก้ไข prisma/schema.prisma แล้ว
 npm run generate-dbml
 ```
+
+### สำหรับการ Pull จาก Database:
+```bash
+# 1. Pull schema จาก database
+npx prisma db pull
+
+# 2. Generate DBML ใหม่
+npm run generate-dbml
+```
+
+## ⚙️ Configuration
+
+ใน `prisma/schema.prisma` มี generator สำหรับ DBML:
+
+```prisma
+generator dbml {
+  provider   = "prisma-dbml-generator"
+  output     = "../"
+  outputName = "database.dbml"
+}
+```
+
+**Options:**
+- `output`: โฟลเดอร์ที่จะสร้างไฟล์ (relative to prisma folder)
+- `outputName`: ชื่อไฟล์ DBML ที่ต้องการ
 
 ## 📚 เอกสารเพิ่มเติม
 
