@@ -22,6 +22,13 @@ async function main() {
       role: 'ADMIN' as const,
     },
     {
+      email: 'sarawutp65@nu.ac.th',
+      password: '65314812',
+      firstName: 'ศราวุฒิ',
+      lastName: 'ปล้องสา',
+      role: 'ADMIN' as const,
+    },
+    {
       email: 'member@smo.com',
       password: 'password123',
       firstName: 'Member',
@@ -66,6 +73,7 @@ async function main() {
   console.log('🎉 All production users created successfully!\n')
   console.log('📝 You can now login with:')
   console.log('   admin@smo.com / password123 (Admin)')
+  console.log('   sarawutp65@nu.ac.th / 65314812 (Admin - ศราวุฒิ ปล้องสา)')
   console.log('   member@smo.com / password123 (Member)')
   console.log('   user@smo.com / password123 (User)')
 }
