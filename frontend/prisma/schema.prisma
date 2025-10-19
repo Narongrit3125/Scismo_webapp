@@ -368,33 +368,3 @@ enum ContactStatus {
   REPLIED     // ตอบกลับแล้ว
   CLOSED      // ปิดเรื่อง
 }
-
-// Contact information - ข้อมูลช่องทางติดต่อ
-model ContactInfo {
-  id        String   @id @default(cuid())
-  type      ContactInfoType // ประเภท
-  label     String   // ป้ายกำกับ
-  value     String   // ค่า
-  icon      String?  // ไอคอน
-  isActive  Boolean  @default(true)
-  order     Int      @default(0) // ลำดับการแสดงผล
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("contact_info")
-}
-
-enum ContactInfoType {
-  ADDRESS     // ที่อยู่
-  PHONE       // เบอร์โทร
-  EMAIL       // อีเมล
-  FAX         // แฟกซ์
-  WEBSITE     // เว็บไซต์
-  FACEBOOK    // เฟซบุ๊ก
-  LINE        // ไลน์
-  INSTAGRAM   // อินสตาแกรม
-  TWITTER     // ทวิตเตอร์
-  YOUTUBE     // ยูทูป
-  TIKTOK      // ติ๊กต๊อก
-  OTHER       // อื่นๆ
-}

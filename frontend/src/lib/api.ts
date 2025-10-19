@@ -90,7 +90,6 @@ export const donationsAPI = {
 // Contacts API
 export const contactsAPI = {
   getAll: () => api.get<APIResponse<any[]>>('/contacts'),
-  getContactInfo: () => api.get<APIResponse<any[]>>('/contacts?info=true'),
   send: (data: any) => api.post<APIResponse<any>>('/contacts', data),
   updateStatus: (id: number, status: string) => api.patch<APIResponse<any>>('/contacts', { id, status }),
 };
