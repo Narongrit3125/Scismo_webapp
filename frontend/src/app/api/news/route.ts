@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       title,
       content,
       excerpt,
-      category,
+      categoryId,
       priority = 'MEDIUM',
       status = 'DRAFT',
       tags = [],
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
       title,
       content: content?.substring(0, 50) + '...',
       excerpt,
-      category,
+      categoryId,
       priority,
       status,
       tags,
@@ -180,14 +180,14 @@ export async function POST(request: NextRequest) {
       image
     });
 
-    if (!title || !content || !category) {
+    if (!title || !content || !categoryId) {
       console.log('Missing fields validation failed:', {
         title: !!title,
         content: !!content,
-        category: !!category
+        categoryId: !!categoryId
       });
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: title, content, category' },
+        { success: false, error: 'Missing required fields: title, content, categoryId' },
         { status: 400 }
       );
     }
@@ -238,7 +238,7 @@ export async function POST(request: NextRequest) {
           content,
           excerpt,
           authorId: author.id, // ใช้ author.id ที่หาเจอแทน authorId
-          categoryId: category,
+          categoryId: categoryId,
           priority: priority.toUpperCase(),
           status: status.toUpperCase(),
           slug: finalSlugWithRandom,
@@ -268,7 +268,7 @@ export async function POST(request: NextRequest) {
         content,
         excerpt,
         authorId: author.id, // ใช้ author.id ที่หาเจอแทน authorId
-        categoryId: category,
+        categoryId: categoryId,
         priority: priority.toUpperCase(),
         status: status.toUpperCase(),
         slug: finalSlug,
@@ -335,7 +335,7 @@ export async function PUT(request: NextRequest) {
       title,
       content,
       excerpt,
-      category,
+      categoryId,
       priority,
       status,
       tags,
@@ -348,7 +348,7 @@ export async function PUT(request: NextRequest) {
     if (title) updateData.title = title;
     if (content) updateData.content = content;
     if (excerpt) updateData.excerpt = excerpt;
-    if (category) updateData.category = category;
+    if (categoryId) updateData.categoryId = categoryId;
     if (priority) updateData.priority = priority.toUpperCase();
     if (status) {
       updateData.status = status.toUpperCase();

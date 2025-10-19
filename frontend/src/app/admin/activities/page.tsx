@@ -66,7 +66,7 @@ export default function AdminActivities() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    categoryId: 'ACADEMIC',
+    categoryId: 'default',
     type: 'WORKSHOP' as 'WORKSHOP' | 'SEMINAR' | 'COMPETITION' | 'VOLUNTEER' | 'SOCIAL' | 'TRAINING' | 'MEETING' | 'CEREMONY' | 'FUNDRAISING' | 'EXHIBITION',
     location: '',
     startDate: '',
@@ -321,7 +321,7 @@ export default function AdminActivities() {
     setFormData({
       title: '',
       description: '',
-      categoryId: 'ACADEMIC',
+      categoryId: 'default',
       type: 'WORKSHOP' as const,
       location: '',
       startDate: '',
