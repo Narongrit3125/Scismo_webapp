@@ -24,19 +24,12 @@ interface Project {
   code: string;
   title: string;
   description: string;
-  shortDescription?: string;
-  year: number;
+  academicYear: number;
+  semester?: number;
   status: 'PLANNING' | 'APPROVED' | 'IN_PROGRESS' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   startDate: string;
   endDate: string;
-  totalBudget?: number;
-  usedBudget: number;
-  objectives?: string;
-  targetGroup?: string;
-  expectedResults?: string;
-  sponsor?: string;
-  coordinator?: string;
+  budget?: number;
   isActive: boolean;
   image?: string;
   planFile?: string;
@@ -48,7 +41,6 @@ interface Project {
     email: string;
   };
   activities?: any[];
-  reports?: any[];
 }
 
 export default function AdminProjectsPage() {
@@ -67,18 +59,12 @@ export default function AdminProjectsPage() {
     code: '',
     title: '',
     description: '',
-    shortDescription: '',
-    year: new Date().getFullYear(),
+    academicYear: new Date().getFullYear(),
+    semester: 1,
     status: 'PLANNING',
-    priority: 'MEDIUM',
     startDate: '',
     endDate: '',
-    totalBudget: 0,
-    objectives: '',
-    targetGroup: '',
-    expectedResults: '',
-    sponsor: '',
-    coordinator: ''
+    budget: 0
   });
 
   useEffect(() => {
@@ -126,10 +112,8 @@ export default function AdminProjectsPage() {
         body: JSON.stringify({
           title: formData.title,
           description: formData.description,
-          year: formData.year,
-          totalBudget: formData.totalBudget,
-          objectives: formData.objectives,
-          coordinator: formData.coordinator,
+          year: formData.academicYear,
+          totalBudget: formData.budget,
           startDate: new Date().toISOString(),
         }),
       });
@@ -156,18 +140,12 @@ export default function AdminProjectsPage() {
       code: project.code || '',
       title: project.title,
       description: project.description,
-      shortDescription: project.shortDescription || '',
-      year: project.year,
+      academicYear: project.academicYear,
+      semester: project.semester || 1,
       status: project.status,
-      priority: project.priority,
       startDate: project.startDate.split('T')[0],
       endDate: project.endDate.split('T')[0],
-      totalBudget: project.totalBudget || 0,
-      objectives: project.objectives || '',
-      targetGroup: project.targetGroup || '',
-      expectedResults: project.expectedResults || '',
-      sponsor: project.sponsor || '',
-      coordinator: project.coordinator || ''
+      budget: project.budget || 0
     });
     setUploadedFilePath('');
     setSelectedFile(null);
@@ -266,25 +244,19 @@ export default function AdminProjectsPage() {
       code: '',
       title: '',
       description: '',
-      shortDescription: '',
-      year: new Date().getFullYear(),
+      academicYear: new Date().getFullYear(),
+      semester: 1,
       status: 'PLANNING',
-      priority: 'MEDIUM',
       startDate: '',
       endDate: '',
-      totalBudget: 0,
-      objectives: '',
-      targetGroup: '',
-      expectedResults: '',
-      sponsor: '',
-      coordinator: ''
+      budget: 0
     });
   };
 
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (project.coordinator && project.coordinator.toLowerCase().includes(searchTerm.toLowerCase()));
+                         project.code.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === '' || project.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
@@ -503,11 +475,7 @@ export default function AdminProjectsPage() {
                   <div className="space-y-2 text-sm text-gray-500">
                     <div className="flex items-center">
                       <User size={14} className="mr-2" />
-                      <span>ปีการศึกษา: {project.year}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <User size={14} className="mr-2" />
-                      <span>ผู้ประสานงาน: {project.coordinator || 'ไม่ระบุ'}</span>
+                      <span>ปีการศึกษา: {project.academicYear}</span>
                     </div>
                     <div className="flex items-center">
                       <Calendar size={14} className="mr-2" />
@@ -518,24 +486,9 @@ export default function AdminProjectsPage() {
                     </div>
                   </div>
 
-                  {project.status === 'IN_PROGRESS' && (
-                    <div className="mt-4">
-                      <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
-                        <span>งบประมาณที่ใช้</span>
-                        <span>{project.totalBudget ? Math.round((project.usedBudget / project.totalBudget) * 100) : 0}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-purple-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${project.totalBudget ? Math.round((project.usedBudget / project.totalBudget) * 100) : 0}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )}
-
                   <div className="mt-4 flex items-center justify-between">
                     <span className="text-sm text-gray-500">
-                      งบประมาณ: ฿{project.totalBudget?.toLocaleString() || 'ไม่ระบุ'}
+                      งบประมาณ: ฿{project.budget?.toLocaleString() || 'ไม่ระบุ'}
                     </span>
                     <span className="text-sm text-gray-500">
                       กิจกรรม: {project.activities?.length || 0} รายการ
@@ -618,8 +571,8 @@ export default function AdminProjectsPage() {
                   <input
                     type="number"
                     required
-                    value={formData.year}
-                    onChange={(e) => setFormData({...formData, year: parseInt(e.target.value)})}
+                    value={formData.academicYear}
+                    onChange={(e) => setFormData({...formData, academicYear: parseInt(e.target.value)})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
@@ -631,8 +584,8 @@ export default function AdminProjectsPage() {
                   <input
                     type="number"
                     min="0"
-                    value={formData.totalBudget}
-                    onChange={(e) => setFormData({...formData, totalBudget: parseFloat(e.target.value) || 0})}
+                    value={formData.budget}
+                    onChange={(e) => setFormData({...formData, budget: parseFloat(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
@@ -684,19 +637,6 @@ export default function AdminProjectsPage() {
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  ผู้ประสานงาน
-                </label>
-                <input
-                  type="text"
-                  value={formData.coordinator}
-                  onChange={(e) => setFormData({...formData, coordinator: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="ชื่อผู้ประสานงานโครงการ"
-                />
               </div>
             </form>
             
@@ -758,8 +698,8 @@ export default function AdminProjectsPage() {
                   </label>
                   <input
                     type="number"
-                    value={formData.year}
-                    onChange={(e) => setFormData({...formData, year: parseInt(e.target.value)})}
+                    value={formData.academicYear}
+                    onChange={(e) => setFormData({...formData, academicYear: parseInt(e.target.value)})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -794,22 +734,6 @@ export default function AdminProjectsPage() {
                     <option value="COMPLETED">เสร็จสิ้น</option>
                     <option value="ON_HOLD">ระงับชั่วคราว</option>
                     <option value="CANCELLED">ยกเลิก</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    ระดับความสำคัญ
-                  </label>
-                  <select
-                    value={formData.priority}
-                    onChange={(e) => setFormData({...formData, priority: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  >
-                    <option value="LOW">ต่ำ</option>
-                    <option value="MEDIUM">ปานกลาง</option>
-                    <option value="HIGH">สูง</option>
-                    <option value="URGENT">เร่งด่วน</option>
                   </select>
                 </div>
               </div>
@@ -850,35 +774,11 @@ export default function AdminProjectsPage() {
                   <input
                     type="number"
                     step="0.01"
-                    value={formData.totalBudget}
-                    onChange={(e) => setFormData({...formData, totalBudget: parseFloat(e.target.value)})}
+                    value={formData.budget}
+                    onChange={(e) => setFormData({...formData, budget: parseFloat(e.target.value)})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    ผู้ประสานงาน
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.coordinator}
-                    onChange={(e) => setFormData({...formData, coordinator: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  วัตถุประสงค์
-                </label>
-                <textarea
-                  value={formData.objectives}
-                  onChange={(e) => setFormData({...formData, objectives: e.target.value})}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
               </div>
 
               <div>
