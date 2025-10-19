@@ -10,9 +10,6 @@ import {
   Calendar, 
   FolderOpen, 
   FileText, 
-  MapPin, 
-  Image, 
-  MessageSquare, 
   File,
   BarChart3,
   TrendingUp,
@@ -120,9 +117,6 @@ export default function AdminDashboard() {
     {
       title: 'ระบบอื่นๆ',
       items: [
-        { name: 'ตำแหน่งหน้าที่', icon: MapPin, href: '/admin/positions', count: 0, bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600', textColor: 'text-yellow-600' },
-        { name: 'แกลเลอรี่', icon: Image, href: '/admin/gallery', count: 0, bgColor: 'bg-pink-100', iconColor: 'text-pink-600', textColor: 'text-pink-600' },
-        { name: 'ติดต่อ', icon: MessageSquare, href: '/admin/contacts', count: stats.contacts, bgColor: 'bg-teal-100', iconColor: 'text-teal-600', textColor: 'text-teal-600' },
         { name: 'เอกสาร', icon: File, href: '/admin/documents', count: stats.documents, bgColor: 'bg-amber-100', iconColor: 'text-amber-600', textColor: 'text-amber-600' },
       ]
     }
