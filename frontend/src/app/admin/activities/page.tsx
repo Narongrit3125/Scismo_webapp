@@ -135,9 +135,30 @@ export default function AdminActivities() {
       setLoading(true);
       const response = await fetch('/api/activities');
       const result = await response.json();
+      console.debug('fetchActivities result:', result);
       
       if (result.success) {
-        setActivities(result.data);
+        // Defensive mapping: ensure required fields exist and types are strings
+        const safe = result.data.map((a: any) => ({
+          id: a.id,
+          title: a.title || '(no title)',
+          description: a.description || '',
+          categoryId: a.categoryId || 'default',
+          type: a.type || 'WORKSHOP',
+          startDate: a.startDate || new Date().toISOString(),
+          endDate: a.endDate || null,
+          location: a.location || '',
+          status: a.status || 'PLANNING',
+          isPublic: !!a.isPublic,
+          createdAt: a.createdAt || new Date().toISOString(),
+          updatedAt: a.updatedAt || new Date().toISOString(),
+          image: a.image || '',
+          gallery: a.gallery || null,
+          authorId: a.authorId || '',
+          author: a.author || { firstName: '', lastName: '', email: '' },
+          project: a.project || null
+        }));
+        setActivities(safe);
       }
     } catch (error) {
       console.error('Error fetching activities:', error);
@@ -477,12 +498,14 @@ export default function AdminActivities() {
             const status = getActivityStatus(activity);
             return (
               <div key={activity.id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
-                {activity.image && (
+                {activity.image ? (
                   <img
                     src={activity.image}
                     alt={activity.title}
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
+                ) : (
+                  <div className="w-full h-48 bg-gray-100 rounded-t-lg flex items-center justify-center text-gray-400">ไม่มีรูปภาพ</div>
                 )}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
@@ -521,11 +544,11 @@ export default function AdminActivities() {
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm text-gray-500">
                       <MapPin className="w-4 h-4 mr-2" />
-                      {activity.location}
+                      {activity.location || 'ไม่ระบุสถานที่'}
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
                       <Clock className="w-4 h-4 mr-2" />
-                      {new Date(activity.startDate).toLocaleDateString('th-TH')}
+                      {activity.startDate ? new Date(activity.startDate).toLocaleDateString('th-TH') : 'ไม่ระบุวันที่'}
                     </div>
                   </div>
 
