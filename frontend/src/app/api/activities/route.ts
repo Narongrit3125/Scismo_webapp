@@ -293,32 +293,47 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const newActivity = await prisma.activity.create({
-      data: {
-        title,
-        description,
-        authorId: author.id,
-        projectId: projectId || null,
-        categoryId: categoryId || null,
-  type: type.toUpperCase() as any,
-        startDate: new Date(startDate),
-        endDate: endDate ? new Date(endDate) : null,
-        location: location || null,
-        isPublic,
-        image: image || null,
-        gallery: gallery || null,
-        status: 'PLANNING'
-      },
-      include: {
-        author: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
+    const createPayload = {
+      title,
+      description,
+      authorId: author.id,
+      projectId: projectId || null,
+      categoryId: categoryId || null,
+      type: type.toUpperCase() as any,
+      startDate: new Date(startDate),
+      endDate: endDate ? new Date(endDate) : null,
+      location: location || null,
+      isPublic,
+      image: image || null,
+      gallery: gallery || null,
+      status: 'PLANNING' as any
+    };
+
+    let newActivity: any;
+    try {
+      newActivity = await prisma.activity.create({
+        data: createPayload as any,
+        include: {
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true
+            }
           }
         }
-      }
-    });
+      });
+    } catch (prismaError: any) {
+      console.error('Prisma error creating activity. Payload:', createPayload);
+      console.error(prismaError);
+      // Expose Prisma message/code to aid debugging (remove in production)
+      const message = prismaError?.message || 'Unknown prisma error';
+      const code = prismaError?.code || undefined;
+      return NextResponse.json(
+        { success: false, error: 'Internal server error', details: { message, code } },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
