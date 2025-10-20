@@ -24,6 +24,7 @@ export default function ContactPage() {
     phone: '',
     subject: '',
     message: '',
+    activityType: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -50,6 +51,7 @@ export default function ContactPage() {
           phone: '',
           subject: '',
           message: '',
+          activityType: '',
         });
       } else {
         setSubmitStatus('error');
@@ -62,7 +64,7 @@ export default function ContactPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -241,6 +243,26 @@ export default function ContactPage() {
                         placeholder="หัวข้อที่ต้องการติดต่อ"
                       />
                     </div>
+                  </div>
+
+                  {/* Activity Type */}
+                  <div>
+                    <label htmlFor="activityType" className="block text-sm font-medium text-gray-700 mb-2">
+                      ประเภทกิจกรรม <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      id="activityType"
+                      name="activityType"
+                      value={formData.activityType}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-3 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="">-- เลือกประเภทกิจกรรม --</option>
+                      <option value="MEETING">Meeting</option>
+                      <option value="WORKSHOP">Workshop</option>
+                      <option value="SEMINAR">Seminar</option>
+                    </select>
                   </div>
 
                   {/* Message */}
