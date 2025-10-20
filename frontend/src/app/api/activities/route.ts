@@ -210,14 +210,36 @@ export async function POST(request: NextRequest) {
       gallery
     } = body;
 
-    if (!title || !description || !type || !startDate) {
+    // Validate required fields
+    if (!title || typeof title !== 'string') {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: 'Invalid or missing title' },
         { status: 400 }
       );
     }
 
-    // ค้นหา author จาก email หรือ ID
+    if (!description || typeof description !== 'string') {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or missing description' },
+        { status: 400 }
+      );
+    }
+
+    if (!type || !['MEETING', 'WORKSHOP', 'SEMINAR'].includes(type.toUpperCase())) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or missing type. Allowed values are MEETING, WORKSHOP, SEMINAR' },
+        { status: 400 }
+      );
+    }
+
+    if (!startDate || isNaN(Date.parse(startDate))) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or missing startDate' },
+        { status: 400 }
+      );
+    }
+
+    // Find author by email or ID
     let author;
     if (authorEmail) {
       author = await prisma.user.findUnique({
@@ -229,7 +251,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // ถ้าไม่พบ ให้ใช้ admin user แทน
+    // Use admin user as fallback
     if (!author) {
       author = await prisma.user.findFirst({
         where: { role: 'ADMIN' }
@@ -243,7 +265,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ตรวจสอบ projectId หากมีการระบุ
+    // Validate projectId if provided
     if (projectId) {
       const project = await prisma.project.findUnique({
         where: { id: projectId }
@@ -307,10 +329,10 @@ export async function POST(request: NextRequest) {
       },
       message: 'Activity created successfully'
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating activity:', error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: 'Internal server error', details: error.message || 'Unknown error' },
       { status: 500 }
     );
   }
