@@ -300,7 +300,7 @@ export async function POST(request: NextRequest) {
         authorId: author.id,
         projectId: projectId || null,
         categoryId: categoryId || null,
-        type: type.toUpperCase(),
+  type: type.toUpperCase() as any,
         startDate: new Date(startDate),
         endDate: endDate ? new Date(endDate) : null,
         location: location || null,
@@ -393,7 +393,7 @@ export async function PUT(request: NextRequest) {
           { status: 400 }
         );
       }
-      updateData.type = type.toUpperCase();
+      updateData.type = type.toUpperCase() as any;
     }
     if (startDate) updateData.startDate = new Date(startDate);
     if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
