@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Allowed activity types (keep in sync with admin UI)
+const ALLOWED_ACTIVITY_TYPES = [
+  'WORKSHOP',
+  'SEMINAR',
+  'COMPETITION',
+  'VOLUNTEER',
+  'SOCIAL',
+  'TRAINING',
+  'MEETING',
+  'CEREMONY',
+  'FUNDRAISING',
+  'EXHIBITION'
+];
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -225,9 +239,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!type || !['MEETING', 'WORKSHOP', 'SEMINAR'].includes(type.toUpperCase())) {
+    if (!type || typeof type !== 'string' || !ALLOWED_ACTIVITY_TYPES.includes(type.toUpperCase())) {
       return NextResponse.json(
-        { success: false, error: 'Invalid or missing type. Allowed values are MEETING, WORKSHOP, SEMINAR' },
+        { success: false, error: `Invalid or missing type. Allowed values are: ${ALLOWED_ACTIVITY_TYPES.join(', ')}` },
         { status: 400 }
       );
     }
@@ -371,7 +385,16 @@ export async function PUT(request: NextRequest) {
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (categoryId !== undefined) updateData.categoryId = categoryId;
-    if (type) updateData.type = type.toUpperCase();
+    if (type) {
+      // Validate type on update as well
+      if (typeof type !== 'string' || !ALLOWED_ACTIVITY_TYPES.includes(type.toUpperCase())) {
+        return NextResponse.json(
+          { success: false, error: `Invalid type. Allowed values are: ${ALLOWED_ACTIVITY_TYPES.join(', ')}` },
+          { status: 400 }
+        );
+      }
+      updateData.type = type.toUpperCase();
+    }
     if (startDate) updateData.startDate = new Date(startDate);
     if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
     if (location !== undefined) updateData.location = location;
