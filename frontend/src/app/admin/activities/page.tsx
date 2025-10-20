@@ -218,7 +218,7 @@ export default function AdminActivities() {
       alert('กรุณากรอกรายละเอียดกิจกรรม');
       return;
     }
-    if (!formData.categoryId) {
+    if (!formData.categoryId || formData.categoryId === 'default' || formData.categoryId === '') {
       alert('กรุณาเลือกหมวดหมู่');
       return;
     }
@@ -245,7 +245,7 @@ export default function AdminActivities() {
       const activityData = {
         title: formData.title,
         description: formData.description,
-        category: formData.categoryId,
+        categoryId: formData.categoryId,
         type: formData.type,
         startDate: formData.startDate,
         endDate: formData.endDate || null,
@@ -294,6 +294,10 @@ export default function AdminActivities() {
         imageUrl = await uploadImage(imageFile);
       }
       
+      if (!formData.categoryId || formData.categoryId === 'default' || formData.categoryId === '') {
+        alert('กรุณาเลือกหมวดหมู่');
+        return;
+      }
       const response = await fetch(`/api/activities?id=${editingActivity.id}`, {
         method: 'PUT',
         headers: {
@@ -301,7 +305,7 @@ export default function AdminActivities() {
         },
         body: JSON.stringify({
           ...formData,
-          category: formData.categoryId,
+          categoryId: formData.categoryId,
           image: imageUrl
         }),
       });
