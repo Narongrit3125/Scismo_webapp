@@ -121,37 +121,52 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password หรือใช้ default password
-    const hashedPassword = password 
-      ? await bcrypt.hash(password, 10)
-      : await bcrypt.hash('changeme123', 10); // default password ถ้าไม่มีการระบุ
+    if (password && password.length < 8) {
+      return NextResponse.json(
+        { success: false, error: 'Password must be at least 8 characters long' },
+        { status: 400 }
+      );
+    }
 
-    const newUser = await prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        role: role.toUpperCase(),
-        isActive: true
-      }
-    });
+    try {
+      const hashedPassword = password 
+        ? await bcrypt.hash(password, 10)
+        : await bcrypt.hash('changeme123', 10); // default password ถ้าไม่มีการระบุ
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        role: newUser.role,
-        isActive: newUser.isActive,
-        createdAt: newUser.createdAt
-      },
-      message: 'User created successfully'
-    });
+      const newUser = await prisma.user.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+          firstName,
+          lastName,
+          role: role.toUpperCase(),
+          isActive: true
+        }
+      });
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          role: newUser.role,
+          isActive: newUser.isActive,
+          createdAt: newUser.createdAt
+        },
+        message: password ? 'User created successfully' : 'User created with default password. Please change it immediately.'
+      });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create user. Please try again later.';
+      return NextResponse.json(
+        { success: false, error: errorMessage },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Error creating user:', error);
     return NextResponse.json(

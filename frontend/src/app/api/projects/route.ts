@@ -194,56 +194,89 @@ export async function POST(request: NextRequest) {
 
     console.log('Found user for project creation:', user.id, user.email);
 
-    const newProject = await prisma.project.create({
-      data: {
-        code,
-        title,
-        description,
-        authorId: user.id,
-        academicYear: academicYear ? parseInt(academicYear) : new Date().getFullYear(),
-        semester: semester ? parseInt(semester) : 1,
-        status: status.toUpperCase(),
-        startDate: new Date(startDate),
-        endDate: endDate ? new Date(endDate) : new Date(startDate),
-        budget: budget ? parseFloat(budget) : null,
-        isActive: isActive !== false,
-        image: image || null,
-        planFile: planFile || null
-      },
-      include: {
-        author: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
+    if (isNaN(new Date(startDate).getTime()) || (endDate && isNaN(new Date(endDate).getTime()))) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid date format for startDate or endDate' },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(parseInt(academicYear)) || parseInt(academicYear) < 2000 || parseInt(academicYear) > new Date().getFullYear() + 1) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid academic year' },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(parseInt(semester)) || parseInt(semester) < 1 || parseInt(semester) > 3) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid semester value' },
+        { status: 400 }
+      );
+    }
+
+    if (new Date(endDate) < new Date(startDate)) {
+      return NextResponse.json(
+        { success: false, error: 'End date cannot be earlier than start date' },
+        { status: 400 }
+      );
+    }
+
+    try {
+      const newProject = await prisma.project.create({
+        data: {
+          code,
+          title,
+          description,
+          authorId: user.id,
+          academicYear: parseInt(academicYear),
+          semester: parseInt(semester),
+          status: status.toUpperCase(),
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          budget: budget ? parseFloat(budget) : null,
+          isActive: isActive !== false,
+          image: image || null,
+          planFile: planFile || null
+        },
+        include: {
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true
+            }
           }
         }
-      }
-    });
+      });
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        id: newProject.id,
-        code: newProject.code,
-        title: newProject.title,
-        description: newProject.description,
-        academicYear: newProject.academicYear,
-        semester: newProject.semester,
-        status: newProject.status,
-        startDate: newProject.startDate,
-        endDate: newProject.endDate,
-        budget: newProject.budget,
-        isActive: newProject.isActive,
-        image: newProject.image,
-        planFile: newProject.planFile,
-        createdAt: newProject.createdAt,
-        updatedAt: newProject.updatedAt,
-        authorId: newProject.authorId,
-        author: newProject.author
-      },
-      message: 'Project created successfully'
-    });
+      return NextResponse.json({
+        success: true,
+        data: {
+          id: newProject.id,
+          code: newProject.code,
+          title: newProject.title,
+          description: newProject.description,
+          academicYear: newProject.academicYear,
+          semester: newProject.semester,
+          status: newProject.status,
+          startDate: newProject.startDate,
+          endDate: newProject.endDate,
+          budget: newProject.budget,
+          isActive: newProject.isActive,
+          image: newProject.image,
+          planFile: newProject.planFile,
+          createdAt: newProject.createdAt
+        }
+      });
+    } catch (error) {
+      console.error('Error creating project:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create project. Please try again later.';
+      return NextResponse.json(
+        { success: false, error: errorMessage },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Error creating project:', error);
     return NextResponse.json(
