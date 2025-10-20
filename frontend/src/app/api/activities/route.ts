@@ -293,12 +293,33 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // categoryId from UI may be a slug (e.g., 'ACADEMIC') or an actual UUID id.
+    // If it's provided and doesn't look like a UUID, try to resolve by slug or name.
+    let resolvedCategoryId = categoryId || null;
+    const isUuid = (val: any) => typeof val === 'string' && /^[0-9a-fA-F\-]{36}$/.test(val);
+    if (resolvedCategoryId && !isUuid(resolvedCategoryId)) {
+      const foundCat = await prisma.category.findFirst({
+        where: {
+          OR: [
+            { slug: resolvedCategoryId },
+            { name: resolvedCategoryId }
+          ]
+        }
+      });
+      if (foundCat) {
+        resolvedCategoryId = foundCat.id;
+      } else {
+        // leave as null to avoid FK error and let client choose to set proper category
+        resolvedCategoryId = null;
+      }
+    }
+
     const createPayload = {
       title,
       description,
       authorId: author.id,
       projectId: projectId || null,
-      categoryId: categoryId || null,
+      categoryId: resolvedCategoryId || null,
       type: type.toUpperCase() as any,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : null,

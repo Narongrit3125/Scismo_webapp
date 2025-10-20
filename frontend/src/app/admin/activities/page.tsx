@@ -89,16 +89,19 @@ export default function AdminActivities() {
     { value: 'EXHIBITION', label: 'นิทรรศการ' }
   ];
 
-  const categories = [
-    { value: 'ACADEMIC', label: 'วิชาการ' },
-    { value: 'SOCIAL', label: 'สังคม' },
-    { value: 'SPORTS', label: 'กีฬา' },
-    { value: 'CULTURE', label: 'ศิลปวัฒนธรรม' },
-    { value: 'VOLUNTEER', label: 'อาสาสมัคร' },
-    { value: 'ENVIRONMENT', label: 'สิ่งแวดล้อม' },
-    { value: 'TECHNOLOGY', label: 'เทคโนโลยี' },
-    { value: 'HEALTH', label: 'สุขภาพ' }
-  ];
+  const [categories, setCategories] = useState<{value: string; label: string}[]>([]);
+
+  const fetchCategoryList = async () => {
+    try {
+      const res = await fetch('/api/categories');
+      const json = await res.json();
+      if (json.success) {
+        setCategories(json.data.map((c: any) => ({ value: c.id, label: c.name })));
+      }
+    } catch (err) {
+      console.error('Error fetching category list:', err);
+    }
+  };
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -115,6 +118,7 @@ export default function AdminActivities() {
 
     fetchActivities();
     fetchProjects();
+    fetchCategoryList();
   }, [session, status, router]);
 
   const fetchProjects = async () => {
@@ -656,6 +660,7 @@ export default function AdminActivities() {
                     onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
+                    <option value="">เลือกหมวดหมู่</option>
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
                     ))}
