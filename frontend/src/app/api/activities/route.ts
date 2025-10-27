@@ -304,9 +304,12 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const isUuid = (val: any) => typeof val === 'string' && /^[0-9a-fA-F\-]{36}$/.test(val);
+    // Check if it looks like a CUID (Prisma default) or UUID
+    const isCuid = (val: any) => typeof val === 'string' && /^c[a-z0-9]{24,}$/i.test(val);
+    const isUuid = (val: any) => typeof val === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val);
     
-    if (resolvedCategoryId && !isUuid(resolvedCategoryId)) {
+    if (resolvedCategoryId && !isCuid(resolvedCategoryId) && !isUuid(resolvedCategoryId)) {
+      // Not a CUID/UUID, try to find by slug or name
       const foundCat = await prisma.category.findFirst({
         where: {
           OR: [
@@ -324,13 +327,13 @@ export async function POST(request: NextRequest) {
         );
       }
     } else if (resolvedCategoryId) {
-      // Verify that the UUID categoryId exists
+      // Verify that the CUID/UUID categoryId exists in database
       const catExists = await prisma.category.findUnique({
         where: { id: resolvedCategoryId }
       });
       if (!catExists) {
         return NextResponse.json(
-          { success: false, error: 'Invalid category ID. Please select a valid category.' },
+          { success: false, error: `Invalid category ID. The selected category does not exist.` },
           { status: 400 }
         );
       }
