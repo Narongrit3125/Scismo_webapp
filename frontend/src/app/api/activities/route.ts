@@ -296,7 +296,16 @@ export async function POST(request: NextRequest) {
     // categoryId from UI may be a slug (e.g., 'ACADEMIC') or an actual UUID id.
     // If it's provided and doesn't look like a UUID, try to resolve by slug or name.
     let resolvedCategoryId = categoryId || null;
+    
+    if (!resolvedCategoryId) {
+      return NextResponse.json(
+        { success: false, error: 'Category is required. Please select a valid category.' },
+        { status: 400 }
+      );
+    }
+    
     const isUuid = (val: any) => typeof val === 'string' && /^[0-9a-fA-F\-]{36}$/.test(val);
+    
     if (resolvedCategoryId && !isUuid(resolvedCategoryId)) {
       const foundCat = await prisma.category.findFirst({
         where: {
@@ -309,8 +318,21 @@ export async function POST(request: NextRequest) {
       if (foundCat) {
         resolvedCategoryId = foundCat.id;
       } else {
-        // leave as null to avoid FK error and let client choose to set proper category
-        resolvedCategoryId = null;
+        return NextResponse.json(
+          { success: false, error: 'Invalid category. Please select a valid category from the list.' },
+          { status: 400 }
+        );
+      }
+    } else if (resolvedCategoryId) {
+      // Verify that the UUID categoryId exists
+      const catExists = await prisma.category.findUnique({
+        where: { id: resolvedCategoryId }
+      });
+      if (!catExists) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid category ID. Please select a valid category.' },
+          { status: 400 }
+        );
       }
     }
 
@@ -319,7 +341,7 @@ export async function POST(request: NextRequest) {
       description,
       authorId: author.id,
       projectId: projectId || null,
-      categoryId: resolvedCategoryId || null,
+      categoryId: resolvedCategoryId,
       type: type.toUpperCase() as any,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : null,

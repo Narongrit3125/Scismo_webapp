@@ -66,7 +66,7 @@ export default function AdminActivities() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    categoryId: 'default',
+    categoryId: '',
     type: 'WORKSHOP' as 'WORKSHOP' | 'SEMINAR' | 'COMPETITION' | 'VOLUNTEER' | 'SOCIAL' | 'TRAINING' | 'MEETING' | 'CEREMONY' | 'FUNDRAISING' | 'EXHIBITION',
     location: '',
     startDate: '',
@@ -218,7 +218,7 @@ export default function AdminActivities() {
       alert('กรุณากรอกรายละเอียดกิจกรรม');
       return;
     }
-    if (!formData.categoryId || formData.categoryId === 'default' || formData.categoryId === '') {
+    if (!formData.categoryId || formData.categoryId.trim() === '') {
       alert('กรุณาเลือกหมวดหมู่');
       return;
     }
@@ -294,7 +294,7 @@ export default function AdminActivities() {
         imageUrl = await uploadImage(imageFile);
       }
       
-      if (!formData.categoryId || formData.categoryId === 'default' || formData.categoryId === '') {
+      if (!formData.categoryId || formData.categoryId.trim() === '') {
         alert('กรุณาเลือกหมวดหมู่');
         return;
       }
@@ -350,7 +350,7 @@ export default function AdminActivities() {
     setFormData({
       title: '',
       description: '',
-      categoryId: 'default',
+      categoryId: '',
       type: 'WORKSHOP' as const,
       location: '',
       startDate: '',
@@ -657,9 +657,10 @@ export default function AdminActivities() {
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    หมวดหมู่
+                    หมวดหมู่ <span className="text-red-500">*</span>
                   </label>
                   <select
+                    required
                     value={formData.categoryId}
                     onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

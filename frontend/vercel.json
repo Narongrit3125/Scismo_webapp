@@ -2,5 +2,12 @@
   "buildCommand": "prisma generate && next build",
   "env": {
     "PRISMA_GENERATE_SKIP_AUTOINSTALL": "false"
-  }
+  },
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["iad1"],
+  "outputDirectory": ".next"
 }
