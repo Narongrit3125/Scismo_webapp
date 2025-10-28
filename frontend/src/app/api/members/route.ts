@@ -126,7 +126,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { 
       userId,
+      name,
       studentId, 
+      email,
       department, 
       faculty,
       year,
@@ -136,9 +138,9 @@ export async function POST(request: NextRequest) {
       avatar
     } = body;
 
-    if (!userId || !department || !faculty || !year) {
+    if (!userId || !name || !department || !faculty || !year) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: 'Missing required fields (userId, name, department, faculty, year)' },
         { status: 400 }
       );
     }
@@ -160,7 +162,9 @@ export async function POST(request: NextRequest) {
     const newMember = await prisma.member.create({
       data: {
         userId,
+        name,
         studentId,
+        email: email || null,
         department,
         faculty,
         year: parseInt(year),
