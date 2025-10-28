@@ -76,7 +76,9 @@ export async function POST(request: NextRequest) {
     await prisma.member.create({
       data: {
         userId: user.id,
+        name: `${firstName} ${lastName}`,
         studentId: studentId || null,
+        email: email,
         year: year ? parseInt(year) : 1,
         department,
         faculty,
