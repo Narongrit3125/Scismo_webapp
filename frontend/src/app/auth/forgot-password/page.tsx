@@ -202,13 +202,6 @@ export default function ForgotPasswordPage() {
             >
               กลับไปหน้าเข้าสู่ระบบ
             </Link>
-            <span className="text-gray-300">|</span>
-            <Link
-              href="/auth/signup"
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
-            >
-              สมัครสมาชิก
-            </Link>
           </div>
         </form>
       </div>

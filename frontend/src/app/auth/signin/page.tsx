@@ -209,20 +209,6 @@ export default function SignIn() {
                     </div>
                   </div>
 
-                  {/* Sign Up Link */}
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600">
-                      ยังไม่มีบัญชี?{' '}
-                      <Link 
-                        href="/auth/signup" 
-                        className="font-medium text-purple-600 hover:text-purple-700 inline-flex items-center transition-colors group"
-                      >
-                        <UserPlus className="w-4 h-4 mr-1 group-hover:scale-110 transition-transform" />
-                        สมัครสมาชิก
-                      </Link>
-                    </p>
-                  </div>
-
                   {/* Test Accounts - Only show in development */}
                   {process.env.NEXT_PUBLIC_SHOW_TEST_ACCOUNTS === 'true' && (
                     <Card className="mt-8 p-5 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200">
