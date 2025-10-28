@@ -92,10 +92,9 @@ export async function GET(request: NextRequest) {
 
     const formattedMembers = members.map(member => ({
       id: member.id,
+      name: member.name, // Get name directly from member table
       studentId: member.studentId,
-      firstName: member.user?.firstName,
-      lastName: member.user?.lastName,
-      email: member.user?.email,
+      email: member.email, // Get email directly from member table
       department: member.department,
       faculty: member.faculty,
       year: member.year,

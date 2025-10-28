@@ -195,12 +195,14 @@ export default function AdminMembersPage() {
       const response = await fetch('/api/members');
       if (response.ok) {
         const data = await response.json();
-        // Map the API response to match our interface
+        // API now returns members with name field directly
         const mappedMembers = (data.data || []).map((member: any) => ({
           ...member,
-          name: `${member.firstName || ''} ${member.lastName || ''}`.trim()
+          // name is already in the response, no need to combine firstName + lastName
         }));
         setMembers(mappedMembers);
+      } else {
+        console.error('Failed to fetch members:', response.status);
       }
     } catch (error) {
       console.error('Error fetching members:', error);
