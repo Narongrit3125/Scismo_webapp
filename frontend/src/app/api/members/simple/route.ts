@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import * as bcrypt from 'bcrypt';
 
 // API สำหรับเพิ่มข้อมูลสมาชิกแบบง่าย (ไม่ต้องสร้าง User account)
 export async function POST(request: NextRequest) {
@@ -19,26 +20,33 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validation
-    if (!name || !studentId || !email || !department || !faculty || !year) {
+    if (!name || !studentId || !email || !department || !year) {
       return NextResponse.json(
-        { success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อ, รหัสนิสิต, อีเมล, สาขา, คณะ, ชั้นปี)' },
+        { success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อ, รหัสนิสิต, อีเมล, สาขา, ชั้นปี)' },
         { status: 400 }
       );
     }
 
     // Check if student ID already exists
-    const existingMember = await prisma.member.findFirst({
-      where: {
-        OR: [
-          { studentId: studentId },
-          { user: { email: email } }
-        ]
-      }
+    const existingMember = await prisma.member.findUnique({
+      where: { studentId: studentId }
     });
 
     if (existingMember) {
       return NextResponse.json(
-        { success: false, error: 'รหัสนิสิตหรืออีเมลนี้มีอยู่ในระบบแล้ว' },
+        { success: false, error: 'รหัสนิสิตนี้มีอยู่ในระบบแล้ว' },
+        { status: 400 }
+      );
+    }
+
+    // Check if email already exists
+    const existingEmail = await prisma.user.findUnique({
+      where: { email: email }
+    });
+
+    if (existingEmail) {
+      return NextResponse.json(
+        { success: false, error: 'อีเมลนี้มีอยู่ในระบบแล้ว' },
         { status: 400 }
       );
     }
@@ -48,6 +56,9 @@ export async function POST(request: NextRequest) {
     const firstName = nameParts[0] || '';
     const lastName = nameParts.slice(1).join(' ') || '';
 
+    // Hash a temporary password
+    const hashedPassword = await bcrypt.hash('temp_' + studentId, 10);
+
     // Create user account first (required for foreign key)
     const user = await prisma.user.create({
       data: {
@@ -55,7 +66,7 @@ export async function POST(request: NextRequest) {
         lastName,
         email,
         username: studentId,
-        password: 'placeholder', // Temporary password
+        password: hashedPassword,
         role: 'MEMBER',
         isActive: true
       }
