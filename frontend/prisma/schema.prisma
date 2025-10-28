@@ -1,91 +1,74 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 generator dbml {
-  provider = "prisma-dbml-generator"
-  output   = "../"
+  provider   = "prisma-dbml-generator"
+  output     = "../"
   outputName = "database.dbml"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // Prisma Accelerate extension for connection pooling
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
-// User management - ระบบจัดการผู้ใช้งาน
 model User {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  username    String   @unique
-  password    String
-  firstName   String
-  lastName    String
-  role        Role     @default(MEMBER)
-  isActive    Boolean  @default(true)
-  lastLoginAt DateTime?
-  resetToken  String?
-  resetTokenExpiry DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  memberProfile Member?
-  authoredNews  News[]
+  id                 String     @id @default(cuid())
+  email              String     @unique
+  username           String     @unique
+  password           String
+  firstName          String
+  lastName           String
+  role               Role       @default(MEMBER)
+  isActive           Boolean    @default(true)
+  lastLoginAt        DateTime?
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  memberProfile      Member?
+  authoredNews       News[]
   authoredActivities Activity[]
-  authoredProjects Project[]
-  contactMessages Contact[]
+  authoredProjects   Project[]
+  contactMessages    Contact[]
 
   @@map("users")
 }
 
-enum Role {
-  ADMIN   // ผู้ดูแลระบบ
-  MEMBER  // สมาชิกสโมสร
-}
-
-// Member information - ข้อมูลสมาชิกสโมสร (ประวัติผู้ดำรงตำแหน่งในแต่ละปี)
 model Member {
-  id          String    @id @default(cuid())
-  userId      String?   @unique // Optional - เชื่อมกับ User account (ถ้ามี)
-  name        String    // ชื่อ-นามสกุล
-  studentId   String    @unique // รหัสนิสิต
-  email       String?   // อีเมล
-  phone       String?   // เบอร์โทร
-  year        Int       // ปีการศึกษา
-  department  String    // สาขาวิชา
-  faculty     String    // คณะ
-  position    String?   // ตำแหน่งในสโมสร
-  division    String?   // ฝ่ายงาน
-  joinDate    DateTime  @default(now())
-  isActive    Boolean   @default(true)
-  avatar      String?   // รูปโปรไฟล์
-
-  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id         String   @id @default(cuid())
+  userId     String?  @unique
+  studentId  String   @unique
+  phone      String?
+  year       Int
+  department String
+  faculty    String
+  position   String?
+  division   String?
+  joinDate   DateTime @default(now())
+  isActive   Boolean  @default(true)
+  avatar     String?
+  email      String?
+  name       String
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("members")
 }
 
-// Category - หมวดหมู่สำหรับเนื้อหาต่างๆ
 model Category {
   id          String       @id @default(cuid())
-  name        String       // ชื่อหมวดหมู่
-  slug        String       @unique // URL-friendly name
-  type        CategoryType // ประเภทหมวดหมู่
-  description String?      // คำอธิบาย
-  color       String?      // สีประจำหมวดหมู่ (hex code)
-  icon        String?      // ไอคอน
-  order       Int          @default(0) // ลำดับการแสดงผล
+  name        String
+  slug        String       @unique
+  type        CategoryType
+  description String?
+  color       String?
+  icon        String?
+  order       Int          @default(0)
   isActive    Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-
-  // Relations
   news        News[]
   activities  Activity[]
   documents   Document[]
@@ -96,24 +79,14 @@ model Category {
   @@map("categories")
 }
 
-enum CategoryType {
-  NEWS      // ข่าวสาร
-  ACTIVITY  // กิจกรรม
-  DOCUMENT  // เอกสาร
-  GENERAL   // ทั่วไป
-}
-
-// Tag - แท็กสำหรับเนื้อหา
 model Tag {
-  id         String   @id @default(cuid())
-  name       String   @unique // ชื่อแท็ก
-  slug       String   @unique // URL-friendly name
-  color      String?  // สีประจำแท็ก (hex code)
-  usageCount Int      @default(0) // จำนวนการใช้งาน
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  // Relations
+  id         String        @id @default(cuid())
+  name       String        @unique
+  slug       String        @unique
+  color      String?
+  usageCount Int           @default(0)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
   news       NewsTag[]
   activities ActivityTag[]
   documents  DocumentTag[]
@@ -122,27 +95,25 @@ model Tag {
   @@map("tags")
 }
 
-// News and announcements - ข่าวสารและประกาศ
 model News {
-  id          String        @id @default(cuid())
-  title       String        // หัวข้อข่าว
-  content     String        // เนื้อหา
-  excerpt     String?       // สรุปข่าว
-  authorId    String        // ผู้เขียน
-  categoryId  String        @default("default") // หมวดหมู่
-  priority    Priority      @default(MEDIUM) // ระดับความสำคัญ
-  isPinned    Boolean       @default(false)  // ปักหมุดข่าว
-  status      NewsStatus    @default(DRAFT)  // สถานะ
-  publishedAt DateTime?     // วันที่เผยแพร่
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  slug        String        @unique
-  viewCount   Int           @default(0) // จำนวนการเข้าชม
-  image       String?       // รูปภาพปก
-  attachments String?       // ไฟล์แนบ (JSON array)
-
-  author      User          @relation(fields: [authorId], references: [id])
-  category    Category?     @relation(fields: [categoryId], references: [id])
+  id          String     @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  authorId    String
+  categoryId  String     @default("default")
+  priority    Priority   @default(MEDIUM)
+  isPinned    Boolean    @default(false)
+  status      NewsStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  slug        String     @unique
+  viewCount   Int        @default(0)
+  image       String?
+  attachments String?
+  author      User       @relation(fields: [authorId], references: [id])
+  category    Category?  @relation(fields: [categoryId], references: [id])
   tags        NewsTag[]
 
   @@index([categoryId])
@@ -151,25 +122,10 @@ model News {
   @@map("news")
 }
 
-enum Priority {
-  LOW     // ต่ำ
-  MEDIUM  // ปานกลาง
-  HIGH    // สูง
-  URGENT  // ด่วน
-}
-
-enum NewsStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-// NewsTag - Many-to-many relationship between News and Tag
 model NewsTag {
   newsId    String
   tagId     String
   createdAt DateTime @default(now())
-
   news      News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
   tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
@@ -179,29 +135,27 @@ model NewsTag {
   @@map("news_tags")
 }
 
-// Activities and events - กิจกรรมและงานต่างๆ
 model Activity {
-  id                  String         @id @default(cuid())
-  title               String         // ชื่อกิจกรรม
-  description         String         // รายละเอียด
-  authorId            String         // ผู้รับผิดชอบ
-  projectId           String?        // เชื่อมโยงกับโครงการหลัก
-  categoryId          String         @default("default") // หมวดหมู่
-  type                ActivityType   // ประเภทกิจกรรม
-  startDate           DateTime       // วันเริ่มต้น
-  endDate             DateTime?      // วันสิ้นสุด
-  location            String?        // สถานที่จัดกิจกรรม
-  status              ActivityStatus @default(PLANNING) // สถานะ
-  isPublic            Boolean        @default(true)
-  image               String?        // รูปภาพ
-  gallery             String?        // แกลเลอรีภาพกิจกรรม (JSON array)
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-
-  author              User           @relation(fields: [authorId], references: [id])
-  project             Project?       @relation(fields: [projectId], references: [id])
-  category            Category?      @relation(fields: [categoryId], references: [id])
-  tags                ActivityTag[]
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  authorId    String
+  projectId   String?
+  categoryId  String         @default("default")
+  type        ActivityType
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  status      ActivityStatus @default(PLANNING)
+  isPublic    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  image       String?
+  gallery     String?
+  author      User           @relation(fields: [authorId], references: [id])
+  project     Project?       @relation(fields: [projectId], references: [id])
+  category    Category?      @relation(fields: [categoryId], references: [id])
+  tags        ActivityTag[]
 
   @@index([categoryId])
   @@index([status])
@@ -209,38 +163,10 @@ model Activity {
   @@map("activities")
 }
 
-enum ActivityType {
-  WORKSHOP      // เวิร์กช็อป/อบรม
-  SEMINAR       // สัมมนา/บรรยาย
-  COMPETITION   // การแข่งขัน
-  VOLUNTEER     // อาสาสมัคร/บำเพ็ญประโยชน์
-  SOCIAL        // กิจกรรมสังสรรค์
-  TRAINING      // ฝึกอบรม
-  MEETING       // ประชุม
-  CEREMONY      // พิธีการ
-  FUNDRAISING   // ระดมทุน
-  EXHIBITION    // นิทรรศการ/จัดแสดง
-  ACADEMIC      // กิจกรรมวิชาการ
-  SPORT         // กีฬา
-  ART_CULTURE   // ศิลปวัฒนธรรม
-}
-
-enum ActivityStatus {
-  PLANNING            // วางแผน
-  OPEN_REGISTRATION   // เปิดรับสมัคร
-  FULL                // เต็ม
-  IN_PROGRESS         // กำลังดำเนินการ
-  COMPLETED           // เสร็จสิ้น
-  CANCELLED           // ยกเลิก
-  POSTPONED           // เลื่อน
-}
-
-// ActivityTag - Many-to-many relationship between Activity and Tag
 model ActivityTag {
   activityId String
   tagId      String
   createdAt  DateTime @default(now())
-
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
   tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
@@ -250,65 +176,50 @@ model ActivityTag {
   @@map("activity_tags")
 }
 
-// Projects (โครงการหลัก)
 model Project {
-  id                String        @id @default(cuid())
-  code              String        @unique // รหัสโครงการ เช่น "SC2567-001"
-  title             String        // ชื่อโครงการ
-  description       String        // รายละเอียด
-  authorId          String        // ผู้รับผิดชอบหลัก
-  academicYear      Int           // ปีการศึกษา เช่น 2567
-  semester          Int?          // ภาคการศึกษา (1, 2, หรือ summer)
-  status            ProjectStatus @default(PLANNING)
-  startDate         DateTime      // วันเริ่มโครงการ
-  endDate           DateTime      // วันสิ้นสุดโครงการ
-  budget            Float?        // งบประมาณ
-  isActive          Boolean       @default(true)
-  image             String?       // รูปปกโครงการ
-  planFile          String?       // ไฟล์แผนโครงการ
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-
-  author            User          @relation(fields: [authorId], references: [id])
-  activities        Activity[]    // กิจกรรมในโครงการ
+  id           String        @id @default(cuid())
+  code         String        @unique
+  title        String
+  description  String
+  authorId     String
+  academicYear Int
+  semester     Int?
+  status       ProjectStatus @default(PLANNING)
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean       @default(true)
+  image        String?
+  planFile     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  budget       Float?
+  author       User          @relation(fields: [authorId], references: [id])
+  activities   Activity[]
 
   @@index([academicYear])
   @@index([status])
   @@map("projects")
 }
 
-enum ProjectStatus {
-  PLANNING      // วางแผน
-  PENDING_APPROVAL // รออนุมัติ
-  APPROVED      // อนุมัติแล้ว
-  IN_PROGRESS   // กำลังดำเนินการ
-  COMPLETED     // เสร็จสิ้น
-  ON_HOLD       // ระงับชั่วคราว
-  CANCELLED     // ยกเลิก
-  CLOSED        // ปิดโครงการ
-}
-
-// Documents and files - เอกสารและไฟล์
 model Document {
-  id            String      @id @default(cuid())
-  title         String      // ชื่อเอกสาร
-  description   String?     // คำอธิบาย
-  categoryId    String      @default("default") // หมวดหมู่
-  type          String      // ประเภทไฟล์ (PDF, DOC, XLS, etc.)
-  fileName      String      // ชื่อไฟล์
-  fileUrl       String      // URL ไฟล์
-  fileSize      Int         // ขนาดไฟล์ (bytes)
-  version       String?     // เวอร์ชัน
-  isPublic      Boolean     @default(true) // สิทธิ์การเข้าถึง
-  accessLevel   AccessLevel @default(PUBLIC) // ระดับการเข้าถึง
-  downloadCount Int         @default(0) // จำนวนดาวน์โหลด
-  uploadedBy    String      // ผู้อัปโหลด
-  approvedBy    String?     // ผู้อนุมัติ
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  expiryDate    DateTime?   // วันหมดอายุ (ถ้ามี)
-
-  category      Category?      @relation(fields: [categoryId], references: [id])
+  id            String        @id @default(cuid())
+  title         String
+  description   String?
+  categoryId    String        @default("default")
+  type          String
+  fileName      String
+  fileUrl       String
+  fileSize      Int
+  version       String?
+  isPublic      Boolean       @default(true)
+  accessLevel   AccessLevel   @default(PUBLIC)
+  downloadCount Int           @default(0)
+  uploadedBy    String
+  approvedBy    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  expiryDate    DateTime?
+  category      Category?     @relation(fields: [categoryId], references: [id])
   tags          DocumentTag[]
 
   @@index([categoryId])
@@ -316,19 +227,10 @@ model Document {
   @@map("documents")
 }
 
-enum AccessLevel {
-  PUBLIC      // ทุกคนเข้าถึงได้
-  MEMBER_ONLY // สมาชิกเท่านั้น
-  ADMIN_ONLY  // ผู้ดูแลระบบเท่านั้น
-  RESTRICTED  // จำกัดเฉพาะบุคคล
-}
-
-// DocumentTag - Many-to-many relationship between Document and Tag
 model DocumentTag {
   documentId String
   tagId      String
   createdAt  DateTime @default(now())
-
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
@@ -338,35 +240,102 @@ model DocumentTag {
   @@map("document_tags")
 }
 
-// Contact messages - ข้อความติดต่อ
 model Contact {
-  id        String        @id @default(cuid())
-  name      String        // ชื่อผู้ติดต่อ
-  email     String        // อีเมล
-  phone     String?       // เบอร์โทร
-  subject   String        // หัวข้อ
-  message   String        // ข้อความ
-  category  String        @default("general") // หมวดหมู่
-  priority  Priority      @default(MEDIUM)    // ระดับความสำคัญ
-  status    ContactStatus @default(PENDING)   // สถานะ
-  userId    String?       // ผู้ส่ง (ถ้าล็อกอิน)
-  assignedTo String?      // มอบหมายให้
-  repliedBy String?       // ผู้ตอบกลับ
-  repliedAt DateTime?     // วันที่ตอบกลับ
-  reply     String?       // ข้อความตอบกลับ
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  user      User?         @relation(fields: [userId], references: [id])
+  id         String        @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  subject    String
+  message    String
+  category   String        @default("general")
+  priority   Priority      @default(MEDIUM)
+  status     ContactStatus @default(PENDING)
+  userId     String?
+  assignedTo String?
+  repliedBy  String?
+  repliedAt  DateTime?
+  reply      String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  user       User?         @relation(fields: [userId], references: [id])
 
   @@index([status])
   @@index([category])
   @@map("contacts")
 }
 
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum CategoryType {
+  NEWS
+  ACTIVITY
+  DOCUMENT
+  GENERAL
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ActivityType {
+  WORKSHOP
+  SEMINAR
+  COMPETITION
+  VOLUNTEER
+  SOCIAL
+  TRAINING
+  MEETING
+  CEREMONY
+  FUNDRAISING
+  EXHIBITION
+  ACADEMIC
+  SPORT
+  ART_CULTURE
+}
+
+enum ActivityStatus {
+  PLANNING
+  OPEN_REGISTRATION
+  FULL
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}
+
+enum ProjectStatus {
+  PLANNING
+  PENDING_APPROVAL
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+  CLOSED
+}
+
+enum AccessLevel {
+  PUBLIC
+  MEMBER_ONLY
+  ADMIN_ONLY
+  RESTRICTED
+}
+
 enum ContactStatus {
-  PENDING     // รอดำเนินการ
-  IN_PROGRESS // กำลังดำเนินการ
-  REPLIED     // ตอบกลับแล้ว
-  CLOSED      // ปิดเรื่อง
+  PENDING
+  IN_PROGRESS
+  REPLIED
+  CLOSED
 }

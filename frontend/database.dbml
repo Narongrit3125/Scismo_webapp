@@ -26,9 +26,7 @@ Table users {
 Table members {
   id String [pk]
   userId String [unique]
-  name String [not null]
   studentId String [unique, not null]
-  email String
   phone String
   year Int [not null]
   department String [not null]
@@ -38,6 +36,8 @@ Table members {
   joinDate DateTime [default: `now()`, not null]
   isActive Boolean [not null, default: true]
   avatar String
+  email String
+  name String [not null]
   user users
 }
 
@@ -122,10 +122,10 @@ Table activities {
   location String
   status ActivityStatus [not null, default: 'PLANNING']
   isPublic Boolean [not null, default: true]
-  image String
-  gallery String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+  image String
+  gallery String
   author users [not null]
   project projects
   category categories
@@ -155,12 +155,12 @@ Table projects {
   status ProjectStatus [not null, default: 'PLANNING']
   startDate DateTime [not null]
   endDate DateTime [not null]
-  budget Float
   isActive Boolean [not null, default: true]
   image String
   planFile String
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+  budget Float
   author users [not null]
   activities activities [not null]
 }
