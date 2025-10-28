@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import * as bcrypt from 'bcrypt';
 
-// API สำหรับเพิ่มข้อมูลสมาชิกแบบง่าย (ไม่ต้องสร้าง User account)
+// API สำหรับเพิ่มข้อมูลสมาชิก (ประวัติผู้ดำรงตำแหน่งในแต่ละปีการศึกษา)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -20,9 +19,9 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validation
-    if (!name || !studentId || !email || !department || !year) {
+    if (!name || !studentId || !department || !year) {
       return NextResponse.json(
-        { success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อ, รหัสนิสิต, อีเมล, สาขา, ชั้นปี)' },
+        { success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อ, รหัสนิสิต, สาขา, ชั้นปี)' },
         { status: 400 }
       );
     }
@@ -39,61 +38,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if email already exists
-    const existingEmail = await prisma.user.findUnique({
-      where: { email: email }
-    });
-
-    if (existingEmail) {
-      return NextResponse.json(
-        { success: false, error: 'อีเมลนี้มีอยู่ในระบบแล้ว' },
-        { status: 400 }
-      );
-    }
-
-    // Split name into first and last name
-    const nameParts = name.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
-
-    // Hash a temporary password
-    const hashedPassword = await bcrypt.hash('temp_' + studentId, 10);
-
-    // Create user account first (required for foreign key)
-    const user = await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        username: studentId,
-        password: hashedPassword,
-        role: 'MEMBER',
-        isActive: true
-      }
-    });
-
-    // Create member profile
+    // Create member record (without User account)
     const newMember = await prisma.member.create({
       data: {
-        userId: user.id,
+        name,
         studentId,
+        email: email || null,
+        phone: phone || null,
         department,
         faculty: faculty || 'คณะวิทยาศาสตร์',
         year: parseInt(year),
-        phone: phone || null,
         position: position || null,
         division: division || null,
         avatar: avatar || null,
         isActive: true
-      },
-      include: {
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
-          }
-        }
       }
     });
 
@@ -102,14 +60,13 @@ export async function POST(request: NextRequest) {
       message: 'เพิ่มข้อมูลสมาชิกสำเร็จ',
       data: {
         id: newMember.id,
+        name: newMember.name,
         studentId: newMember.studentId,
-        firstName: newMember.user?.firstName,
-        lastName: newMember.user?.lastName,
-        email: newMember.user?.email,
+        email: newMember.email,
+        phone: newMember.phone,
         department: newMember.department,
         faculty: newMember.faculty,
         year: newMember.year,
-        phone: newMember.phone,
         position: newMember.position,
         division: newMember.division,
         avatar: newMember.avatar,

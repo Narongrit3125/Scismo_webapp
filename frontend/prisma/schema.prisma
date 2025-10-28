@@ -49,12 +49,14 @@ enum Role {
   MEMBER  // สมาชิกสโมสร
 }
 
-// Member information - ข้อมูลสมาชิกสโมสร
+// Member information - ข้อมูลสมาชิกสโมสร (ประวัติผู้ดำรงตำแหน่งในแต่ละปี)
 model Member {
   id          String    @id @default(cuid())
-  userId      String    @unique
+  userId      String?   @unique // Optional - เชื่อมกับ User account (ถ้ามี)
+  name        String    // ชื่อ-นามสกุล
   studentId   String    @unique // รหัสนิสิต
-  phone       String?
+  email       String?   // อีเมล
+  phone       String?   // เบอร์โทร
   year        Int       // ปีการศึกษา
   department  String    // สาขาวิชา
   faculty     String    // คณะ
@@ -62,9 +64,9 @@ model Member {
   division    String?   // ฝ่ายงาน
   joinDate    DateTime  @default(now())
   isActive    Boolean   @default(true)
-  avatar      String?
+  avatar      String?   // รูปโปรไฟล์
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("members")
 }

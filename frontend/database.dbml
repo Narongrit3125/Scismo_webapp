@@ -25,8 +25,10 @@ Table users {
 
 Table members {
   id String [pk]
-  userId String [unique, not null]
+  userId String [unique]
+  name String [not null]
   studentId String [unique, not null]
+  email String
   phone String
   year Int [not null]
   department String [not null]
@@ -36,7 +38,7 @@ Table members {
   joinDate DateTime [default: `now()`, not null]
   isActive Boolean [not null, default: true]
   avatar String
-  user users [not null]
+  user users
 }
 
 Table categories {
@@ -293,7 +295,7 @@ Enum ContactStatus {
   CLOSED
 }
 
-Ref: members.userId - users.id [delete: Cascade]
+Ref: members.userId - users.id [delete: Set Null]
 
 Ref: news.authorId > users.id
 
