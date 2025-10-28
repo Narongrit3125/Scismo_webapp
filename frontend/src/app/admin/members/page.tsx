@@ -152,64 +152,33 @@ export default function AdminMembersPage() {
         }
       }
 
-      // Split name into first and last name
-      const nameParts = formData.name.trim().split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
-
-      // Create user account first
-      const userResponse = await fetch('/api/auth/register', {
+      // Create member using simple API
+      const response = await fetch('/api/members/simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: formData.email,
-          username: formData.studentId,
-          password: 'changeme123', // Default password
-          firstName: firstName,
-          lastName: lastName,
-          role: 'MEMBER'
-        }),
-      });
-
-      if (!userResponse.ok) {
-        const error = await userResponse.json();
-        throw new Error(error.error || 'Failed to create user account');
-      }
-
-      const userData = await userResponse.json();
-      const userId = userData.user?.id;
-
-      if (!userId) {
-        throw new Error('Failed to get user ID');
-      }
-
-      // Create member profile
-      const memberResponse = await fetch('/api/members', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: userId,
+          name: formData.name,
           studentId: formData.studentId,
-          department: formData.department,
-          faculty: 'คณะวิทยาศาสตร์', // Default faculty
-          year: parseInt(formData.year),
+          email: formData.email,
           phone: formData.phone || '',
+          department: formData.department,
+          faculty: 'คณะวิทยาศาสตร์',
+          year: formData.year,
           position: formData.position || 'สมาชิกทั่วไป',
           avatar: avatarUrl
         }),
       });
 
-      if (!memberResponse.ok) {
-        const error = await memberResponse.json();
-        throw new Error(error.error || 'Failed to create member profile');
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก');
       }
 
       // Success
-      alert('เพิ่มสมาชิกเรียบร้อยแล้ว\nชื่อผู้ใช้: ' + formData.studentId + '\nรหัสผ่านเริ่มต้น: changeme123');
+      alert('เพิ่มข้อมูลสมาชิกเรียบร้อยแล้ว ✅');
       setShowAddModal(false);
       resetForm();
       fetchMembers();
