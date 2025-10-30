@@ -44,8 +44,15 @@ export async function GET(request: NextRequest) {
     if (type) {
       whereCondition.type = type;
     }
-    if (isPublic !== null) {
+    // Handle isPublic filter
+    if (isPublic === 'all') {
+      // Show all documents (for admin)
+      // Don't filter by isPublic
+    } else if (isPublic !== null && isPublic !== undefined) {
       whereCondition.isPublic = isPublic === 'true';
+    } else {
+      // Default: show only public documents for regular users
+      whereCondition.isPublic = true;
     }
 
     const documents = await prisma.document.findMany({

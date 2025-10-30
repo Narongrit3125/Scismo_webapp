@@ -13,14 +13,19 @@ export default function DocumentsPage() {
     queryFn: () => documentAPI.getAll().then(res => res.data),
   });
 
-  const downloadFile = (fileUrl: string, fileName: string) => {
-    if (fileUrl) {
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  const downloadFile = async (docId: string, fileUrl: string, fileName: string) => {
+    try {
+      // Increment download count
+      await fetch(`/api/documents?id=${docId}&action=download`, {
+        method: 'PATCH',
+      });
+
+      // Download file
+      if (fileUrl) {
+        window.open(fileUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
     }
   };
 
@@ -28,19 +33,19 @@ export default function DocumentsPage() {
     return filename.split('.').pop()?.toLowerCase() || '';
   };
 
-  const getFileIcon = (filename: string) => {
-    const ext = getFileExtension(filename);
-    switch (ext) {
-      case 'pdf':
+  const getFileIcon = (type: string) => {
+    const typeUpper = type.toUpperCase();
+    switch (typeUpper) {
+      case 'PDF':
         return <FileText className="w-6 h-6 text-red-500" />;
-      case 'doc':
-      case 'docx':
+      case 'DOC':
+      case 'DOCX':
         return <FileText className="w-6 h-6 text-blue-500" />;
-      case 'xls':
-      case 'xlsx':
+      case 'XLS':
+      case 'XLSX':
         return <FileText className="w-6 h-6 text-green-500" />;
-      case 'ppt':
-      case 'pptx':
+      case 'PPT':
+      case 'PPTX':
         return <FileText className="w-6 h-6 text-orange-500" />;
       default:
         return <FileIcon className="w-6 h-6 text-gray-500" />;
@@ -78,21 +83,21 @@ export default function DocumentsPage() {
           <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 text-center border border-red-200 shadow-sm hover:shadow-md transition-shadow">
             <FileText className="w-8 h-8 text-red-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">
-              {Array.isArray(documents) ? documents.filter((doc: any) => getFileExtension(doc.file_name) === 'pdf').length : 0}
+              {Array.isArray(documents) ? documents.filter((doc: any) => doc.type === 'PDF').length : 0}
             </div>
             <div className="text-sm text-gray-600">ไฟล์ PDF</div>
           </div>
           <div className="bg-gradient-to-br from-blue-50 to-cyan-100 rounded-lg p-6 text-center border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
             <FileText className="w-8 h-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">
-              {Array.isArray(documents) ? documents.filter((doc: any) => ['doc', 'docx'].includes(getFileExtension(doc.file_name))).length : 0}
+              {Array.isArray(documents) ? documents.filter((doc: any) => ['DOC', 'DOCX'].includes(doc.type)).length : 0}
             </div>
             <div className="text-sm text-gray-600">ไฟล์ Word</div>
           </div>
           <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg p-6 text-center border border-green-200 shadow-sm hover:shadow-md transition-shadow">
             <FileText className="w-8 h-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-gray-900">
-              {Array.isArray(documents) ? documents.filter((doc: any) => ['xls', 'xlsx'].includes(getFileExtension(doc.file_name))).length : 0}
+              {Array.isArray(documents) ? documents.filter((doc: any) => ['XLS', 'XLSX'].includes(doc.type)).length : 0}
             </div>
             <div className="text-sm text-gray-600">ไฟล์ Excel</div>
           </div>
@@ -116,29 +121,45 @@ export default function DocumentsPage() {
         {/* Documents List */}
         {Array.isArray(documents) && documents.length > 0 ? (
           <div className="space-y-4">
-            {documents.map((document: any) => (
+            {documents.filter((doc: any) => doc.isPublic).map((document: any) => (
               <Card key={document.id} hover>
                 <CardContent className="p-6 bg-gradient-to-r from-white to-gray-50 hover:from-purple-50 hover:to-blue-50 transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 flex-1">
                       {/* File Icon */}
                       <div className="flex-shrink-0 bg-white p-3 rounded-lg shadow-sm">
-                        {getFileIcon(document.file_name)}
+                        {getFileIcon(document.type)}
                       </div>
 
                       {/* File Info */}
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-lg text-gray-900 truncate">
-                          {document.file_name}
+                          {document.title}
                         </h3>
-                        <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
+                        {document.description && (
+                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                            {document.description}
+                          </p>
+                        )}
+                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                           <div className="flex items-center space-x-1">
                             <Calendar size={16} />
-                            <span>อัปโหลดเมื่อ {new Date(document.uploaded_at).toLocaleDateString('th-TH')}</span>
+                            <span>อัปโหลดเมื่อ {new Date(document.createdAt).toLocaleDateString('th-TH', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}</span>
                           </div>
                           <span className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 px-3 py-1 rounded-full text-xs font-medium">
-                            {getFileExtension(document.file_name).toUpperCase()}
+                            {document.type}
                           </span>
+                          <div className="flex items-center space-x-1">
+                            <Download size={14} />
+                            <span>{document.downloadCount} ครั้ง</span>
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          {document.fileName} • {formatFileSize(document.fileSize)}
                         </div>
                       </div>
                     </div>
@@ -146,7 +167,7 @@ export default function DocumentsPage() {
                     {/* Download Button */}
                     <div className="flex-shrink-0 ml-4">
                       <button
-                        onClick={() => downloadFile(document.file_path, document.file_name)}
+                        onClick={() => downloadFile(document.id, document.fileUrl, document.fileName)}
                         className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg"
                       >
                         <Download size={16} />

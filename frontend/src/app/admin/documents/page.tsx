@@ -83,7 +83,8 @@ export default function AdminDocuments() {
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/documents');
+      // Fetch all documents (public and private) for admin
+      const response = await fetch('/api/documents?public=all');
       const result = await response.json();
       
       if (result.success) {
