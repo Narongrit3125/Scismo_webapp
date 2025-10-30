@@ -479,8 +479,10 @@ export default function AdminMembersPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ปี {member.year}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {member.academicYear || '(ไม่มีข้อมูล)'}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 bg-yellow-50">
+                        <span className="font-semibold text-purple-600">
+                          ปีการศึกษา: {member.academicYear || '❌ ไม่มี'}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
