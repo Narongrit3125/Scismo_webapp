@@ -31,6 +31,7 @@ interface Member {
   department: string;
   faculty: string;
   year: number;
+  academicYear: number;
   position?: string;
   division?: string;
   avatar?: string;
@@ -70,6 +71,7 @@ export default function AdminMembersPage() {
     phone: '',
     department: '',
     year: '',
+    academicYear: '2568',
     position: '',
     avatar: ''
   });
@@ -105,6 +107,7 @@ export default function AdminMembersPage() {
       phone: '',
       department: '',
       year: '',
+      academicYear: '2568',
       position: '',
       avatar: ''
     });
@@ -166,6 +169,7 @@ export default function AdminMembersPage() {
           department: formData.department,
           faculty: 'คณะวิทยาศาสตร์',
           year: formData.year,
+          academicYear: formData.academicYear,
           position: formData.position || 'สมาชิกทั่วไป',
           avatar: avatarUrl
         }),
@@ -363,6 +367,9 @@ export default function AdminMembersPage() {
                     ชั้นปี
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ปีการศึกษา
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     สถานะ
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -411,6 +418,9 @@ export default function AdminMembersPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         ปี {member.year}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {member.academicYear}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           member.isActive 
@@ -437,7 +447,7 @@ export default function AdminMembersPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                       <Users size={48} className="mx-auto text-gray-300 mb-4" />
                       <p>ไม่พบข้อมูลสมาชิก</p>
                     </td>
@@ -581,7 +591,7 @@ export default function AdminMembersPage() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     ชั้นปี <span className="text-red-500">*</span>
@@ -599,6 +609,22 @@ export default function AdminMembersPage() {
                     <option value="4">ปี 4</option>
                     <option value="5">ปี 5</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    ปีการศึกษา <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={formData.academicYear}
+                    onChange={(e) => setFormData({...formData, academicYear: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="เช่น 2568"
+                    min="2560"
+                    max="2580"
+                  />
                 </div>
                 
                 <div>

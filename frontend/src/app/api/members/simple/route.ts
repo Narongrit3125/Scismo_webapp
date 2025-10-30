@@ -13,15 +13,16 @@ export async function POST(request: NextRequest) {
       department, 
       faculty,
       year,
+      academicYear,
       position,
       division,
       avatar
     } = body;
 
     // Validation
-    if (!name || !studentId || !department || !year) {
+    if (!name || !studentId || !department || !year || !academicYear) {
       return NextResponse.json(
-        { success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อ, รหัสนิสิต, สาขา, ชั้นปี)' },
+        { success: false, error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน (ชื่อ, รหัสนิสิต, สาขา, ชั้นปี, ปีการศึกษา)' },
         { status: 400 }
       );
     }
@@ -48,6 +49,7 @@ export async function POST(request: NextRequest) {
         department,
         faculty: faculty || 'คณะวิทยาศาสตร์',
         year: parseInt(year),
+        academicYear: parseInt(academicYear),
         position: position || null,
         division: division || null,
         avatar: avatar || null,
@@ -67,6 +69,7 @@ export async function POST(request: NextRequest) {
         department: newMember.department,
         faculty: newMember.faculty,
         year: newMember.year,
+        academicYear: newMember.academicYear,
         position: newMember.position,
         division: newMember.division,
         avatar: newMember.avatar,

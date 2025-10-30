@@ -38,61 +38,24 @@ model User {
 }
 
 model Member {
-  id         String   @id @default(cuid())
-  userId     String?  @unique
-  studentId  String   @unique
-  phone      String?
-  year       Int
-  department String
-  faculty    String
-  position   String?
-  division   String?
-  joinDate   DateTime @default(now())
-  isActive   Boolean  @default(true)
-  avatar     String?
-  email      String?
-  name       String
-  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id           String   @id @default(cuid())
+  userId       String?  @unique
+  studentId    String   @unique
+  phone        String?
+  year         Int
+  academicYear Int      @default(2568)
+  department   String
+  faculty      String
+  position     String?
+  division     String?
+  joinDate     DateTime @default(now())
+  isActive     Boolean  @default(true)
+  avatar       String?
+  email        String?
+  name         String
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("members")
-}
-
-model Category {
-  id          String       @id @default(cuid())
-  name        String
-  slug        String       @unique
-  type        CategoryType
-  description String?
-  color       String?
-  icon        String?
-  order       Int          @default(0)
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  news        News[]
-  activities  Activity[]
-  documents   Document[]
-
-  @@unique([type, slug])
-  @@index([type])
-  @@index([isActive])
-  @@map("categories")
-}
-
-model Tag {
-  id         String        @id @default(cuid())
-  name       String        @unique
-  slug       String        @unique
-  color      String?
-  usageCount Int           @default(0)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  news       NewsTag[]
-  activities ActivityTag[]
-  documents  DocumentTag[]
-
-  @@index([usageCount])
-  @@map("tags")
 }
 
 model News {
@@ -101,7 +64,6 @@ model News {
   content     String
   excerpt     String?
   authorId    String
-  categoryId  String     @default("default")
   priority    Priority   @default(MEDIUM)
   isPinned    Boolean    @default(false)
   status      NewsStatus @default(DRAFT)
@@ -113,26 +75,10 @@ model News {
   image       String?
   attachments String?
   author      User       @relation(fields: [authorId], references: [id])
-  category    Category?  @relation(fields: [categoryId], references: [id])
-  tags        NewsTag[]
 
-  @@index([categoryId])
   @@index([status])
   @@index([publishedAt])
   @@map("news")
-}
-
-model NewsTag {
-  newsId    String
-  tagId     String
-  createdAt DateTime @default(now())
-  news      News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
-  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([newsId, tagId])
-  @@index([newsId])
-  @@index([tagId])
-  @@map("news_tags")
 }
 
 model Activity {
@@ -141,7 +87,6 @@ model Activity {
   description String
   authorId    String
   projectId   String?
-  categoryId  String         @default("default")
   type        ActivityType
   startDate   DateTime
   endDate     DateTime?
@@ -154,26 +99,10 @@ model Activity {
   gallery     String?
   author      User           @relation(fields: [authorId], references: [id])
   project     Project?       @relation(fields: [projectId], references: [id])
-  category    Category?      @relation(fields: [categoryId], references: [id])
-  tags        ActivityTag[]
 
-  @@index([categoryId])
   @@index([status])
   @@index([startDate])
   @@map("activities")
-}
-
-model ActivityTag {
-  activityId String
-  tagId      String
-  createdAt  DateTime @default(now())
-  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([activityId, tagId])
-  @@index([activityId])
-  @@index([tagId])
-  @@map("activity_tags")
 }
 
 model Project {
@@ -205,7 +134,6 @@ model Document {
   id            String        @id @default(cuid())
   title         String
   description   String?
-  categoryId    String        @default("default")
   type          String
   fileName      String
   fileUrl       String
@@ -219,25 +147,9 @@ model Document {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   expiryDate    DateTime?
-  category      Category?     @relation(fields: [categoryId], references: [id])
-  tags          DocumentTag[]
 
-  @@index([categoryId])
   @@index([isPublic])
   @@map("documents")
-}
-
-model DocumentTag {
-  documentId String
-  tagId      String
-  createdAt  DateTime @default(now())
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([documentId, tagId])
-  @@index([documentId])
-  @@index([tagId])
-  @@map("document_tags")
 }
 
 model Contact {
@@ -267,13 +179,6 @@ model Contact {
 enum Role {
   ADMIN
   MEMBER
-}
-
-enum CategoryType {
-  NEWS
-  ACTIVITY
-  DOCUMENT
-  GENERAL
 }
 
 enum Priority {
