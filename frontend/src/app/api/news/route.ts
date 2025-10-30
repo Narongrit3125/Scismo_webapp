@@ -82,10 +82,6 @@ export async function GET(request: NextRequest) {
     // สร้าง filter conditions
     const whereCondition: any = {};
     
-    if (category) {
-      whereCondition.categoryId = category;
-    }
-    
     if (status) {
       whereCondition.status = status.toUpperCase();
     } else {
@@ -120,7 +116,6 @@ export async function GET(request: NextRequest) {
       title: news.title,
       content: news.content,
       excerpt: news.excerpt,
-      categoryId: news.categoryId,
       priority: news.priority,
       status: news.status,
       publishedAt: news.publishedAt,
@@ -159,7 +154,6 @@ export async function POST(request: NextRequest) {
       title,
       content,
       excerpt,
-      categoryId,
       priority = 'MEDIUM',
       status = 'DRAFT',
       tags = [],
@@ -171,7 +165,6 @@ export async function POST(request: NextRequest) {
       title,
       content: content?.substring(0, 50) + '...',
       excerpt,
-      categoryId,
       priority,
       status,
       tags,
@@ -179,14 +172,13 @@ export async function POST(request: NextRequest) {
       image
     });
 
-    if (!title || !content || !categoryId) {
+    if (!title || !content) {
       console.log('Missing fields validation failed:', {
         title: !!title,
-        content: !!content,
-        categoryId: !!categoryId
+        content: !!content
       });
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: title, content, categoryId' },
+        { success: false, error: 'Missing required fields: title, content' },
         { status: 400 }
       );
     }
@@ -236,22 +228,12 @@ export async function POST(request: NextRequest) {
           title,
           content,
           excerpt,
-          authorId: author.id, // ใช้ author.id ที่หาเจอแทน authorId
-          categoryId: categoryId,
+          authorId: author.id,
           priority: priority.toUpperCase(),
           status: status.toUpperCase(),
           slug: finalSlugWithRandom,
           image: image || null,
           publishedAt: status.toUpperCase() === 'PUBLISHED' ? new Date() : null
-        },
-        include: {
-          author: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true
-            }
-          }
         }
       });
 
@@ -266,22 +248,12 @@ export async function POST(request: NextRequest) {
         title,
         content,
         excerpt,
-        authorId: author.id, // ใช้ author.id ที่หาเจอแทน authorId
-        categoryId: categoryId,
+        authorId: author.id,
         priority: priority.toUpperCase(),
         status: status.toUpperCase(),
         slug: finalSlug,
         image: image || null,
         publishedAt: status.toUpperCase() === 'PUBLISHED' ? new Date() : null
-      },
-      include: {
-        author: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
-          }
-        }
       }
     });
 
@@ -292,7 +264,6 @@ export async function POST(request: NextRequest) {
         title: newNews.title,
         content: newNews.content,
         excerpt: newNews.excerpt,
-        categoryId: newNews.categoryId,
         priority: newNews.priority,
         status: newNews.status,
         publishedAt: newNews.publishedAt,
@@ -300,11 +271,7 @@ export async function POST(request: NextRequest) {
         slug: newNews.slug,
         viewCount: newNews.viewCount,
         image: newNews.image,
-        author: {
-          firstName: newNews.author.firstName,
-          lastName: newNews.author.lastName,
-          email: newNews.author.email
-        }
+        authorId: newNews.authorId
       },
       message: 'News created successfully'
     });
@@ -334,7 +301,6 @@ export async function PUT(request: NextRequest) {
       title,
       content,
       excerpt,
-      categoryId,
       priority,
       status,
       tags,
@@ -347,7 +313,6 @@ export async function PUT(request: NextRequest) {
     if (title) updateData.title = title;
     if (content) updateData.content = content;
     if (excerpt) updateData.excerpt = excerpt;
-    if (categoryId) updateData.categoryId = categoryId;
     if (priority) updateData.priority = priority.toUpperCase();
     if (status) {
       updateData.status = status.toUpperCase();
@@ -384,7 +349,6 @@ export async function PUT(request: NextRequest) {
         title: updatedNews.title,
         content: updatedNews.content,
         excerpt: updatedNews.excerpt,
-        categoryId: updatedNews.categoryId,
         priority: updatedNews.priority,
         status: updatedNews.status,
         publishedAt: updatedNews.publishedAt,
