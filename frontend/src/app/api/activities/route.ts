@@ -46,26 +46,6 @@ export async function GET(request: NextRequest) {
               academicYear: true,
               status: true
             }
-          },
-          category: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              color: true
-            }
-          },
-          tags: {
-            include: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                  color: true
-                }
-              }
-            }
           }
         }
       });
@@ -84,12 +64,6 @@ export async function GET(request: NextRequest) {
           title: activity.title,
           description: activity.description,
           projectId: activity.projectId,
-          categoryId: activity.categoryId,
-          category: activity.category ? {
-            id: activity.category.id,
-            name: activity.category.name,
-            slug: activity.category.slug
-          } : { id: "default", name: "ทั่วไป", slug: "general" },
           type: activity.type,
           startDate: activity.startDate,
           endDate: activity.endDate,
@@ -98,11 +72,6 @@ export async function GET(request: NextRequest) {
           isPublic: activity.isPublic,
           createdAt: activity.createdAt,
           updatedAt: activity.updatedAt,
-          tags: activity.tags?.map((t: any) => ({
-            id: t.tag.id,
-            name: t.tag.name,
-            slug: t.tag.slug
-          })) || [],
           image: activity.image,
           gallery: activity.gallery,
           author: activity.author ? {
@@ -171,7 +140,6 @@ export async function GET(request: NextRequest) {
       id: activity.id,
       title: activity.title,
       description: activity.description,
-      categoryId: activity.categoryId,
       type: activity.type,
       startDate: activity.startDate,
       endDate: activity.endDate,
@@ -304,47 +272,11 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Check if it looks like a CUID (Prisma default) or UUID
-    const isCuid = (val: any) => typeof val === 'string' && /^c[a-z0-9]{24,}$/i.test(val);
-    const isUuid = (val: any) => typeof val === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val);
-    
-    if (resolvedCategoryId && !isCuid(resolvedCategoryId) && !isUuid(resolvedCategoryId)) {
-      // Not a CUID/UUID, try to find by slug or name
-      const foundCat = await prisma.category.findFirst({
-        where: {
-          OR: [
-            { slug: resolvedCategoryId },
-            { name: resolvedCategoryId }
-          ]
-        }
-      });
-      if (foundCat) {
-        resolvedCategoryId = foundCat.id;
-      } else {
-        return NextResponse.json(
-          { success: false, error: 'Invalid category. Please select a valid category from the list.' },
-          { status: 400 }
-        );
-      }
-    } else if (resolvedCategoryId) {
-      // Verify that the CUID/UUID categoryId exists in database
-      const catExists = await prisma.category.findUnique({
-        where: { id: resolvedCategoryId }
-      });
-      if (!catExists) {
-        return NextResponse.json(
-          { success: false, error: `Invalid category ID. The selected category does not exist.` },
-          { status: 400 }
-        );
-      }
-    }
-
     const createPayload = {
       title,
       description,
       authorId: author.id,
       projectId: projectId || null,
-      categoryId: resolvedCategoryId,
       type: type.toUpperCase() as any,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : null,
@@ -485,7 +417,6 @@ export async function PUT(request: NextRequest) {
         id: updatedActivity.id,
         title: updatedActivity.title,
         description: updatedActivity.description,
-        categoryId: updatedActivity.categoryId,
         type: updatedActivity.type,
         startDate: updatedActivity.startDate,
         endDate: updatedActivity.endDate,
