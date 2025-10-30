@@ -113,6 +113,50 @@ export default function AdminMembersPage() {
     });
     setImageFile(null);
     setImagePreview('');
+    setSelectedMember(null);
+  };
+
+  const handleDelete = async (memberId: string) => {
+    if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสมาชิกคนนี้?')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/members?id=${memberId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert('ลบสมาชิกสำเร็จ');
+        await fetchMembers();
+      } else {
+        const error = await response.json();
+        alert(`เกิดข้อผิดพลาด: ${error.error || 'ไม่สามารถลบสมาชิกได้'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting member:', error);
+      alert('เกิดข้อผิดพลาดในการลบสมาชิก');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startEdit = (member: Member) => {
+    setSelectedMember(member);
+    setFormData({
+      name: member.name || '',
+      studentId: member.studentId || '',
+      email: member.email || '',
+      phone: member.phone || '',
+      department: member.department || '',
+      year: member.year?.toString() || '',
+      academicYear: member.academicYear?.toString() || '2568',
+      position: member.position || '',
+      avatar: member.avatar || ''
+    });
+    setImagePreview(member.avatar || '');
+    setShowAddModal(true);
   };
 
   const uploadImage = async (): Promise<string | null> => {
@@ -155,34 +199,48 @@ export default function AdminMembersPage() {
         }
       }
 
-      // Create member using simple API
-      const response = await fetch('/api/members/simple', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          studentId: formData.studentId,
-          email: formData.email,
-          phone: formData.phone || '',
-          department: formData.department,
-          faculty: 'คณะวิทยาศาสตร์',
-          year: formData.year,
-          academicYear: formData.academicYear,
-          position: formData.position || 'สมาชิกทั่วไป',
-          avatar: avatarUrl
-        }),
-      });
+      const memberData = {
+        name: formData.name,
+        studentId: formData.studentId,
+        email: formData.email,
+        phone: formData.phone || '',
+        department: formData.department,
+        faculty: 'คณะวิทยาศาสตร์',
+        year: parseInt(formData.year),
+        academicYear: parseInt(formData.academicYear),
+        position: formData.position || 'สมาชิกทั่วไป',
+        avatar: avatarUrl || formData.avatar || undefined
+      };
+
+      let response;
+      if (selectedMember) {
+        // Update existing member
+        response = await fetch(`/api/members?id=${selectedMember.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(memberData),
+        });
+      } else {
+        // Create new member
+        response = await fetch('/api/members/simple', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(memberData),
+        });
+      }
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก');
+        throw new Error(result.error || `เกิดข้อผิดพลาดในการ${selectedMember ? 'แก้ไข' : 'เพิ่ม'}สมาชิก`);
       }
 
       // Success
-      alert('เพิ่มข้อมูลสมาชิกเรียบร้อยแล้ว ✅');
+      alert(`${selectedMember ? 'แก้ไข' : 'เพิ่ม'}ข้อมูลสมาชิกเรียบร้อยแล้ว ✅`);
       setShowAddModal(false);
       resetForm();
       fetchMembers();
@@ -433,12 +491,17 @@ export default function AdminMembersPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => setSelectedMember(member)}
+                            onClick={() => startEdit(member)}
                             className="text-purple-600 hover:text-purple-900 p-2 rounded-lg hover:bg-purple-50 transition-colors"
+                            title="แก้ไข"
                           >
                             <Edit size={16} />
                           </button>
-                          <button className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors">
+                          <button 
+                            onClick={() => handleDelete(member.id)}
+                            className="text-red-600 hover:text-red-900 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                            title="ลบ"
+                          >
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -464,7 +527,9 @@ export default function AdminMembersPage() {
         <div className="fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900">เพิ่มสมาชิกใหม่</h3>
+              <h3 className="text-xl font-semibold text-gray-900">
+                {selectedMember ? 'แก้ไขข้อมูลสมาชิก' : 'เพิ่มสมาชิกใหม่'}
+              </h3>
               <button
                 onClick={() => {
                   setShowAddModal(false);
@@ -664,7 +729,10 @@ export default function AdminMembersPage() {
                   disabled={loading}
                   className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'กำลังเพิ่ม...' : 'เพิ่มสมาชิก'}
+                  {loading 
+                    ? (selectedMember ? 'กำลังแก้ไข...' : 'กำลังเพิ่ม...') 
+                    : (selectedMember ? 'บันทึกการแก้ไข' : 'เพิ่มสมาชิก')
+                  }
                 </button>
               </div>
             </form>
