@@ -30,9 +30,12 @@ export default function MembersPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [groupByYear, setGroupByYear] = useState(false);
 
-  const { data: members, isLoading: membersLoading } = useQuery({
+  const { data: members, isLoading: membersLoading, error: membersError } = useQuery({
     queryKey: ['members'],
-    queryFn: () => memberAPI.getAll().then(res => res.data),
+    queryFn: () => memberAPI.getAll().then(res => {
+      console.log('Members API response:', res);
+      return res.data;
+    }),
   });
 
   const { data: positions, isLoading: positionsLoading } = useQuery({
@@ -40,7 +43,12 @@ export default function MembersPage() {
     queryFn: () => positionAPI.getAll().then(res => res.data),
   });
 
+  console.log('Members data:', members);
+  console.log('Members loading:', membersLoading);
+  console.log('Members error:', membersError);
+
   const membersList = Array.isArray(members) ? members : [];
+  console.log('Members list:', membersList.length, 'members');
 
   // Get unique values for filters
   const years = useMemo(() => {
@@ -97,6 +105,19 @@ export default function MembersPage() {
   }), [membersList]);
 
   if (membersLoading || positionsLoading) return <Loading text="กำลังโหลดข้อมูลสมาชิก..." />;
+  
+  if (membersError) {
+    return (
+      <Container>
+        <Section>
+          <div className="text-center py-16">
+            <div className="text-red-500 text-xl mb-4">เกิดข้อผิดพลาดในการโหลดข้อมูลสมาชิก</div>
+            <p className="text-gray-600">{membersError instanceof Error ? membersError.message : 'Unknown error'}</p>
+          </div>
+        </Section>
+      </Container>
+    );
+  }
 
   return (
     <main className="min-h-screen">
@@ -325,6 +346,9 @@ export default function MembersPage() {
                 {searchQuery 
                   ? `ไม่พบสมาชิกที่ค้นหา "${searchQuery}"`
                   : 'ไม่พบสมาชิกที่ตรงกับเงื่อนไข'}
+              </p>
+              <p className="text-xs text-gray-400">
+                Total members: {membersList.length} | Filtered: {filteredMembers.length}
               </p>
             </div>
           )}
