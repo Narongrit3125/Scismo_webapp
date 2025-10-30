@@ -182,7 +182,6 @@ export async function POST(request: NextRequest) {
       authorId,
       authorEmail,
       projectId,
-      categoryId,
       type,
       startDate,
       endDate,
@@ -261,17 +260,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // categoryId from UI may be a slug (e.g., 'ACADEMIC') or an actual UUID id.
-    // If it's provided and doesn't look like a UUID, try to resolve by slug or name.
-    let resolvedCategoryId = categoryId || null;
-    
-    if (!resolvedCategoryId) {
-      return NextResponse.json(
-        { success: false, error: 'Category is required. Please select a valid category.' },
-        { status: 400 }
-      );
-    }
-    
     const createPayload = {
       title,
       description,
@@ -319,7 +307,6 @@ export async function POST(request: NextRequest) {
         id: newActivity.id,
         title: newActivity.title,
         description: newActivity.description,
-        categoryId: newActivity.categoryId,
         type: newActivity.type,
         startDate: newActivity.startDate,
         endDate: newActivity.endDate,
@@ -361,7 +348,6 @@ export async function PUT(request: NextRequest) {
     const { 
       title,
       description,
-      categoryId,
       type,
       startDate,
       endDate,
@@ -377,7 +363,6 @@ export async function PUT(request: NextRequest) {
     
     if (title) updateData.title = title;
     if (description) updateData.description = description;
-    if (categoryId !== undefined) updateData.categoryId = categoryId;
     if (type) {
       // Validate type on update as well
       if (typeof type !== 'string' || !ALLOWED_ACTIVITY_TYPES.includes(type.toUpperCase())) {

@@ -62,7 +62,6 @@ export async function GET(request: NextRequest) {
           title: news.title,
           content: news.content,
           excerpt: news.excerpt,
-          categoryId: news.categoryId,
           priority: news.priority,
           status: news.status,
           publishedAt: news.publishedAt,
