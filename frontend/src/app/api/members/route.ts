@@ -107,22 +107,22 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { 
-      userId,
       name,
       studentId, 
       email,
       department, 
       faculty,
       year,
+      academicYear,
       phone,
       position,
       division,
       avatar
     } = body;
 
-    if (!userId || !name || !department || !faculty || !year) {
+    if (!name || !department || !faculty || !year) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields (userId, name, department, faculty, year)' },
+        { success: false, error: 'Missing required fields (name, department, faculty, year)' },
         { status: 400 }
       );
     }
@@ -149,6 +149,7 @@ export async function POST(request: NextRequest) {
         department,
         faculty,
         year: parseInt(year),
+        academicYear: academicYear ? parseInt(academicYear) : 2568,
         phone,
         position,
         division,
@@ -204,6 +205,7 @@ export async function PUT(request: NextRequest) {
       department, 
       faculty,
       year,
+      academicYear,
       phone,
       position,
       division,
@@ -218,6 +220,7 @@ export async function PUT(request: NextRequest) {
         ...(department && { department }),
         ...(faculty && { faculty }),
         ...(year && { year: parseInt(year) }),
+        ...(academicYear && { academicYear: parseInt(academicYear) }),
         ...(phone && { phone }),
         ...(position && { position }),
         ...(division && { division }),
