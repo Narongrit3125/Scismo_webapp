@@ -54,8 +54,8 @@ export const positionAPI = {
 
 // Document API
 export const documentAPI = {
-  getAll: () => api.get<APIResponse<Document[]>>('/documents'),
-  getByCategory: (category: string) => api.get<APIResponse<Document[]>>(`/documents?category=${category}`),
+  getAll: () => api.get<APIResponse<Document[]>>('/documents?public=true'),
+  getByCategory: (category: string) => api.get<APIResponse<Document[]>>(`/documents?category=${category}&public=true`),
   getPublic: () => api.get<APIResponse<Document[]>>('/documents?public=true'),
   getById: (id: number) => api.get<APIResponse<Document>>(`/documents?id=${id}`),
 };
