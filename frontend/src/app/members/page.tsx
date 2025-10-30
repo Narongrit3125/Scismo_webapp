@@ -9,16 +9,17 @@ import { Users, Mail, Phone, GraduationCap, Award, Search, Filter, Grid, List, B
 
 interface Member {
   id: string;
-  student_id: string;
-  first_name: string;
-  last_name: string;
+  studentId: string;
+  name: string;
   email?: string;
   phone?: string;
   year?: number;
-  major?: string;
-  position?: number;
-  position_name?: string;
-  image?: string;
+  department?: string;
+  faculty?: string;
+  position?: string;
+  division?: string;
+  avatar?: string;
+  isActive?: boolean;
 }
 
 export default function MembersPage() {
@@ -48,12 +49,12 @@ export default function MembersPage() {
   }, [membersList]);
 
   const majors = useMemo(() => {
-    const majorSet = new Set(membersList.map((m: Member) => m.major).filter(Boolean));
+    const majorSet = new Set(membersList.map((m: Member) => m.department).filter(Boolean));
     return ['ทั้งหมด', ...Array.from(majorSet).sort()];
   }, [membersList]);
 
   const positionNames = useMemo(() => {
-    const posSet = new Set(membersList.map((m: Member) => m.position_name).filter(Boolean));
+    const posSet = new Set(membersList.map((m: Member) => m.position).filter(Boolean));
     return ['ทั้งหมด', ...Array.from(posSet)];
   }, [membersList]);
 
@@ -61,14 +62,13 @@ export default function MembersPage() {
   const filteredMembers = useMemo(() => {
     return membersList.filter((member: Member) => {
       const matchesSearch = 
-        member.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.last_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.student_id?.includes(searchQuery) ||
+        member.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.studentId?.includes(searchQuery) ||
         member.email?.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesYear = selectedYear === 'ทั้งหมด' || member.year?.toString() === selectedYear;
-      const matchesMajor = selectedMajor === 'ทั้งหมด' || member.major === selectedMajor;
-      const matchesPosition = selectedPosition === 'ทั้งหมด' || member.position_name === selectedPosition;
+      const matchesMajor = selectedMajor === 'ทั้งหมด' || member.department === selectedMajor;
+      const matchesPosition = selectedPosition === 'ทั้งหมด' || member.position === selectedPosition;
       
       return matchesSearch && matchesYear && matchesMajor && matchesPosition;
     });
@@ -92,8 +92,8 @@ export default function MembersPage() {
   const stats = useMemo(() => ({
     total: membersList.length,
     years: new Set(membersList.map((m: Member) => m.year).filter(Boolean)).size,
-    majors: new Set(membersList.map((m: Member) => m.major).filter(Boolean)).size,
-    withPosition: membersList.filter((m: Member) => m.position_name).length,
+    majors: new Set(membersList.map((m: Member) => m.department).filter(Boolean)).size,
+    withPosition: membersList.filter((m: Member) => m.position).length,
   }), [membersList]);
 
   if (membersLoading || positionsLoading) return <Loading text="กำลังโหลดข้อมูลสมาชิก..." />;
@@ -341,10 +341,10 @@ function MemberCard({ member, viewMode }: { member: Member; viewMode: 'grid' | '
       <div className="p-6 text-center">
         {/* Profile Image */}
         <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
-          {member.image ? (
+          {member.avatar ? (
             <img
-              src={member.image}
-              alt={`${member.first_name} ${member.last_name}`}
+              src={member.avatar}
+              alt={member.name}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -354,13 +354,13 @@ function MemberCard({ member, viewMode }: { member: Member; viewMode: 'grid' | '
 
         {/* Name */}
         <h3 className="font-bold text-lg text-gray-900 mb-2">
-          {member.first_name} {member.last_name}
+          {member.name}
         </h3>
 
         {/* Student ID */}
         <div className="flex items-center justify-center text-sm text-gray-600 mb-3">
           <GraduationCap size={14} className="mr-1" />
-          <span>{member.student_id}</span>
+          <span>{member.studentId}</span>
         </div>
 
         {/* Badges */}
@@ -368,14 +368,14 @@ function MemberCard({ member, viewMode }: { member: Member; viewMode: 'grid' | '
           {member.year && (
             <Badge variant="success">ปี {member.year}</Badge>
           )}
-          {member.position_name && (
-            <Badge variant="info">{member.position_name}</Badge>
+          {member.position && (
+            <Badge variant="info">{member.position}</Badge>
           )}
         </div>
 
-        {member.major && (
+        {member.department && (
           <div className="text-sm text-gray-600 mb-3">
-            📚 {member.major}
+            📚 {member.department}
           </div>
         )}
 
@@ -401,10 +401,10 @@ function MemberCard({ member, viewMode }: { member: Member; viewMode: 'grid' | '
       <div className="flex items-center p-4 gap-4">
         {/* Profile Image */}
         <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-          {member.image ? (
+          {member.avatar ? (
             <img
-              src={member.image}
-              alt={`${member.first_name} ${member.last_name}`}
+              src={member.avatar}
+              alt={member.name}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -415,15 +415,15 @@ function MemberCard({ member, viewMode }: { member: Member; viewMode: 'grid' | '
         {/* Info */}
         <div className="flex-1 min-w-0">
           <h3 className="font-bold text-gray-900 mb-1">
-            {member.first_name} {member.last_name}
+            {member.name}
           </h3>
           <div className="flex flex-wrap gap-2 text-xs text-gray-600">
             <span className="flex items-center">
               <GraduationCap size={12} className="mr-1" />
-              {member.student_id}
+              {member.studentId}
             </span>
-            {member.major && (
-              <span>• {member.major}</span>
+            {member.department && (
+              <span>• {member.department}</span>
             )}
             {member.year && (
               <span>• ปี {member.year}</span>
@@ -433,8 +433,8 @@ function MemberCard({ member, viewMode }: { member: Member; viewMode: 'grid' | '
 
         {/* Badges */}
         <div className="flex gap-2 flex-shrink-0">
-          {member.position_name && (
-            <Badge variant="info">{member.position_name}</Badge>
+          {member.position && (
+            <Badge variant="info">{member.position}</Badge>
           )}
         </div>
 
