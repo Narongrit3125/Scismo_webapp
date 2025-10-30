@@ -257,11 +257,14 @@ export default function AdminMembersPage() {
       const response = await fetch('/api/members');
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 Admin Members API Response:', data);
+        console.log('🔍 First member:', data.data?.[0]);
         // API now returns members with name field directly
         const mappedMembers = (data.data || []).map((member: any) => ({
           ...member,
           // name is already in the response, no need to combine firstName + lastName
         }));
+        console.log('🔍 Mapped members:', mappedMembers[0]);
         setMembers(mappedMembers);
       } else {
         console.error('Failed to fetch members:', response.status);
@@ -477,7 +480,7 @@ export default function AdminMembersPage() {
                         ปี {member.year}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {member.academicYear}
+                        {member.academicYear || '(ไม่มีข้อมูล)'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
