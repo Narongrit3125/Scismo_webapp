@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
           fileUrl: document.fileUrl,
           fileSize: document.fileSize,
           type: document.type,
-          categoryId: document.categoryId,
           isPublic: document.isPublic,
           downloadCount: document.downloadCount,
           uploadedBy: document.uploadedBy,
@@ -44,9 +43,6 @@ export async function GET(request: NextRequest) {
     const whereCondition: any = {};
     if (type) {
       whereCondition.type = type;
-    }
-    if (category) {
-      whereCondition.categoryId = category;
     }
     if (isPublic !== null) {
       whereCondition.isPublic = isPublic === 'true';
@@ -69,7 +65,6 @@ export async function GET(request: NextRequest) {
         fileUrl: document.fileUrl,
         fileSize: document.fileSize,
         type: document.type,
-        categoryId: document.categoryId,
         isPublic: document.isPublic,
         downloadCount: document.downloadCount,
         uploadedBy: document.uploadedBy,
@@ -96,7 +91,6 @@ export async function POST(request: NextRequest) {
       fileUrl,
       fileSize,
       type = 'document',
-      categoryId = null,
       isPublic = false,
       uploadedBy
     } = body;
@@ -116,7 +110,6 @@ export async function POST(request: NextRequest) {
         fileUrl,
         fileSize: fileSize || 0,
         type,
-        categoryId,
         isPublic,
         uploadedBy
       }
@@ -132,7 +125,6 @@ export async function POST(request: NextRequest) {
         fileUrl: newDocument.fileUrl,
         fileSize: newDocument.fileSize,
         type: newDocument.type,
-        categoryId: newDocument.categoryId,
         isPublic: newDocument.isPublic,
         downloadCount: newDocument.downloadCount,
         uploadedBy: newDocument.uploadedBy,
@@ -185,7 +177,6 @@ export async function PUT(request: NextRequest) {
         fileUrl: updatedDocument.fileUrl,
         fileSize: updatedDocument.fileSize,
         type: updatedDocument.type,
-        categoryId: updatedDocument.categoryId,
         isPublic: updatedDocument.isPublic,
         downloadCount: updatedDocument.downloadCount,
         uploadedBy: updatedDocument.uploadedBy,
