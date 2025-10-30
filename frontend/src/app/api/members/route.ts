@@ -12,16 +12,7 @@ export async function GET(request: NextRequest) {
     // ถ้าต้องการข้อมูลสมาชิกคนเดียว
     if (id) {
       const member = await prisma.member.findUnique({
-        where: { id },
-        include: {
-          user: {
-            select: {
-              firstName: true,
-              lastName: true,
-              email: true
-            }
-          }
-        }
+        where: { id }
       });
 
       if (!member) {
@@ -35,10 +26,9 @@ export async function GET(request: NextRequest) {
         success: true,
         data: {
           id: member.id,
+          name: member.name,
           studentId: member.studentId,
-          firstName: member.user?.firstName,
-          lastName: member.user?.lastName,
-          email: member.user?.email,
+          email: member.email,
           department: member.department,
           faculty: member.faculty,
           year: member.year,
@@ -76,18 +66,9 @@ export async function GET(request: NextRequest) {
 
     const members = await prisma.member.findMany({
       where: whereCondition,
-      include: {
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
-          }
-        }
-      },
       orderBy: [
         { year: 'desc' },
-        { user: { firstName: 'asc' } }
+        { name: 'asc' }
       ]
     });
 
