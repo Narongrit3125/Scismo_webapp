@@ -10,8 +10,15 @@ import { FileText, Download, Calendar, FileIcon } from 'lucide-react';
 export default function DocumentsPage() {
   const { data: documents, isLoading, error } = useQuery({
     queryKey: ['documents'],
-    queryFn: () => documentAPI.getAll().then(res => res.data),
+    queryFn: () => documentAPI.getAll().then(res => {
+      console.log('Documents response:', res);
+      return res.data;
+    }),
   });
+
+  console.log('Documents:', documents);
+  console.log('IsLoading:', isLoading);
+  console.log('Error:', error);
 
   const downloadFile = async (docId: string, fileUrl: string, fileName: string) => {
     try {
@@ -63,7 +70,10 @@ export default function DocumentsPage() {
   if (isLoading) return <Loading text="กำลังโหลดเอกสาร..." />;
   if (error) return (
     <PageLayout title="เกิดข้อผิดพลาด" showSidebar={false}>
-      <div className="text-center py-8 text-red-500">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>
+      <div className="text-center py-8">
+        <div className="text-red-500 mb-2">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>
+        <div className="text-gray-600 text-sm">{error instanceof Error ? error.message : 'Unknown error'}</div>
+      </div>
     </PageLayout>
   );
 
@@ -186,6 +196,10 @@ export default function DocumentsPage() {
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">ยังไม่มีเอกสาร</h3>
             <p className="text-gray-500">ขณะนี้ยังไม่มีเอกสารที่จะแสดง</p>
+            <p className="text-xs text-gray-400 mt-2">
+              Total documents: {Array.isArray(documents) ? documents.length : 0} | 
+              Public documents: {Array.isArray(documents) ? documents.filter((d: any) => d.isPublic).length : 0}
+            </p>
           </div>
         )}
     </PageLayout>
