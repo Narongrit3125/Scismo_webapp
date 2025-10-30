@@ -41,12 +41,10 @@ export default function AdminDocuments() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: 'PDF',
+    type: '',
     file: null as File | null,
     isPublic: true
   });
-
-  const [filePreview, setFilePreview] = useState<string>('');
 
   // Function to generate slug from title
   const generateSlug = (title: string) => {
@@ -115,13 +113,25 @@ export default function AdminDocuments() {
     e.preventDefault();
     
     if (!formData.file) {
-      setError('Please select a file');
+      setError('กรุณาเลือกไฟล์');
+      return;
+    }
+
+    if (!formData.title) {
+      setError('กรุณาระบุชื่อเอกสาร');
+      return;
+    }
+
+    if (!session?.user?.id) {
+      setError('ไม่พบข้อมูลผู้ใช้');
       return;
     }
 
     try {
       setUploading(true);
       setError(null);
+
+      console.log('Starting upload...', { fileName: formData.file.name, type: formData.type });
 
       // Upload file to Vercel Blob
       const uploadFormData = new FormData();
@@ -132,25 +142,44 @@ export default function AdminDocuments() {
         body: uploadFormData,
       });
 
-      if (!uploadResponse.ok) throw new Error('File upload failed');
-      const { url } = await uploadResponse.json();
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        console.error('Upload failed:', errorText);
+        throw new Error('การอัปโหลดไฟล์ล้มเหลว');
+      }
+      
+      const uploadResult = await uploadResponse.json();
+      console.log('Upload success:', uploadResult);
+      const { url } = uploadResult;
 
       // Create document record
+      const documentData = {
+        title: formData.title,
+        description: formData.description || null,
+        fileName: formData.file.name,
+        fileUrl: url,
+        fileSize: formData.file.size,
+        type: formData.type,
+        isPublic: formData.isPublic,
+        uploadedBy: session?.user?.id,
+      };
+
+      console.log('Creating document record:', documentData);
+
       const docResponse = await fetch('/api/documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formData.title,
-          description: formData.description || null,
-          fileName: formData.file.name,
-          fileUrl: url,
-          fileSize: formData.file.size,
-          type: formData.type,
-          isPublic: formData.isPublic,
-        }),
+        body: JSON.stringify(documentData),
       });
 
-      if (!docResponse.ok) throw new Error('Failed to create document');
+      if (!docResponse.ok) {
+        const errorData = await docResponse.json();
+        console.error('Document creation failed:', errorData);
+        throw new Error(errorData.error || 'การสร้างข้อมูลเอกสารล้มเหลว');
+      }
+
+      const docResult = await docResponse.json();
+      console.log('Document created successfully:', docResult);
 
       // Success
       await fetchDocuments();
@@ -158,13 +187,15 @@ export default function AdminDocuments() {
       setFormData({
         title: '',
         description: '',
-        type: 'PDF',
+        type: '',
         file: null,
         isPublic: true,
       });
+      setError(null);
+      alert('อัปโหลดเอกสารสำเร็จ!');
     } catch (error) {
       console.error('Upload error:', error);
-      setError(error instanceof Error ? error.message : 'Upload failed');
+      setError(error instanceof Error ? error.message : 'การอัปโหลดล้มเหลว');
     } finally {
       setUploading(false);
     }
