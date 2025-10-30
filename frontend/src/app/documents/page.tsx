@@ -16,9 +16,10 @@ export default function DocumentsPage() {
     }),
   });
 
-  console.log('Documents:', documents);
-  console.log('IsLoading:', isLoading);
-  console.log('Error:', error);
+  console.log('📄 Documents Page - Data:', documents);
+  console.log('📄 Documents Page - Loading:', isLoading);
+  console.log('📄 Documents Page - Error:', error);
+  console.log('📄 Documents Page - Array?:', Array.isArray(documents));
 
   const downloadFile = async (docId: string, fileUrl: string, fileName: string) => {
     try {
