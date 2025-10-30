@@ -28,7 +28,6 @@ model User {
   resetTokenExpiry   DateTime?
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
-  memberProfile      Member?
   authoredNews       News[]
   authoredActivities Activity[]
   authoredProjects   Project[]
@@ -39,7 +38,6 @@ model User {
 
 model Member {
   id           String   @id @default(cuid())
-  userId       String?  @unique
   studentId    String   @unique
   phone        String?
   year         Int
@@ -53,7 +51,6 @@ model Member {
   avatar       String?
   email        String?
   name         String
-  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("members")
 }

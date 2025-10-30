@@ -14,6 +14,7 @@ interface Member {
   email?: string;
   phone?: string;
   year?: number;
+  academicYear?: number;
   department?: string;
   faculty?: string;
   position?: string;
