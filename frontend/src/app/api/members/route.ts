@@ -143,7 +143,6 @@ export async function POST(request: NextRequest) {
 
     const newMember = await prisma.member.create({
       data: {
-        userId,
         name,
         studentId,
         email: email || null,
@@ -155,15 +154,6 @@ export async function POST(request: NextRequest) {
         division,
         avatar,
         isActive: true
-      },
-      include: {
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
-          }
-        }
       }
     });
 
@@ -171,13 +161,13 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         id: newMember.id,
+        name: newMember.name,
         studentId: newMember.studentId,
-        firstName: newMember.user?.firstName,
-        lastName: newMember.user?.lastName,
-        email: newMember.user?.email,
+        email: newMember.email,
         department: newMember.department,
         faculty: newMember.faculty,
         year: newMember.year,
+        academicYear: newMember.academicYear,
         phone: newMember.phone,
         position: newMember.position,
         division: newMember.division,
@@ -233,15 +223,6 @@ export async function PUT(request: NextRequest) {
         ...(division && { division }),
         ...(avatar && { avatar }),
         ...(isActive !== undefined && { isActive })
-      },
-      include: {
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true
-          }
-        }
       }
     });
 
@@ -249,13 +230,13 @@ export async function PUT(request: NextRequest) {
       success: true,
       data: {
         id: updatedMember.id,
+        name: updatedMember.name,
         studentId: updatedMember.studentId,
-        firstName: updatedMember.user?.firstName,
-        lastName: updatedMember.user?.lastName,
-        email: updatedMember.user?.email,
+        email: updatedMember.email,
         department: updatedMember.department,
         faculty: updatedMember.faculty,
         year: updatedMember.year,
+        academicYear: updatedMember.academicYear,
         phone: updatedMember.phone,
         position: updatedMember.position,
         division: updatedMember.division,
