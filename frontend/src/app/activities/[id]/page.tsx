@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -13,20 +13,21 @@ interface Activity {
   author?: string;
 }
 
-export default function ActivityDetailPage({ params }: { params: { id: string } }) {
+export default function ActivityDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const { id } = use(params);
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchActivity();
-  }, [params.id]);
+  }, [id]);
 
   const fetchActivity = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/activities?id=${params.id}`);
+      const response = await fetch(`/api/activities?id=${id}`);
       
       if (!response.ok) {
         if (response.status === 404) {
