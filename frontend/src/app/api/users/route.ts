@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
     // ถ้าต้องการข้อมูลผู้ใช้คนเดียว
     if (id) {
       const user = await prisma.user.findUnique({
-        where: { id },
-        include: {
-          memberProfile: true
-        }
+        where: { id }
       });
 
       if (!user) {
@@ -35,8 +32,7 @@ export async function GET(request: NextRequest) {
           role: user.role,
           isActive: user.isActive,
           createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-          memberProfile: user.memberProfile
+          updatedAt: user.updatedAt
         }
       });
     }
@@ -50,9 +46,6 @@ export async function GET(request: NextRequest) {
 
     const users = await prisma.user.findMany({
       where: whereCondition,
-      include: {
-        memberProfile: true
-      },
       orderBy: {
         createdAt: 'desc'
       }
@@ -67,8 +60,7 @@ export async function GET(request: NextRequest) {
       role: user.role,
       isActive: user.isActive,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      memberProfile: user.memberProfile
+      updatedAt: user.updatedAt
     }));
 
     return NextResponse.json({
@@ -216,10 +208,7 @@ export async function PUT(request: NextRequest) {
 
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: updateData,
-      include: {
-        memberProfile: true
-      }
+      data: updateData
     });
 
     return NextResponse.json({
@@ -233,8 +222,7 @@ export async function PUT(request: NextRequest) {
         role: updatedUser.role,
         isActive: updatedUser.isActive,
         createdAt: updatedUser.createdAt,
-        updatedAt: updatedUser.updatedAt,
-        memberProfile: updatedUser.memberProfile
+        updatedAt: updatedUser.updatedAt
       },
       message: 'User updated successfully'
     });
