@@ -147,89 +147,67 @@ export default function MembersPage() {
       {filteredMembers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredMembers.map(member => (
-            <Card key={member.id} className="overflow-hidden">
-              {/* Card Header with Dark Blue Background */}
-              <div className="bg-gradient-to-br from-blue-900 to-blue-800 h-20"></div>
-              
-              <CardContent className="relative pt-0 pb-6 px-6">
-                {/* Profile Picture - Overlapping header */}
-                <div className="flex justify-center -mt-12 mb-4">
-                  {member.avatar ? (
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="w-24 h-24 rounded-lg border-4 border-white shadow-lg object-cover"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-lg border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center">
-                      <Users size={40} className="text-gray-400" />
+            <Card key={member.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+              {/* Profile Picture - Full width */}
+              <div className="relative h-64 bg-gray-100">
+                {member.avatar ? (
+                  <img
+                    src={member.avatar}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                    <Users size={80} className="text-gray-400" />
+                  </div>
+                )}
+                
+                {/* Academic Year Badge - Top Left */}
+                {member.academicYear && (
+                  <div className="absolute top-3 left-3">
+                    <div className="bg-blue-600 text-white px-3 py-1.5 rounded-lg shadow-lg">
+                      <div className="text-xs font-medium">ปีการศึกษา</div>
+                      <div className="text-lg font-bold">{member.academicYear}</div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+              </div>
+              
+              <CardContent className="p-5">
+                {/* Name */}
+                <h3 className="font-bold text-lg text-gray-900 mb-2 text-center">
+                  {member.name}
+                </h3>
 
-                {/* Member Info */}
-                <div className="text-center mb-4">
-                  <h3 className="font-bold text-lg text-gray-900 mb-1">{member.name}</h3>
-                  {member.position && (
-                    <p className="text-sm font-semibold text-blue-900 uppercase tracking-wide mb-2">
+                {/* Position */}
+                {member.position && (
+                  <div className="text-center mb-3 pb-3 border-b">
+                    <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">
                       {member.position}
                     </p>
-                  )}
-                </div>
+                  </div>
+                )}
 
-                {/* Contact Details */}
-                <div className="space-y-2 text-sm">
-                  {member.phone && (
-                    <div className="flex items-center text-gray-700">
-                      <Phone size={16} className="mr-2 text-gray-500 flex-shrink-0" />
-                      <span className="truncate">{member.phone}</span>
+                {/* Department */}
+                {member.department && (
+                  <div className="flex items-start mb-3">
+                    <Building size={18} className="mr-2 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-800">{member.department}</div>
+                      {member.faculty && (
+                        <div className="text-xs text-gray-500 mt-0.5">{member.faculty}</div>
+                      )}
                     </div>
-                  )}
-                  
-                  {member.email && (
-                    <div className="flex items-center text-gray-700">
-                      <Mail size={16} className="mr-2 text-gray-500 flex-shrink-0" />
-                      <span className="truncate">{member.email}</span>
-                    </div>
-                  )}
+                  </div>
+                )}
 
-                  {member.department && (
-                    <div className="flex items-start text-gray-700 pt-2 border-t">
-                      <Building size={16} className="mr-2 text-gray-500 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <div className="font-medium">{member.department}</div>
-                        {member.faculty && (
-                          <div className="text-xs text-gray-500">{member.faculty}</div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {(member.year || member.academicYear) && (
-                    <div className="flex items-center text-gray-700 pt-2 border-t">
-                      <GraduationCap size={16} className="mr-2 text-gray-500 flex-shrink-0" />
-                      <div className="flex gap-3 text-xs">
-                        {member.year && (
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded font-medium">
-                            ชั้นปี {member.year}
-                          </span>
-                        )}
-                        {member.academicYear && (
-                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded font-medium">
-                            ปีการศึกษา {member.academicYear}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {member.studentId && (
-                    <div className="text-center pt-2 border-t">
-                      <span className="text-xs text-gray-500">รหัสนักศึกษา</span>
-                      <div className="font-mono font-semibold text-gray-700">{member.studentId}</div>
-                    </div>
-                  )}
-                </div>
+                {/* Email */}
+                {member.email && (
+                  <div className="flex items-center text-sm text-gray-700">
+                    <Mail size={16} className="mr-2 text-blue-600 flex-shrink-0" />
+                    <span className="truncate">{member.email}</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

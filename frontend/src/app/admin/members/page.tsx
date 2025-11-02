@@ -54,6 +54,16 @@ const DEPARTMENTS = [
   'เทคโนโลยีสารสนเทศ'
 ];
 
+// ตำแหน่งหลักๆ ในสโมสรนิสิต
+const POSITIONS = [
+  'ประธานสโมสรนิสิต',
+  'รองประธานสโมสรนิสิต',
+  'เลขานุการ',
+  'เหรัญญิก',
+  'ฝ่าย',
+  'อื่นๆ'
+];
+
 export default function AdminMembersPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -73,6 +83,9 @@ export default function AdminMembersPage() {
     year: '',
     academicYear: '2568',
     position: '',
+    division: '',
+    isDivisionHead: false,
+    customPosition: '',
     avatar: ''
   });
 
@@ -109,6 +122,9 @@ export default function AdminMembersPage() {
       year: '',
       academicYear: '2568',
       position: '',
+      division: '',
+      isDivisionHead: false,
+      customPosition: '',
       avatar: ''
     });
     setImageFile(null);
@@ -144,6 +160,33 @@ export default function AdminMembersPage() {
 
   const startEdit = (member: Member) => {
     setSelectedMember(member);
+    
+    // Parse position to extract division info if it contains "ฝ่าย"
+    let basePosition = member.position || '';
+    let divisionName = '';
+    let isHead = false;
+    
+    if (basePosition.includes('รองประธาน') && basePosition.includes('ฝ่าย')) {
+      const match = basePosition.match(/รองประธานสโมสรนิสิต\s*ฝ่าย(.+)/);
+      if (match) {
+        divisionName = match[1].trim();
+        basePosition = 'รองประธานสโมสรนิสิต';
+      }
+    } else if (basePosition.includes('หัวหน้าฝ่าย')) {
+      const match = basePosition.match(/หัวหน้าฝ่าย(.+)/);
+      if (match) {
+        divisionName = match[1].trim();
+        isHead = true;
+        basePosition = 'ฝ่าย';
+      }
+    } else if (basePosition.includes('ฝ่าย') && !POSITIONS.includes(basePosition)) {
+      const match = basePosition.match(/ฝ่าย(.+)/);
+      if (match) {
+        divisionName = match[1].trim();
+        basePosition = 'ฝ่าย';
+      }
+    }
+    
     setFormData({
       name: member.name || '',
       studentId: member.studentId || '',
@@ -152,7 +195,10 @@ export default function AdminMembersPage() {
       department: member.department || '',
       year: member.year?.toString() || '',
       academicYear: member.academicYear?.toString() || '2568',
-      position: member.position || '',
+      position: POSITIONS.includes(basePosition) ? basePosition : 'อื่นๆ',
+      division: divisionName,
+      isDivisionHead: isHead,
+      customPosition: POSITIONS.includes(basePosition) ? '' : member.position || '',
       avatar: member.avatar || ''
     });
     setImagePreview(member.avatar || '');
@@ -199,6 +245,22 @@ export default function AdminMembersPage() {
         }
       }
 
+      // Build position string based on selection
+      let finalPosition = '';
+      if (formData.position === 'รองประธานสโมสรนิสิต' && formData.division) {
+        finalPosition = `รองประธานสโมสรนิสิต ฝ่าย${formData.division}`;
+      } else if (formData.position === 'ฝ่าย' && formData.division) {
+        if (formData.isDivisionHead) {
+          finalPosition = `หัวหน้าฝ่าย${formData.division}`;
+        } else {
+          finalPosition = `ฝ่าย${formData.division}`;
+        }
+      } else if (formData.position === 'อื่นๆ' && formData.customPosition) {
+        finalPosition = formData.customPosition;
+      } else {
+        finalPosition = formData.position || 'สมาชิกทั่วไป';
+      }
+
       const memberData = {
         name: formData.name,
         studentId: formData.studentId,
@@ -208,7 +270,8 @@ export default function AdminMembersPage() {
         faculty: 'คณะวิทยาศาสตร์',
         year: parseInt(formData.year),
         academicYear: parseInt(formData.academicYear),
-        position: formData.position || 'สมาชิกทั่วไป',
+        position: finalPosition,
+        division: formData.division || undefined,
         avatar: avatarUrl || formData.avatar || undefined
       };
 
@@ -698,19 +761,101 @@ export default function AdminMembersPage() {
                   </label>
                   <select
                     value={formData.position}
-                    onChange={(e) => setFormData({...formData, position: e.target.value})}
+                    onChange={(e) => setFormData({
+                      ...formData, 
+                      position: e.target.value,
+                      division: e.target.value === 'รองประธานสโมสรนิสิต' || e.target.value === 'ฝ่าย' ? formData.division : '',
+                      isDivisionHead: e.target.value === 'ฝ่าย' ? formData.isDivisionHead : false,
+                      customPosition: e.target.value === 'อื่นๆ' ? formData.customPosition : ''
+                    })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   >
                     <option value="">เลือกตำแหน่ง</option>
-                    <option value="ประธานสโมสร">ประธานสโมสร</option>
-                    <option value="รองประธานสโมสร">รองประธานสโมสร</option>
-                    <option value="เลขานุการ">เลขานุการ</option>
-                    <option value="เหรัญญิก">เหรัญญิก</option>
-                    <option value="ประชาสัมพันธ์">ประชาสัมพันธ์</option>
-                    <option value="สมาชิก">สมาชิกทั่วไป</option>
+                    {POSITIONS.map((pos) => (
+                      <option key={pos} value={pos}>{pos}</option>
+                    ))}
                   </select>
                 </div>
               </div>
+
+              {/* รองประธานสโมสรนิสิต - แสดงช่องฝ่าย */}
+              {formData.position === 'รองประธานสโมสรนิสิต' && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    ฝ่าย <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.division}
+                    onChange={(e) => setFormData({...formData, division: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="เช่น วิชาการ, กีฬา, ประชาสัมพันธ์"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    ระบุชื่อฝ่ายที่รับผิดชอบ (ตำแหน่งจะแสดงเป็น "รองประธานสโมสรนิสิต ฝ่าย...")
+                  </p>
+                </div>
+              )}
+
+              {/* ฝ่าย - แสดงช่องฝ่ายและติ๊กหัวหน้า */}
+              {formData.position === 'ฝ่าย' && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      ชื่อฝ่าย <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.division}
+                      onChange={(e) => setFormData({...formData, division: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      placeholder="เช่น วิชาการ, กีฬา, ประชาสัมพันธ์"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="isDivisionHead"
+                      checked={formData.isDivisionHead}
+                      onChange={(e) => setFormData({...formData, isDivisionHead: e.target.checked})}
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <label htmlFor="isDivisionHead" className="ml-2 text-sm font-medium text-gray-700">
+                      เป็นหัวหน้าฝ่าย
+                    </label>
+                  </div>
+                  
+                  <p className="text-xs text-gray-500">
+                    {formData.isDivisionHead 
+                      ? '✓ ตำแหน่งจะแสดงเป็น "หัวหน้าฝ่าย..."'
+                      : 'ตำแหน่งจะแสดงเป็น "ฝ่าย..."'
+                    }
+                  </p>
+                </div>
+              )}
+
+              {/* อื่นๆ - แสดงช่องกรอกตำแหน่งเอง */}
+              {formData.position === 'อื่นๆ' && (
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    ระบุตำแหน่ง <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.customPosition}
+                    onChange={(e) => setFormData({...formData, customPosition: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="เช่น ที่ปรึกษา, พิธีกร, ผู้ประสานงาน"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    กรอกตำแหน่งที่ต้องการ (สำหรับตำแหน่งที่ไม่อยู่ในตัวเลือก)
+                  </p>
+                </div>
+              )}
 
               {/* Submit Buttons */}
               <div className="flex space-x-3 pt-4">
