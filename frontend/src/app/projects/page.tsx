@@ -201,7 +201,7 @@ export default function ProjectsPage() {
       <Section variant="light">
         <Container>
           <Card className="p-6 shadow-xl mb-8">
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
               {/* Status Filter */}
               <div>
                 <h3 className="text-sm font-medium text-gray-700 mb-3">สถานะโครงการ</h3>

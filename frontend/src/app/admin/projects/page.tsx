@@ -349,14 +349,14 @@ export default function AdminProjectsPage() {
               <input
                 type="text"
                 placeholder="ค้นหาโครงการ (ชื่อ, คำอธิบาย, ผู้ประสานงาน)"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full pl-10 pr-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex items-center space-x-4">
               <select 
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
@@ -530,7 +530,7 @@ export default function AdminProjectsPage() {
                   required
                   value={formData.code}
                   onChange={(e) => setFormData({...formData, code: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="เช่น SC2567-001"
                 />
               </div>
@@ -544,7 +544,7 @@ export default function AdminProjectsPage() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="กรุณากรอกชื่อโครงการ"
                 />
               </div>
@@ -558,7 +558,7 @@ export default function AdminProjectsPage() {
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="กรุณากรอกคำอธิบายโครงการ"
                 />
               </div>
@@ -573,7 +573,7 @@ export default function AdminProjectsPage() {
                     required
                     value={formData.academicYear}
                     onChange={(e) => setFormData({...formData, academicYear: parseInt(e.target.value)})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
 
@@ -586,7 +586,7 @@ export default function AdminProjectsPage() {
                     min="0"
                     value={formData.budget}
                     onChange={(e) => setFormData({...formData, budget: parseFloat(e.target.value) || 0})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
               </div>
@@ -598,7 +598,7 @@ export default function AdminProjectsPage() {
                 <select 
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 >
                   <option value="PLANNING">กำลังวางแผน</option>
                   <option value="APPROVED">อนุมัติแล้ว</option>
@@ -619,7 +619,7 @@ export default function AdminProjectsPage() {
                     required
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
@@ -633,7 +633,7 @@ export default function AdminProjectsPage() {
                     required
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
@@ -647,7 +647,7 @@ export default function AdminProjectsPage() {
                   setShowAddModal(false);
                   resetForm();
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border-2 border-gray-400 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 ยกเลิก
               </button>
@@ -688,7 +688,7 @@ export default function AdminProjectsPage() {
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
                 
@@ -700,7 +700,7 @@ export default function AdminProjectsPage() {
                     type="number"
                     value={formData.academicYear}
                     onChange={(e) => setFormData({...formData, academicYear: parseInt(e.target.value)})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -714,7 +714,7 @@ export default function AdminProjectsPage() {
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
 
@@ -726,7 +726,7 @@ export default function AdminProjectsPage() {
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({...formData, status: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   >
                     <option value="PLANNING">วางแผน</option>
                     <option value="APPROVED">อนุมัติแล้ว</option>
@@ -747,7 +747,7 @@ export default function AdminProjectsPage() {
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
@@ -760,7 +760,7 @@ export default function AdminProjectsPage() {
                     type="date"
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
@@ -776,7 +776,7 @@ export default function AdminProjectsPage() {
                     step="0.01"
                     value={formData.budget}
                     onChange={(e) => setFormData({...formData, budget: parseFloat(e.target.value)})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -789,7 +789,7 @@ export default function AdminProjectsPage() {
                   type="file"
                   accept=".pdf,.doc,.docx"
                   onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
                 {selectedFile && (
                   <p className="text-sm text-gray-600 mt-1">
@@ -806,7 +806,7 @@ export default function AdminProjectsPage() {
                   setSelectedFile(null);
                   setUploadedFilePath('');
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border-2 border-gray-400 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 ยกเลิก
               </button>

@@ -86,7 +86,7 @@ export default function MembersPage() {
               placeholder="ค้นหาสมาชิก (ชื่อ, รหัสนักศึกษา, อีเมล)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -98,7 +98,7 @@ export default function MembersPage() {
             <select
               value={filterAcademicYear}
               onChange={(e) => setFilterAcademicYear(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">ทุกปีการศึกษา</option>
               {academicYears.filter(y => y !== 'all').map(year => (
@@ -112,7 +112,7 @@ export default function MembersPage() {
             <select
               value={filterYear}
               onChange={(e) => setFilterYear(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">ทุกชั้นปี</option>
               {years.filter(y => y !== 'all').map(year => (
@@ -126,7 +126,7 @@ export default function MembersPage() {
             <select
               value={filterDepartment}
               onChange={(e) => setFilterDepartment(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">ทุกสาขา</option>
               {departments.filter(d => d !== 'all').map(dept => (

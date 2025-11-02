@@ -373,7 +373,7 @@ export default function AdminNews() {
                   placeholder="ค้นหาข่าว..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full pl-10 pr-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
               </div>
             </div>
@@ -383,7 +383,7 @@ export default function AdminNews() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="border-2 border-gray-400 rounded-lg px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 >
                   <option value="ALL">หมวดหมู่ทั้งหมด</option>
                   {categories.map(cat => (
@@ -394,7 +394,7 @@ export default function AdminNews() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="border-2 border-gray-400 rounded-lg px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 <option value="ALL">สถานะทั้งหมด</option>
                 <option value="PUBLISHED">เผยแพร่แล้ว</option>
@@ -498,7 +498,7 @@ export default function AdminNews() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -511,7 +511,7 @@ export default function AdminNews() {
                   rows={3}
                   value={formData.excerpt}
                   onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -524,7 +524,7 @@ export default function AdminNews() {
                   rows={8}
                   value={formData.content}
                   onChange={(e) => setFormData({...formData, content: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -536,7 +536,7 @@ export default function AdminNews() {
                   <select
                     value={formData.categoryId}
                     onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -598,7 +598,7 @@ export default function AdminNews() {
                       }
                     }}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>

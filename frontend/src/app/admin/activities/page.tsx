@@ -461,7 +461,7 @@ export default function AdminActivities() {
                     placeholder="ค้นหากิจกรรม..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full pl-10 pr-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
                 <button
@@ -479,7 +479,7 @@ export default function AdminActivities() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="border-2 border-gray-400 rounded-lg px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 >
                   <option value="ALL">หมวดหมู่ทั้งหมด</option>
                   {categories.map(cat => (
@@ -490,7 +490,7 @@ export default function AdminActivities() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="border-2 border-gray-400 rounded-lg px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 <option value="ALL">สถานะทั้งหมด</option>
                 <option value="ACTIVE">เปิดใช้งาน</option>
@@ -619,7 +619,7 @@ export default function AdminActivities() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -632,7 +632,7 @@ export default function AdminActivities() {
                   rows={4}
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -643,7 +643,7 @@ export default function AdminActivities() {
                 <select
                   value={formData.projectId}
                   onChange={(e) => setFormData({...formData, projectId: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">เลือกโครงการ (ไม่บังคับ)</option>
                   {projects.map(project => (
@@ -663,7 +663,7 @@ export default function AdminActivities() {
                     required
                     value={formData.categoryId}
                     onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">เลือกหมวดหมู่</option>
                     {categories.map(cat => (
@@ -679,7 +679,7 @@ export default function AdminActivities() {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({...formData, type: e.target.value as any})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     {activityTypes.map(type => (
                       <option key={type.value} value={type.value}>{type.label}</option>
@@ -696,7 +696,7 @@ export default function AdminActivities() {
                     required
                     value={formData.location}
                     onChange={(e) => setFormData({...formData, location: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -711,7 +711,7 @@ export default function AdminActivities() {
                     required
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -724,7 +724,7 @@ export default function AdminActivities() {
                     required
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -790,7 +790,7 @@ export default function AdminActivities() {
                       }
                     }}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    className="w-full mt-1 px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                   />
                 </div>
               </div>

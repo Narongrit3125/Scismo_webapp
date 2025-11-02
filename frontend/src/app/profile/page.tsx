@@ -302,7 +302,7 @@ export default function ProfilePage() {
                     type="text"
                     value={editedProfile.firstName || ''}
                     onChange={(e) => setEditedProfile({ ...editedProfile, firstName: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    className="w-full px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     placeholder="กรอกชื่อ"
                   />
                 ) : (
@@ -323,7 +323,7 @@ export default function ProfilePage() {
                     type="text"
                     value={editedProfile.lastName || ''}
                     onChange={(e) => setEditedProfile({ ...editedProfile, lastName: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    className="w-full px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     placeholder="กรอกนามสกุล"
                   />
                 ) : (

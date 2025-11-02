@@ -395,13 +395,13 @@ export default function AdminMembersPage() {
               <input
                 type="text"
                 placeholder="ค้นหาสมาชิก (ชื่อ, รหัสนิสิต, ภาควิชา)"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full pl-10 pr-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex items-center space-x-4">
-              <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              <select className="px-4 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 <option value="">ทุกสถานะ</option>
                 <option value="active">ใช้งานอยู่</option>
                 <option value="inactive">ไม่ใช้งาน</option>
