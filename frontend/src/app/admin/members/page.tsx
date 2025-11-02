@@ -587,43 +587,49 @@ export default function AdminMembersPage() {
 
       {/* Add Member Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900">
-                {selectedMember ? 'แก้ไขข้อมูลสมาชิก' : 'เพิ่มสมาชิกใหม่'}
-              </h3>
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl my-8 transform transition-all">
+            {/* Header with Gradient */}
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-6 flex items-center justify-between rounded-t-2xl">
+              <div>
+                <h3 className="text-2xl font-bold text-white">
+                  {selectedMember ? 'แก้ไขข้อมูลสมาชิก' : 'เพิ่มสมาชิกใหม่'}
+                </h3>
+                <p className="text-purple-100 text-sm mt-1">
+                  {selectedMember ? 'อัพเดตข้อมูลสมาชิกในระบบ' : 'เพิ่มสมาชิกใหม่เข้าสู่ระบบ'}
+                </p>
+              </div>
               <button
                 onClick={() => {
                   setShowAddModal(false);
                   resetForm();
                 }}
-                className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="text-white hover:bg-white/20 p-2 rounded-full transition-all duration-200"
               >
-                <X size={20} />
+                <X size={24} />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              {/* รูปโปรไฟล์ */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
+            <form id="member-form" onSubmit={handleSubmit} className="p-8 space-y-8 max-h-[calc(90vh-240px)] overflow-y-auto">
+              {/* Profile Picture Section */}
+              <div className="flex flex-col items-center space-y-4 pb-6 border-b border-gray-200">
+                <div className="relative group">
                   {imagePreview ? (
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-32 h-32 rounded-full object-cover border-4 border-purple-100"
+                      className="w-36 h-36 rounded-full object-cover border-4 border-purple-200 shadow-lg"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center border-4 border-purple-100">
-                      <ImageIcon className="w-12 h-12 text-purple-400" />
+                    <div className="w-36 h-36 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 flex items-center justify-center border-4 border-purple-200 shadow-lg">
+                      <ImageIcon className="w-16 h-16 text-purple-400" />
                     </div>
                   )}
                   <label
                     htmlFor="avatar-upload"
-                    className="absolute bottom-0 right-0 bg-purple-600 text-white p-2 rounded-full cursor-pointer hover:bg-purple-700 transition-colors shadow-lg"
+                    className="absolute bottom-2 right-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-3 rounded-full cursor-pointer hover:shadow-xl transition-all transform hover:scale-110"
                   >
-                    <Upload size={16} />
+                    <Upload size={18} />
                     <input
                       id="avatar-upload"
                       type="file"
@@ -634,12 +640,19 @@ export default function AdminMembersPage() {
                   </label>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-gray-700">รูปโปรไฟล์</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    คลิกปุ่มกล้องเพื่ออัปโหลดรูปภาพ (PNG, JPG, JPEG)
+                  <p className="text-base font-semibold text-gray-800">รูปโปรไฟล์</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    อัปโหลดรูปภาพ (PNG, JPG, JPEG)
                   </p>
                 </div>
               </div>
+              
+              {/* Personal Information Section */}
+              <div className="space-y-6">
+                <h4 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full mr-3"></div>
+                  ข้อมูลส่วนตัว
+                </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -718,6 +731,14 @@ export default function AdminMembersPage() {
                   ))}
                 </select>
               </div>
+              </div>
+
+              {/* Academic Information Section */}
+              <div className="space-y-6">
+                <h4 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full mr-3"></div>
+                  ข้อมูลการศึกษา
+                </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -856,31 +877,34 @@ export default function AdminMembersPage() {
                   </p>
                 </div>
               )}
-
-              {/* Submit Buttons */}
-              <div className="flex space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddModal(false);
-                    resetForm();
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors font-medium"
-                >
-                  ยกเลิก
-                </button>
-                <button 
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading 
-                    ? (selectedMember ? 'กำลังแก้ไข...' : 'กำลังเพิ่ม...') 
-                    : (selectedMember ? 'บันทึกการแก้ไข' : 'เพิ่มสมาชิก')
-                  }
-                </button>
               </div>
+
             </form>
+
+            {/* Footer Actions */}
+            <div className="sticky bottom-0 bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200 rounded-b-2xl">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddModal(false);
+                  resetForm();
+                }}
+                className="px-6 py-3 border-2 border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition-all duration-200 font-medium min-w-[120px]"
+              >
+                ยกเลิก
+              </button>
+              <button 
+                type="submit"
+                form="member-form"
+                disabled={loading}
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-w-[120px]"
+              >
+                {loading 
+                  ? (selectedMember ? 'กำลังแก้ไข...' : 'กำลังเพิ่ม...') 
+                  : (selectedMember ? 'บันทึกการแก้ไข' : 'เพิ่มสมาชิก')
+                }
+              </button>
+            </div>
           </div>
         </div>
       )}
