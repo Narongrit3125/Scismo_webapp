@@ -266,8 +266,8 @@ export default function ProjectsPage() {
               {filteredProjects.map((project: any) => {
                 const statusInfo = getStatusInfo(project.status);
                 const priorityInfo = getPriorityInfo(project.priority);
-                const budgetPercent = Number(project.totalBudget) > 0 
-                  ? (Number(project.usedBudget) / Number(project.totalBudget)) * 100 
+                const budgetPercent = Number(project.totalBudget || 0) > 0 
+                  ? (Number(project.usedBudget || 0) / Number(project.totalBudget || 0)) * 100 
                   : 0;
 
                 return (
@@ -331,16 +331,16 @@ export default function ProjectsPage() {
                           </div>
                         )}
                         
-                        {project.totalBudget > 0 && (
+                        {(project.totalBudget || 0) > 0 && (
                           <div className="flex items-center text-sm text-gray-600">
                             <DollarSign size={16} className="mr-2 text-purple-500" />
-                            <span>{project.totalBudget.toLocaleString()} บาท</span>
+                            <span>{(project.totalBudget || 0).toLocaleString()} บาท</span>
                           </div>
                         )}
                       </div>
 
                       {/* Budget Progress */}
-                      {project.totalBudget > 0 && (
+                      {(project.totalBudget || 0) > 0 && (
                         <div className="mb-4">
                           <div className="flex justify-between text-xs text-gray-600 mb-1">
                             <span>งบประมาณที่ใช้</span>
@@ -440,8 +440,8 @@ function ProjectDetailModal({
 }) {
   const statusInfo = getStatusInfo(project.status);
   const priorityInfo = getPriorityInfo(project.priority);
-  const budgetPercent = project.totalBudget > 0 
-    ? (project.usedBudget / project.totalBudget) * 100 
+  const budgetPercent = (project.totalBudget || 0) > 0 
+    ? ((project.usedBudget || 0) / (project.totalBudget || 0)) * 100 
     : 0;
 
   return (
@@ -482,12 +482,12 @@ function ProjectDetailModal({
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <DollarSign className="w-6 h-6 text-blue-600 mx-auto mb-2" />
               <div className="text-sm text-gray-600">งบประมาณ</div>
-              <div className="font-bold text-gray-900">{project.totalBudget.toLocaleString()}</div>
+              <div className="font-bold text-gray-900">{(project.totalBudget || 0).toLocaleString()}</div>
             </div>
             <div className="text-center p-4 bg-indigo-50 rounded-lg">
               <User className="w-6 h-6 text-indigo-600 mx-auto mb-2" />
               <div className="text-sm text-gray-600">ผู้ประสานงาน</div>
-              <div className="font-bold text-gray-900 text-sm truncate">{project.coordinator}</div>
+              <div className="font-bold text-gray-900 text-sm truncate">{project.coordinator || '-'}</div>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
               <Users className="w-6 h-6 text-purple-600 mx-auto mb-2" />
@@ -497,12 +497,12 @@ function ProjectDetailModal({
           </div>
 
           {/* Budget Progress */}
-          {project.totalBudget > 0 && (
+          {(project.totalBudget || 0) > 0 && (
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="flex justify-between text-sm text-gray-700 mb-2">
                 <span>การใช้งบประมาณ</span>
                 <span className="font-bold">
-                  {project.usedBudget.toLocaleString()} / {project.totalBudget.toLocaleString()} บาท
+                  {(project.usedBudget || 0).toLocaleString()} / {(project.totalBudget || 0).toLocaleString()} บาท
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
