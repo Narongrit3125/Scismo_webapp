@@ -175,14 +175,14 @@ export default function MembersPage() {
               
               <CardContent className="p-5">
                 {/* Name */}
-                <h3 className="font-bold text-lg text-gray-900 mb-2 text-center">
+                <h3 className="font-bold text-lg text-gray-900 mb-2 text-center break-words leading-tight min-h-[3.5rem] flex items-center justify-center">
                   {member.name}
                 </h3>
 
                 {/* Position */}
                 {member.position && (
                   <div className="text-center mb-3 pb-3 border-b">
-                    <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">
+                    <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide break-words">
                       {member.position}
                     </p>
                   </div>
@@ -205,7 +205,7 @@ export default function MembersPage() {
                 {member.email && (
                   <div className="flex items-center text-sm text-gray-700">
                     <Mail size={16} className="mr-2 text-blue-600 flex-shrink-0" />
-                    <span className="truncate">{member.email}</span>
+                    <span className="truncate break-all">{member.email}</span>
                   </div>
                 )}
               </CardContent>
