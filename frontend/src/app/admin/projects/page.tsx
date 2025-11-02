@@ -508,19 +508,31 @@ export default function AdminProjectsPage() {
 
       {/* Add Project Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white bg-opacity-20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">เพิ่มโครงการใหม่</h3>
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl my-8 transform transition-all">
+            {/* Header with Gradient */}
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-6 flex items-center justify-between rounded-t-2xl">
+              <div>
+                <h3 className="text-2xl font-bold text-white">เพิ่มโครงการใหม่</h3>
+                <p className="text-purple-100 text-sm mt-1">สร้างโครงการใหม่และเพิ่มเข้าสู่ระบบ</p>
+              </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+                className="text-white hover:bg-white/20 p-2 rounded-full transition-all duration-200"
               >
-                <X size={20} />
+                <X size={24} />
               </button>
             </div>
             
-            <form id="project-form" onSubmit={handleCreateProject} className="space-y-4">
+            <form id="project-form" onSubmit={handleCreateProject} className="p-8 space-y-8 max-h-[calc(90vh-240px)] overflow-y-auto">
+              {/* Basic Information Section */}
+              <div className="space-y-6">
+                <h4 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full mr-3"></div>
+                  ข้อมูลพื้นฐาน
+                </h4>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   รหัสโครงการ *
@@ -549,7 +561,9 @@ export default function AdminProjectsPage() {
                 />
               </div>
               
-              <div>
+              </div>
+
+              <div className="col-span-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   คำอธิบาย *
                 </label>
@@ -563,7 +577,7 @@ export default function AdminProjectsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-full grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     ปีการศึกษา *
@@ -619,7 +633,7 @@ export default function AdminProjectsPage() {
                     required
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
@@ -633,28 +647,30 @@ export default function AdminProjectsPage() {
                     required
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
               </div>
+              </div>
             </form>
             
-            <div className="flex space-x-3 mt-6">
+            {/* Footer Actions */}
+            <div className="sticky bottom-0 bg-gray-50 px-8 py-6 flex justify-end space-x-4 border-t border-gray-200 rounded-b-2xl">
               <button
                 type="button"
                 onClick={() => {
                   setShowAddModal(false);
                   resetForm();
                 }}
-                className="flex-1 px-4 py-2 border-2 border-gray-400 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border-2 border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition-all duration-200 font-medium min-w-[120px]"
               >
                 ยกเลิก
               </button>
               <button 
                 type="submit"
                 form="project-form"
-                className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 min-w-[120px]"
               >
                 เพิ่มโครงการ
               </button>
@@ -747,7 +763,7 @@ export default function AdminProjectsPage() {
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
@@ -760,7 +776,7 @@ export default function AdminProjectsPage() {
                     type="date"
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-900"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     style={{ colorScheme: 'light' }}
                   />
                 </div>
