@@ -148,7 +148,7 @@ export default function ActivitiesPage() {
               </div>
 
               {/* Filters Row */}
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row gap-6">
                 {/* Type Filter */}
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">

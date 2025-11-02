@@ -651,7 +651,7 @@ export default function AdminMembersPage() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="กรุณากรอกชื่อ-นามสกุล"
                   />
                 </div>
@@ -665,7 +665,7 @@ export default function AdminMembersPage() {
                     required
                     value={formData.studentId}
                     onChange={(e) => setFormData({...formData, studentId: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="เช่น 6410110001"
                   />
                 </div>
@@ -681,7 +681,7 @@ export default function AdminMembersPage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="example@student.university.ac.th"
                   />
                 </div>
@@ -694,7 +694,7 @@ export default function AdminMembersPage() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="0XX-XXX-XXXX"
                   />
                 </div>
@@ -708,7 +708,7 @@ export default function AdminMembersPage() {
                   required
                   value={formData.department}
                   onChange={(e) => setFormData({...formData, department: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900"
                 >
                   <option value="">เลือกสาขาวิชา</option>
                   {DEPARTMENTS.map((dept) => (
@@ -728,7 +728,7 @@ export default function AdminMembersPage() {
                     required
                     value={formData.year}
                     onChange={(e) => setFormData({...formData, year: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900"
                   >
                     <option value="">เลือกชั้นปี</option>
                     <option value="1">ปี 1</option>
@@ -748,7 +748,7 @@ export default function AdminMembersPage() {
                     required
                     value={formData.academicYear}
                     onChange={(e) => setFormData({...formData, academicYear: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="เช่น 2568"
                     min="2560"
                     max="2580"
@@ -768,7 +768,7 @@ export default function AdminMembersPage() {
                       isDivisionHead: e.target.value === 'ฝ่าย' ? formData.isDivisionHead : false,
                       customPosition: e.target.value === 'อื่นๆ' ? formData.customPosition : ''
                     })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900"
                   >
                     <option value="">เลือกตำแหน่ง</option>
                     {POSITIONS.map((pos) => (
@@ -789,7 +789,7 @@ export default function AdminMembersPage() {
                     required
                     value={formData.division}
                     onChange={(e) => setFormData({...formData, division: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="เช่น วิชาการ, กีฬา, ประชาสัมพันธ์"
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -810,7 +810,7 @@ export default function AdminMembersPage() {
                       required
                       value={formData.division}
                       onChange={(e) => setFormData({...formData, division: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      className="w-full px-3 py-2 border-2 border-green-400 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="เช่น วิชาการ, กีฬา, ประชาสัมพันธ์"
                     />
                   </div>
@@ -848,7 +848,7 @@ export default function AdminMembersPage() {
                     required
                     value={formData.customPosition}
                     onChange={(e) => setFormData({...formData, customPosition: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border-2 border-purple-400 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="เช่น ที่ปรึกษา, พิธีกร, ผู้ประสานงาน"
                   />
                   <p className="text-xs text-gray-500 mt-1">

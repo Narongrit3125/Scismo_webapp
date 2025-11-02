@@ -46,9 +46,13 @@ export default function NewsPage() {
 
   // Get unique categories
   const categories = useMemo(() => {
-    const uniqueCats = new Set(newsData.map((item: NewsItem) => item.category as string));
-    const cats: string[] = ['ทั้งหมด', ...Array.from(uniqueCats) as string[]];
-    return cats;
+    const uniqueCats = new Set<string>();
+    newsData.forEach((item: NewsItem) => {
+      if (item.category && item.category !== 'ทั้งหมด') {
+        uniqueCats.add(item.category);
+      }
+    });
+    return ['ทั้งหมด', ...Array.from(uniqueCats)];
   }, [newsData]);
 
   // Filter news
@@ -94,7 +98,7 @@ export default function NewsPage() {
       <Section variant="light" className="-mt-10 relative z-20">
         <Container>
           <Card className="p-6 shadow-xl">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-6">
               {/* Search */}
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
