@@ -414,78 +414,123 @@ export default function AdminDocuments() {
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-lg">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">อัปโหลดเอกสารใหม่</h3>
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            {/* Header with Gradient */}
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-6 rounded-t-2xl">
+              <h3 className="text-2xl font-bold text-white">อัปโหลดเอกสารใหม่</h3>
+              <p className="text-purple-100 text-sm mt-1">เพิ่มเอกสารใหม่เข้าสู่ระบบ</p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mx-8 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            )}
             
-            <form onSubmit={handleUploadDocument}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ชื่อเอกสาร <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="ระบุชื่อเอกสาร"
-                />
-              </div>
+            <form onSubmit={handleUploadDocument} id="upload-form">
+              <div className="p-8 space-y-6 max-h-[calc(90vh-220px)] overflow-y-auto">
+                {/* Section: ข้อมูลเอกสาร */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">ข้อมูลเอกสาร</h4>
+                  </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  คำอธิบาย
-                </label>
-                <textarea
-                  rows={3}
-                  value={formData.description || ''}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="อธิบายเกี่ยวกับเอกสารนี้..."
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ไฟล์เอกสาร <span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center justify-center w-full">
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-2 text-gray-500" />
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">คลิกเพื่ออัปโหลด</span> หรือลากไฟล์มาวาง
-                      </p>
-                      <p className="text-xs text-gray-500">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (MAX. 50MB)</p>
-                      {formData.file && (
-                        <p className="text-xs text-blue-600 mt-2 font-medium">{formData.file.name}</p>
-                      )}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        ชื่อเอกสาร <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.title}
+                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        placeholder="ระบุชื่อเอกสาร"
+                      />
                     </div>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                      onChange={handleFileChange}
-                      required
-                    />
-                  </label>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        คำอธิบาย
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={formData.description || ''}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        placeholder="อธิบายเกี่ยวกับเอกสารนี้..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section: อัปโหลดไฟล์ */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">อัปโหลดไฟล์</h4>
+                  </div>
+
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gradient-to-br from-gray-50 to-blue-50 hover:from-blue-50 hover:to-purple-50 transition-all duration-300">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <div className="p-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mb-3">
+                          <Upload className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="mb-2 text-sm text-gray-700">
+                          <span className="font-semibold">คลิกเพื่อเลือกไฟล์</span> หรือลากไฟล์มาวาง
+                        </p>
+                        <p className="text-xs text-gray-500">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (สูงสุด 50MB)</p>
+                        {formData.file && (
+                          <div className="mt-3 px-4 py-2 bg-white border border-purple-200 rounded-lg">
+                            <p className="text-sm text-purple-700 font-medium flex items-center gap-2">
+                              <FileText className="w-4 h-4" />
+                              {formData.file.name}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                        onChange={handleFileChange}
+                        required
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Section: การเผยแพร่ */}
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">การเผยแพร่</h4>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-200">
+                    <label className="flex items-start cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.isPublic}
+                        onChange={(e) => setFormData({...formData, isPublic: e.target.checked})}
+                        className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                      />
+                      <span className="ml-3">
+                        <span className="block text-sm font-medium text-gray-900">เผยแพร่สาธารณะ</span>
+                        <span className="block text-xs text-gray-600 mt-1">ผู้ใช้ทั่วไปสามารถดูและดาวน์โหลดเอกสารนี้ได้</span>
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isPublic}
-                    onChange={(e) => setFormData({...formData, isPublic: e.target.checked})}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">เผยแพร่สาธารณะ (ผู้ใช้ทั่วไปสามารถดาวน์โหลดได้)</span>
-                </label>
-              </div>
-
-              <div className="flex justify-end space-x-3">
+              {/* Footer with Buttons */}
+              <div className="sticky bottom-0 bg-gray-50 px-8 py-6 rounded-b-2xl border-t border-gray-200 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -494,18 +539,18 @@ export default function AdminDocuments() {
                     setError(null);
                   }}
                   disabled={uploading}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
+                  className="min-w-[120px] px-6 py-3 text-sm font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 transition-all"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
                   disabled={uploading || !formData.file}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                  className="min-w-[140px] px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   {uploading ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                       <span>กำลังอัปโหลด...</span>
                     </>
                   ) : (
