@@ -10,7 +10,8 @@ import {
   Trash2, 
   Eye,
   Download,
-  Upload
+  Upload,
+  ArrowLeft
 } from 'lucide-react';
 
 interface Document {
@@ -248,7 +249,16 @@ export default function AdminDocuments() {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-500 text-white shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-10">
+          {/* Back Button */}
+          <button
+            onClick={() => router.back()}
+            className="pt-6 pb-2 flex items-center text-white hover:text-blue-100 transition-colors group"
+          >
+            <ArrowLeft size={20} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-medium">กลับ</span>
+          </button>
+
+          <div className="flex justify-between items-center pb-10">
             <div className="flex items-center space-x-6">
               <div className="bg-white bg-opacity-25 p-4 rounded-xl shadow-lg backdrop-blur-sm">
                 <FileText size={36} className="text-blue-100 drop-shadow-sm" />
