@@ -377,113 +377,155 @@ export default function AdminUsers() {
 
       {/* Create/Edit User Modal */}
       {(showCreateForm || editingUser) && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white bg-opacity-20 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {editingUser ? 'แก้ไขผู้ใช้' : 'เพิ่มผู้ใช้ใหม่'}
-            </h3>
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+            {/* Header with Gradient */}
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-6 rounded-t-2xl">
+              <h3 className="text-2xl font-bold text-white">
+                {editingUser ? 'แก้ไขข้อมูลผู้ใช้' : 'เพิ่มผู้ใช้ใหม่'}
+              </h3>
+              <p className="text-purple-100 text-sm mt-1">
+                {editingUser ? 'อัพเดตข้อมูลผู้ใช้ในระบบ' : 'สร้างบัญชีผู้ใช้ใหม่เข้าสู่ระบบ'}
+              </p>
+            </div>
             
-            <form onSubmit={editingUser ? handleUpdateUser : handleCreateUser}>
-              {!editingUser && (
-                <>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      ชื่อผู้ใช้ (Username)
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.username}
-                      onChange={(e) => setFormData({...formData, username: e.target.value})}
-                      placeholder="ตัวอักษร a-z, 0-9, _, - เท่านั้น"
-                      pattern="[a-zA-Z0-9_-]+"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+            <form onSubmit={editingUser ? handleUpdateUser : handleCreateUser} id="user-form">
+              <div className="p-8 space-y-6 max-h-[calc(90vh-200px)] overflow-y-auto">
+                {/* Section: ข้อมูลบัญชี (Account Information) - Only for new user */}
+                {!editingUser && (
+                  <div>
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                      <h4 className="text-lg font-semibold text-gray-900">ข้อมูลบัญชี</h4>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          ชื่อผู้ใช้ (Username) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.username}
+                          onChange={(e) => setFormData({...formData, username: e.target.value})}
+                          placeholder="ตัวอักษร a-z, 0-9, _, - เท่านั้น"
+                          pattern="[a-zA-Z0-9_-]+"
+                          className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          อีเมล <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          placeholder="example@email.com"
+                          className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          รหัสผ่าน <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={formData.password}
+                          onChange={(e) => setFormData({...formData, password: e.target.value})}
+                          placeholder="อย่างน้อย 6 ตัวอักษร"
+                          className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      อีเมล
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                )}
+
+                {/* Section: ข้อมูลส่วนตัว (Personal Information) */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">ข้อมูลส่วนตัว</h4>
                   </div>
-                </>
-              )}
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ชื่อจริง
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        ชื่อจริง <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                        placeholder="ระบุชื่อจริง"
+                        className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                      />
+                    </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  นามสกุล
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              {!editingUser && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    รหัสผ่าน
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        นามสกุล <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                        placeholder="ระบุนามสกุล"
+                        className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                      />
+                    </div>
+                  </div>
                 </div>
-              )}
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  บทบาท
-                </label>
-                <select
-                  value={formData.role}
-                  onChange={(e) => setFormData({...formData, role: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="MEMBER">สมาชิกสโมสร</option>
-                  <option value="ADMIN">ผู้ดูแลระบบ</option>
-                </select>
+                {/* Section: สิทธิ์และสถานะ (Permissions & Status) */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">สิทธิ์และสถานะ</h4>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        บทบาท <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={formData.role}
+                        onChange={(e) => setFormData({...formData, role: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-400 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                      >
+                        <option value="MEMBER">สมาชิกสโมสร</option>
+                        <option value="ADMIN">ผู้ดูแลระบบ</option>
+                      </select>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-200">
+                      <label className="flex items-start cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.isActive}
+                          onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
+                          className="mt-1 h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <span className="ml-3">
+                          <span className="block text-sm font-medium text-gray-900">เปิดใช้งานบัญชี</span>
+                          <span className="block text-xs text-gray-600 mt-1">ผู้ใช้สามารถเข้าสู่ระบบและใช้งานได้</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="mb-6">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isActive}
-                    onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">ใช้งาน</span>
-                </label>
-              </div>
-
-              <div className="flex justify-end space-x-3">
+              {/* Footer with Buttons */}
+              <div className="sticky bottom-0 bg-gray-50 px-8 py-6 rounded-b-2xl border-t border-gray-200 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -499,15 +541,15 @@ export default function AdminUsers() {
                       isActive: true
                     });
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  className="min-w-[120px] px-6 py-3 text-sm font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                  className="min-w-[120px] px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 hover:shadow-lg hover:scale-105 transition-all duration-200"
                 >
-                  {editingUser ? 'อัพเดท' : 'สร้าง'}
+                  {editingUser ? 'อัพเดท' : 'สร้างบัญชี'}
                 </button>
               </div>
             </form>
