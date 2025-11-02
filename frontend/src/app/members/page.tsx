@@ -75,7 +75,8 @@ export default function MembersPage() {
   if (loading) return <Loading />;
 
   return (
-    <PageLayout title="สมาชิก">
+    <PageLayout title="สมาชิกสโมสรนิสิตคณะวิทยาศาสตร์
+    มหาวิทยาลัยนเรศวร">
       {/* Filter Section */}
       <div className="mb-6 space-y-4">
         <div className="flex flex-col gap-4">
