@@ -712,6 +712,7 @@ export default function AdminActivities() {
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
                     className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{ colorScheme: 'light' }}
                   />
                 </div>
 
@@ -725,6 +726,7 @@ export default function AdminActivities() {
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
                     className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{ colorScheme: 'light' }}
                   />
                 </div>
               </div>
