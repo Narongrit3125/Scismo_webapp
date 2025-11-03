@@ -304,10 +304,12 @@ export default function ActivitiesPage() {
                       )}
                       
                       {/* Button */}
-                      <Button variant="primary" className="w-full group-hover:shadow-lg transition-shadow">
-                        <span>ดูรายละเอียด</span>
-                        <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                      </Button>
+                      <Link href={`/activities/${activity.id}`}>
+                        <Button variant="primary" className="w-full group-hover:shadow-lg transition-shadow">
+                          <span>ดูรายละเอียด</span>
+                          <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </Link>
                     </div>
                   </Card>
                 ) : (
@@ -380,10 +382,12 @@ export default function ActivitiesPage() {
                               </div>
                             </div>
                           )}
-                          <Button variant="primary">
-                            ดูรายละเอียด
-                            <ArrowRight size={16} className="ml-2" />
-                          </Button>
+                          <Link href={`/activities/${activity.id}`}>
+                            <Button variant="primary">
+                              ดูรายละเอียด
+                              <ArrowRight size={16} className="ml-2" />
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                     </div>

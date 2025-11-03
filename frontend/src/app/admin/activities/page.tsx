@@ -601,201 +601,244 @@ export default function AdminActivities() {
 
       {/* Create/Edit Activity Modal */}
       {(showCreateForm || editingActivity) && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white bg-opacity-20 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {editingActivity ? 'แก้ไขกิจกรรม' : 'เพิ่มกิจกรรมใหม่'}
-            </h3>
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-t-2xl px-8 py-6">
+              <h3 className="text-2xl font-bold text-white">
+                {editingActivity ? 'แก้ไขกิจกรรม' : 'เพิ่มกิจกรรมใหม่'}
+              </h3>
+              <p className="text-purple-100 text-sm mt-1">
+                {editingActivity ? 'อัปเดตข้อมูลกิจกรรม' : 'สร้างกิจกรรมใหม่สำหรับแสดงในเว็บไซต์'}
+              </p>
+            </div>
             
-            <form onSubmit={editingActivity ? handleUpdateActivity : handleCreateActivity}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ชื่อกิจกรรม
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  รายละเอียด
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  โครงการ
-                </label>
-                <select
-                  value={formData.projectId}
-                  onChange={(e) => setFormData({...formData, projectId: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">เลือกโครงการ (ไม่บังคับ)</option>
-                  {projects.map(project => (
-                    <option key={project.id} value={project.id}>
-                      {project.code} - {project.title} (ปี {project.year})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 mb-4">
+            <form onSubmit={editingActivity ? handleUpdateActivity : handleCreateActivity} className="flex flex-col flex-1 min-h-0">
+              {/* Form Content */}
+              <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                {/* Basic Information Section */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    หมวดหมู่ <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    required
-                    value={formData.categoryId}
-                    onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">เลือกหมวดหมู่</option>
-                    {categories.map(cat => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
-                    ))}
-                  </select>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">ข้อมูลพื้นฐาน</h4>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        ชื่อกิจกรรม <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.title}
+                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        placeholder="ระบุชื่อกิจกรรม"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        รายละเอียด <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        required
+                        rows={4}
+                        value={formData.description}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                        placeholder="รายละเอียดกิจกรรม"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        โครงการ
+                      </label>
+                      <select
+                        value={formData.projectId}
+                        onChange={(e) => setFormData({...formData, projectId: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="">เลือกโครงการ (ไม่บังคับ)</option>
+                        {projects.map(project => (
+                          <option key={project.id} value={project.id}>
+                            {project.code} - {project.title} (ปี {project.year})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
+                {/* Classification Section */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    ประเภทกิจกรรม
-                  </label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value as any})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {activityTypes.map(type => (
-                      <option key={type.value} value={type.value}>{type.label}</option>
-                    ))}
-                  </select>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">ประเภทและหมวดหมู่</h4>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        หมวดหมู่ <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        required
+                        value={formData.categoryId}
+                        onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="">เลือกหมวดหมู่</option>
+                        {categories.map(cat => (
+                          <option key={cat.value} value={cat.value}>{cat.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        ประเภทกิจกรรม
+                      </label>
+                      <select
+                        value={formData.type}
+                        onChange={(e) => setFormData({...formData, type: e.target.value as any})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        {activityTypes.map(type => (
+                          <option key={type.value} value={type.value}>{type.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        สถานที่ <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.location}
+                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        placeholder="สถานที่"
+                      />
+                    </div>
+                  </div>
                 </div>
 
+                {/* Date & Time Section */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    สถานที่
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.location}
-                    onChange={(e) => setFormData({...formData, location: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">วันและเวลา</h4>
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        วันเวลาเริ่ม <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        required
+                        value={formData.startDate}
+                        onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        style={{ colorScheme: 'light' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        วันเวลาสิ้นสุด <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        required
+                        value={formData.endDate}
+                        onChange={(e) => setFormData({...formData, endDate: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        style={{ colorScheme: 'light' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Image Section */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    วันเวลาเริ่ม
-                  </label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    style={{ colorScheme: 'light' }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    วันเวลาสิ้นสุด
-                  </label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    style={{ colorScheme: 'light' }}
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  รูปภาพกิจกรรม
-                </label>
-                
-                {/* File Upload */}
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="activity-image-upload"
-                  />
-                  <label
-                    htmlFor="activity-image-upload"
-                    className="cursor-pointer flex flex-col items-center"
-                  >
-                    {imagePreview ? (
-                      <div className="relative w-full">
-                        <img
-                          src={imagePreview}
-                          alt="Preview"
-                          className="max-h-48 mx-auto rounded-lg object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setImageFile(null);
-                            setImagePreview('');
-                            setFormData({...formData, image: ''});
-                          }}
-                          className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                        >
-                          <X size={16} />
-                        </button>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">รูปภาพกิจกรรม</h4>
+                  </div>
+                  
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div className="mb-4 relative">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-64 object-cover rounded-xl border-2 border-gray-200 shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setImageFile(null);
+                          setImagePreview('');
+                          setFormData({...formData, image: ''});
+                        }}
+                        className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg transition-all"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+                  )}
+                  
+                  {/* File Upload Area */}
+                  <div className="flex items-center justify-center w-full">
+                    <label htmlFor="activity-image-upload" className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gradient-to-br from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 transition-all">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-10 h-10 text-purple-500 mb-3" />
+                        <p className="mb-2 text-sm text-gray-600">
+                          <span className="font-semibold">คลิกเพื่ออัปโหลด</span> หรือลากไฟล์มาวาง
+                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG หรือ GIF (สูงสุด 5MB)</p>
                       </div>
-                    ) : (
-                      <>
-                        <Upload className="w-12 h-12 text-gray-400 mb-2" />
-                        <span className="text-sm text-gray-600">คลิกเพื่ออัปโหลดรูปภาพ</span>
-                        <span className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</span>
-                      </>
-                    )}
-                  </label>
-                </div>
+                      <input
+                        type="file"
+                        id="activity-image-upload"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  </div>
 
-                {/* Or enter URL */}
-                <div className="mt-2">
-                  <span className="text-xs text-gray-500">หรือใส่ URL รูปภาพ:</span>
-                  <input
-                    type="text"
-                    value={formData.image}
-                    onChange={(e) => {
-                      setFormData({...formData, image: e.target.value});
-                      if (e.target.value) {
-                        setImagePreview(e.target.value);
-                      }
-                    }}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full mt-1 px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  />
+                  {/* URL Input */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                      หรือใส่ URL รูปภาพ
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.image}
+                      onChange={(e) => {
+                        setFormData({...formData, image: e.target.value});
+                        if (e.target.value) {
+                          setImagePreview(e.target.value);
+                        }
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3">
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-gray-50 px-8 py-6 rounded-b-2xl border-t border-gray-200 flex justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -803,15 +846,15 @@ export default function AdminActivities() {
                     setEditingActivity(null);
                     resetForm();
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  className="px-6 py-3 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                  className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 hover:scale-105 transition-all shadow-lg"
                 >
-                  {editingActivity ? 'อัพเดท' : 'สร้าง'}
+                  {editingActivity ? 'อัปเดตกิจกรรม' : 'สร้างกิจกรรม'}
                 </button>
               </div>
             </form>
