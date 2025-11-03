@@ -295,7 +295,7 @@ export default function Home() {
                     <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-3">
                       {news.category}
                     </span>
-                    <h3 className="font-bold text-xl mb-2 line-clamp-2">{news.title}</h3>
+                    <h3 className="font-bold text-xl mb-2 line-clamp-2 text-gray-900">{news.title}</h3>
                     {news.excerpt && (
                       <p className="text-gray-600 mb-4 line-clamp-3">{news.excerpt}</p>
                     )}
