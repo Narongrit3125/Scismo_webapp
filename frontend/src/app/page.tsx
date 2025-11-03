@@ -339,7 +339,7 @@ export default function Home() {
           ) : activities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {activities.map((activity) => (
-                <Link key={activity.id} href={`/activities`}>
+                <Link key={activity.id} href={`/activities/${activity.id}`}>
                   <Card hover className="overflow-hidden h-full cursor-pointer transition-transform hover:scale-[1.02]">
                     {/* Image */}
                     <div className="h-48 relative overflow-hidden bg-gradient-to-br from-purple-400 to-blue-500">
