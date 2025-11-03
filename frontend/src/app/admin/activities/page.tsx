@@ -56,7 +56,7 @@ export default function AdminActivities() {
   const [projects, setProjects] = useState<{id: string; code: string; title: string; year: number}[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('ALL');
+
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
@@ -66,7 +66,6 @@ export default function AdminActivities() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    categoryId: '',
     type: 'WORKSHOP' as 'WORKSHOP' | 'SEMINAR' | 'COMPETITION' | 'VOLUNTEER' | 'SOCIAL' | 'TRAINING' | 'MEETING' | 'CEREMONY' | 'FUNDRAISING' | 'EXHIBITION',
     location: '',
     startDate: '',
@@ -217,10 +216,6 @@ export default function AdminActivities() {
       alert('กรุณากรอกรายละเอียดกิจกรรม');
       return;
     }
-    if (!formData.categoryId || formData.categoryId.trim() === '') {
-      alert('กรุณาเลือกหมวดหมู่');
-      return;
-    }
     if (!formData.type) {
       alert('กรุณาเลือกประเภท');
       return;
@@ -244,7 +239,7 @@ export default function AdminActivities() {
       const activityData = {
         title: formData.title,
         description: formData.description,
-        categoryId: formData.categoryId,
+        categoryId: formData.type, // Use type as categoryId
         type: formData.type,
         startDate: formData.startDate,
         endDate: formData.endDate || null,
@@ -294,10 +289,6 @@ export default function AdminActivities() {
         imageUrl = await uploadImage(imageFile);
       }
       
-      if (!formData.categoryId || formData.categoryId.trim() === '') {
-        alert('กรุณาเลือกหมวดหมู่');
-        return;
-      }
       const response = await fetch(`/api/activities?id=${editingActivity.id}`, {
         method: 'PUT',
         headers: {
@@ -305,7 +296,7 @@ export default function AdminActivities() {
         },
         body: JSON.stringify({
           ...formData,
-          categoryId: formData.categoryId,
+          categoryId: formData.type, // Use type as categoryId
           image: imageUrl
         }),
       });
@@ -350,7 +341,6 @@ export default function AdminActivities() {
     setFormData({
       title: '',
       description: '',
-      categoryId: '',
       type: 'WORKSHOP' as const,
       location: '',
       startDate: '',
@@ -369,7 +359,6 @@ export default function AdminActivities() {
     setFormData({
       title: activity.title,
       description: activity.description,
-      categoryId: activity.categoryId,
       type: activity.type,
       location: activity.location || '',
       startDate: activity.startDate.slice(0, 16), // Format for datetime-local input
@@ -386,11 +375,10 @@ export default function AdminActivities() {
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          activity.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'ALL' || activity.categoryId === categoryFilter;
     const matchesStatus = statusFilter === 'ALL' ||
                          (statusFilter === 'COMPLETED' && activity.status === 'COMPLETED') ||
                          (statusFilter === 'IN_PROGRESS' && activity.status === 'IN_PROGRESS');
-    return matchesSearch && matchesCategory && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 
   const getActivityStatus = (activity: Activity) => {
@@ -478,16 +466,7 @@ export default function AdminActivities() {
             <div className="flex gap-4">
               <div className="flex items-center">
                 <Filter className="w-4 h-4 mr-2 text-gray-400" />
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="border-2 border-gray-400 rounded-lg px-3 py-2 bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                >
-                  <option value="ALL">หมวดหมู่ทั้งหมด</option>
-                  {categories.map(cat => (
-                    <option key={cat.value} value={cat.value}>{cat.label}</option>
-                  ))}
-                </select>
+                <span className="text-sm text-gray-600 mr-2">สถานะ:</span>
               </div>
               <select
                 value={statusFilter}
@@ -528,7 +507,7 @@ export default function AdminActivities() {
                        status === 'ongoing' ? 'กำลังดำเนินการ' : 'สิ้นสุดแล้ว'}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {categories.find(cat => cat.value === activity.categoryId)?.label}
+                      {activityTypes.find(type => type.value === activity.type)?.label}
                     </span>
                   </div>
                   
@@ -685,31 +664,14 @@ export default function AdminActivities() {
                   </div>
                 </div>
 
-                {/* Classification Section */}
+                {/* Activity Details Section */}
                 <div>
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
-                    <h4 className="text-lg font-semibold text-gray-900">ประเภทและหมวดหมู่</h4>
+                    <h4 className="text-lg font-semibold text-gray-900">รายละเอียดกิจกรรม</h4>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        หมวดหมู่ <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        required
-                        value={formData.categoryId}
-                        onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                      >
-                        <option value="">เลือกหมวดหมู่</option>
-                        {categories.map(cat => (
-                          <option key={cat.value} value={cat.value}>{cat.label}</option>
-                        ))}
-                      </select>
-                    </div>
-
+                  <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         ประเภทกิจกรรม
@@ -738,27 +700,26 @@ export default function AdminActivities() {
                         placeholder="สถานที่"
                       />
                     </div>
-                  </div>
 
-                  {/* Status */}
-                  <div className="mt-6">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      สถานะกิจกรรม <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      required
-                      value={formData.status}
-                      onChange={(e) => setFormData({...formData, status: e.target.value as any})}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                    >
-                      <option value="PLANNING">กำลังวางแผน</option>
-                      <option value="OPEN_REGISTRATION">เปิดรับสมัคร</option>
-                      <option value="FULL">เต็มแล้ว</option>
-                      <option value="IN_PROGRESS">กำลังดำเนินการ</option>
-                      <option value="COMPLETED">เสร็จสิ้น</option>
-                      <option value="CANCELLED">ยกเลิก</option>
-                      <option value="POSTPONED">เลื่อน</option>
-                    </select>
+                    <div className="col-span-2">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        สถานะกิจกรรม <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        required
+                        value={formData.status}
+                        onChange={(e) => setFormData({...formData, status: e.target.value as any})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="PLANNING">กำลังวางแผน</option>
+                        <option value="OPEN_REGISTRATION">เปิดรับสมัคร</option>
+                        <option value="FULL">เต็มแล้ว</option>
+                        <option value="IN_PROGRESS">กำลังดำเนินการ</option>
+                        <option value="COMPLETED">เสร็จสิ้น</option>
+                        <option value="CANCELLED">ยกเลิก</option>
+                        <option value="POSTPONED">เลื่อน</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
