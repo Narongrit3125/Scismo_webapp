@@ -482,140 +482,179 @@ export default function AdminNews() {
 
       {/* Create/Edit News Modal */}
       {(showCreateForm || editingNews) && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white bg-opacity-20 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {editingNews ? 'แก้ไขข่าว' : 'เพิ่มข่าวใหม่'}
-            </h3>
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-t-2xl px-8 py-6">
+              <h3 className="text-2xl font-bold text-white">
+                {editingNews ? 'แก้ไขข่าว' : 'เพิ่มข่าวใหม่'}
+              </h3>
+              <p className="text-purple-100 text-sm mt-1">
+                {editingNews ? 'อัปเดตข้อมูลข่าวสาร' : 'สร้างข่าวสารใหม่สำหรับแสดงในเว็บไซต์'}
+              </p>
+            </div>
             
-            <form onSubmit={editingNews ? handleUpdateNews : handleCreateNews}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  หัวข้อข่าว
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  สรุปข่าว
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  เนื้อหา
-                </label>
-                <textarea
-                  required
-                  rows={8}
-                  value={formData.content}
-                  onChange={(e) => setFormData({...formData, content: e.target.value})}
-                  className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
+            <form onSubmit={editingNews ? handleUpdateNews : handleCreateNews} className="flex flex-col flex-1 min-h-0">
+              {/* Form Content */}
+              <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                {/* Basic Information Section */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    หมวดหมู่
-                  </label>
-                  <select
-                    value={formData.categoryId}
-                    onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {categories.map(cat => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">ข้อมูลพื้นฐาน</h4>
+                  </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  รูปภาพประกอบ
-                </label>
-                
-                {/* Image Preview */}
-                {imagePreview && (
-                  <div className="mb-4">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        หัวข้อข่าว <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.title}
+                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        placeholder="ระบุหัวข้อข่าว"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        สรุปข่าว <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        required
+                        rows={3}
+                        value={formData.excerpt}
+                        onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                        placeholder="สรุปเนื้อหาข่าวโดยย่อ"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        เนื้อหา <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        required
+                        rows={8}
+                        value={formData.content}
+                        onChange={(e) => setFormData({...formData, content: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                        placeholder="เนื้อหาข่าวโดยละเอียด"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        หมวดหมู่
+                      </label>
+                      <select
+                        value={formData.categoryId}
+                        onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                      >
+                        {categories.map(cat => (
+                          <option key={cat.value} value={cat.value}>{cat.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Image Section */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">รูปภาพประกอบ</h4>
+                  </div>
+                  
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div className="mb-4">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-64 object-cover rounded-xl border-2 border-gray-200 shadow-md"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* File Upload Area */}
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gradient-to-br from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 transition-all">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <svg className="w-10 h-10 mb-3 text-purple-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                        </svg>
+                        <p className="mb-2 text-sm text-gray-600">
+                          <span className="font-semibold">คลิกเพื่ออัปโหลด</span> หรือลากไฟล์มาวาง
+                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG หรือ GIF (สูงสุด 10MB)</p>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  </div>
+                  
+                  {/* URL Input */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
+                      หรือใส่ URL รูปภาพ
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.image}
+                      onChange={(e) => {
+                        setFormData({...formData, image: e.target.value});
+                        if (e.target.value) {
+                          setImagePreview(e.target.value);
+                          setImageFile(null);
+                        }
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                     />
                   </div>
-                )}
-                
-                {/* File Input */}
-                <div className="flex items-center justify-center w-full">
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">คลิกเพื่ออัปโหลด</span> หรือลากไฟล์มาวาง
-                      </p>
-                      <p className="text-xs text-gray-500">PNG, JPG หรือ GIF (MAX. 10MB)</p>
-                    </div>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </label>
                 </div>
-                
-                {/* Alternative URL Input */}
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-500 mb-2">
-                    หรือใส่ URL รูปภาพ
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => {
-                      setFormData({...formData, image: e.target.value});
-                      if (e.target.value) {
-                        setImagePreview(e.target.value);
-                        setImageFile(null);
-                      }
-                    }}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full px-3 py-2 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+
+                {/* Publishing Section */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-1 h-6 bg-gradient-to-b from-purple-600 to-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-900">การเผยแพร่</h4>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 border-2 border-purple-200">
+                    <label className="flex items-center cursor-pointer group">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={formData.status === 'PUBLISHED'}
+                          onChange={(e) => setFormData({...formData, status: e.target.checked ? 'PUBLISHED' : 'DRAFT'})}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                      </div>
+                      <div className="ms-3">
+                        <span className="text-sm font-semibold text-gray-900">เผยแพร่ทันที</span>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {formData.status === 'PUBLISHED' ? 'ข่าวจะแสดงในเว็บไซต์ทันที' : 'บันทึกเป็นแบบร่างก่อน'}
+                        </p>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.status === 'PUBLISHED'}
-                    onChange={(e) => setFormData({...formData, status: e.target.checked ? 'PUBLISHED' : 'DRAFT'})}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">เผยแพร่ทันที</span>
-                </label>
-              </div>
-
-              <div className="flex justify-end space-x-3">
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-gray-50 px-8 py-6 rounded-b-2xl border-t border-gray-200 flex justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -623,15 +662,15 @@ export default function AdminNews() {
                     setEditingNews(null);
                     resetForm();
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  className="px-6 py-3 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                  className="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl hover:from-purple-700 hover:to-blue-700 hover:scale-105 transition-all shadow-lg"
                 >
-                  {editingNews ? 'อัพเดท' : 'สร้าง'}
+                  {editingNews ? 'อัปเดตข่าว' : 'สร้างข่าว'}
                 </button>
               </div>
             </form>
