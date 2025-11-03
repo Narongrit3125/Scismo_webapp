@@ -30,7 +30,7 @@ interface Activity {
   startDate: string;
   endDate?: string;
   location?: string;
-  status: 'PLANNING' | 'OPEN_REGISTRATION' | 'FULL' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  status: 'PLANNING' | 'OPEN_REGISTRATION' | 'FULL' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED';
   isPublic: boolean;
   gallery?: string;
   image?: string;
@@ -73,7 +73,8 @@ export default function AdminActivities() {
     endDate: '',
     image: '',
     isPublic: true,
-    projectId: ''
+    projectId: '',
+    status: 'PLANNING' as 'PLANNING' | 'OPEN_REGISTRATION' | 'FULL' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED'
   });
 
   const activityTypes = [
@@ -251,6 +252,7 @@ export default function AdminActivities() {
         image: imageUrl || null,
         isPublic: formData.isPublic,
         projectId: formData.projectId || null,
+        status: formData.status,
         authorEmail: session.user.email
       };
 
@@ -355,7 +357,8 @@ export default function AdminActivities() {
       endDate: '',
       image: '',
       isPublic: true,
-      projectId: ''
+      projectId: '',
+      status: 'PLANNING' as const
     });
     setImageFile(null);
     setImagePreview('');
@@ -373,7 +376,8 @@ export default function AdminActivities() {
       endDate: activity.endDate?.slice(0, 16) || '',
       image: activity.image || '',
       isPublic: activity.isPublic,
-      projectId: activity.projectId || ''
+      projectId: activity.projectId || '',
+      status: activity.status || 'PLANNING'
     });
     setImageFile(null);
     setImagePreview(activity.image || '');
@@ -561,12 +565,21 @@ export default function AdminActivities() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        activity.status === 'COMPLETED' || activity.status === 'CANCELLED' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                        activity.status === 'COMPLETED' ? 'bg-gray-100 text-gray-800' :
+                        activity.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
+                        activity.status === 'POSTPONED' ? 'bg-orange-100 text-orange-800' :
+                        activity.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' :
+                        activity.status === 'OPEN_REGISTRATION' ? 'bg-green-100 text-green-800' :
+                        activity.status === 'FULL' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-purple-100 text-purple-800'
                       }`}>
                         {activity.status === 'COMPLETED' ? 'เสร็จสิ้น' : 
-                         activity.status === 'CANCELLED' ? 'ยกเลิก' : 
+                         activity.status === 'CANCELLED' ? 'ยกเลิก' :
+                         activity.status === 'POSTPONED' ? 'เลื่อน' :
                          activity.status === 'IN_PROGRESS' ? 'กำลังดำเนินการ' : 
-                         activity.status === 'OPEN_REGISTRATION' ? 'เปิดรับสมัคร' : 'วางแผน'}
+                         activity.status === 'OPEN_REGISTRATION' ? 'เปิดรับสมัคร' :
+                         activity.status === 'FULL' ? 'เต็มแล้ว' :
+                         'กำลังวางแผน'}
                       </span>
                     </div>
                     <div className="flex space-x-2">
@@ -725,6 +738,27 @@ export default function AdminActivities() {
                         placeholder="สถานที่"
                       />
                     </div>
+                  </div>
+
+                  {/* Status */}
+                  <div className="mt-6">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      สถานะกิจกรรม <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      required
+                      value={formData.status}
+                      onChange={(e) => setFormData({...formData, status: e.target.value as any})}
+                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                    >
+                      <option value="PLANNING">กำลังวางแผน</option>
+                      <option value="OPEN_REGISTRATION">เปิดรับสมัคร</option>
+                      <option value="FULL">เต็มแล้ว</option>
+                      <option value="IN_PROGRESS">กำลังดำเนินการ</option>
+                      <option value="COMPLETED">เสร็จสิ้น</option>
+                      <option value="CANCELLED">ยกเลิก</option>
+                      <option value="POSTPONED">เลื่อน</option>
+                    </select>
                   </div>
                 </div>
 
