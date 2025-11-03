@@ -339,41 +339,92 @@ export default function Home() {
           ) : activities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {activities.map((activity) => (
-                <Card key={activity.id} hover className="overflow-hidden">
-                  {activity.image && (
-                    <div className="h-48 relative overflow-hidden">
-                      <img 
-                        src={activity.image} 
-                        alt={activity.title}
-                        className="w-full h-full object-cover"
-                      />
+                <Link key={activity.id} href={`/activities`}>
+                  <Card hover className="overflow-hidden h-full cursor-pointer transition-transform hover:scale-[1.02]">
+                    {/* Image */}
+                    <div className="h-48 relative overflow-hidden bg-gradient-to-br from-purple-400 to-blue-500">
+                      {activity.image ? (
+                        <img 
+                          src={activity.image} 
+                          alt={activity.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Calendar className="w-16 h-16 text-white/50" />
+                        </div>
+                      )}
+                      {/* Status Badge */}
+                      {activity.status && (
+                        <div className="absolute top-3 right-3">
+                          <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-purple-700">
+                            {activity.status === 'PLANNING' && 'กำลังวางแผน'}
+                            {activity.status === 'OPEN_REGISTRATION' && 'เปิดรับสมัคร'}
+                            {activity.status === 'FULL' && 'เต็ม'}
+                            {activity.status === 'IN_PROGRESS' && 'กำลังดำเนินการ'}
+                            {activity.status === 'COMPLETED' && 'เสร็จสิ้น'}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-start space-x-4 mb-4">
-                      <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex flex-col items-center justify-center text-white">
-                        <span className="text-2xl font-bold">
-                          {new Date(activity.startDate).getDate()}
-                        </span>
-                        <span className="text-xs">
-                          {new Date(activity.startDate).toLocaleDateString('th-TH', { month: 'short' })}
-                        </span>
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        {/* Date Box */}
+                        <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex flex-col items-center justify-center text-white shadow-lg">
+                          <span className="text-2xl font-bold">
+                            {new Date(activity.startDate).getDate()}
+                          </span>
+                          <span className="text-xs font-medium">
+                            {new Date(activity.startDate).toLocaleDateString('th-TH', { month: 'short' })}
+                          </span>
+                        </div>
+
+                        {/* Title and Description */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg mb-2 line-clamp-2 text-gray-900 hover:text-purple-600 transition-colors">
+                            {activity.title}
+                          </h3>
+                          {activity.description && (
+                            <p className="text-gray-600 text-sm line-clamp-2 mb-3">{activity.description}</p>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg mb-2">{activity.title}</h3>
-                        {activity.description && (
-                          <p className="text-gray-600 text-sm line-clamp-2">{activity.description}</p>
-                        )}
+
+                      {/* Footer Info */}
+                      <div className="space-y-2 pt-3 border-t border-gray-100">
+                        {/* Date and Time */}
+                        <div className="flex items-center text-gray-600 text-sm">
+                          <Clock size={14} className="mr-2 text-purple-500" />
+                          <span>
+                            {new Date(activity.startDate).toLocaleDateString('th-TH', { 
+                              year: 'numeric',
+                              month: 'long', 
+                              day: 'numeric'
+                            })}
+                          </span>
+                        </div>
+
+                        {/* Location */}
                         {activity.location && (
-                          <div className="flex items-center text-purple-600 text-sm mt-2">
-                            <MapPin size={14} className="mr-1" />
-                            {activity.location}
+                          <div className="flex items-center text-gray-600 text-sm">
+                            <MapPin size={14} className="mr-2 text-purple-500" />
+                            <span className="line-clamp-1">{activity.location}</span>
                           </div>
                         )}
                       </div>
+
+                      {/* View Details Link */}
+                      <div className="mt-4 pt-3 border-t border-gray-100">
+                        <div className="text-purple-600 font-medium text-sm flex items-center justify-between group">
+                          <span>ดูรายละเอียด</span>
+                          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </div>
           ) : (
