@@ -89,19 +89,18 @@ export default function AdminActivities() {
     { value: 'EXHIBITION', label: 'นิทรรศการ' }
   ];
 
-  const [categories, setCategories] = useState<{value: string; label: string}[]>([]);
-
-  const fetchCategoryList = async () => {
-    try {
-      const res = await fetch('/api/categories');
-      const json = await res.json();
-      if (json.success) {
-        setCategories(json.data.map((c: any) => ({ value: c.id, label: c.name })));
-      }
-    } catch (err) {
-      console.error('Error fetching category list:', err);
-    }
-  };
+  // Categories as constant array (no category table in database)
+  const categories = [
+    { value: 'academic', label: 'วิชาการ' },
+    { value: 'social', label: 'สังคม' },
+    { value: 'sport', label: 'กีฬา' },
+    { value: 'culture', label: 'วัฒนธรรม' },
+    { value: 'volunteer', label: 'อาสาสมัคร' },
+    { value: 'training', label: 'ฝึกอบรม' },
+    { value: 'competition', label: 'การแข่งขัน' },
+    { value: 'ceremony', label: 'พิธีการ' },
+    { value: 'other', label: 'อื่นๆ' }
+  ];
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -118,7 +117,6 @@ export default function AdminActivities() {
 
     fetchActivities();
     fetchProjects();
-    fetchCategoryList();
   }, [session, status, router]);
 
   const fetchProjects = async () => {
