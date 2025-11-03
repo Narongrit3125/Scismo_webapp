@@ -115,7 +115,10 @@ export async function GET(request: NextRequest) {
       whereCondition.startDate = {
         gte: new Date() // เริ่มวันนี้หรือหลังจากนี้
       };
-      whereCondition.status = 'PUBLISHED'; // เฉพาะที่ published
+      // แสดงทุก status ยกเว้น CANCELLED และ POSTPONED
+      whereCondition.status = {
+        notIn: ['CANCELLED', 'POSTPONED']
+      };
     }
 
     const activities = await prisma.activity.findMany({
